@@ -33,21 +33,7 @@ export default function LoginPage() {
         }
     };
 
-    const handleSignUp = async () => {
-        setLoading(true);
-        setError(null);
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-        });
 
-        if (error) {
-            setError(error.message);
-        } else {
-            setError('Check your email for the confirmation link.');
-        }
-        setLoading(false);
-    };
 
     return (
         <div className="min-h-screen flex bg-background">
@@ -131,24 +117,22 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                        <div className="flex flex-col space-y-4">
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
                             >
                                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
                             </button>
-
-                            <button
-                                type="button"
-                                onClick={handleSignUp}
-                                disabled={loading}
-                                className="w-full flex justify-center py-3 px-4 border border-input rounded-lg shadow-sm text-sm font-medium text-foreground bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all"
-                            >
-                                Create Account
-                            </button>
                         </div>
+                    </form>
+
+                    <p className="text-center text-sm text-slate-600">
+                        Don't have an account?{' '}
+                        <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+                            Sign up for free
+                        </Link>
+                    </p>
                     </form>
 
                     <p className="text-center text-sm text-muted-foreground">
@@ -162,8 +146,8 @@ export default function LoginPage() {
                         </Link>
                         .
                     </p>
-                </div>
-            </div>
-        </div>
+                </div >
+            </div >
+        </div >
     );
 }
