@@ -112,13 +112,21 @@ export default function ComposerPage() {
                 body: JSON.stringify({
                     topic: aiPrompt,
                     platform: 'all',
-                    tone: aiTone
+                    tone: aiTone,
                 }),
             });
             const data = await res.json();
+            if (!res.ok) {
+                // Handles 401 Unauthorized or other server errors
+                alert(`AI generation failed: ${data.error || 'Unknown error'}`);
+                console.error('AI generation error (status', res.status, '):', data);
+                return;
+            }
             if (data.suggestions && data.suggestions.length > 0) {
                 setContent(data.suggestions[0].text);
                 setShowAiModal(false);
+            } else {
+                alert('No suggestions returned');
             }
         } catch (err) {
             alert('Failed to generate content');
