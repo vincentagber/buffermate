@@ -54,7 +54,7 @@ export default function LoginPage() {
             {/* Left Side - Brand/Visual */}
             <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/40 via-black to-black z-10"></div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-20"></div>
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1644426358812-879f02d1d867?q=80&w=1828&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] opacity-20 z-20"></div>
 
                 <div className="relative z-30 flex flex-col justify-between p-12 h-full text-white">
                     <div className="flex items-center space-x-2">
@@ -74,7 +74,7 @@ export default function LoginPage() {
                     </div>
 
                     <div className="text-sm text-white/40">
-                        © 2024 Buffermate AI. All rights reserved.
+                        © 2025 Buffermate AI. All rights reserved.
                     </div>
                 </div>
             </div>

@@ -2,7 +2,7 @@
 create extension if not exists "uuid-ossp";
 
 -- Create Social Accounts Table
-create type social_provider as enum ('x', 'facebook', 'linkedin');
+create type social_provider as enum ('x', 'facebook', 'linkedin', 'youtube', 'tiktok', 'instagram');
 
 create table social_accounts (
   id uuid primary key default uuid_generate_v4(),

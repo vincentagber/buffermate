@@ -9,7 +9,10 @@ import {
     CheckCircle2,
     Plus,
     Loader2,
-    ExternalLink
+    ExternalLink,
+    Youtube,
+    Instagram,
+    Video
 } from 'lucide-react';
 
 export default function AccountsPage() {
@@ -79,11 +82,25 @@ export default function AccountsPage() {
             description: 'Post to your pages and groups.'
         },
         {
-            id: 'mock',
-            name: 'Mock Provider',
-            icon: ExternalLink,
-            color: 'bg-gray-600 text-white',
-            description: 'Test the connection flow.'
+            id: 'youtube',
+            name: 'YouTube',
+            icon: Youtube,
+            color: 'bg-[#FF0000] text-white',
+            description: 'Upload videos and manage your channel.'
+        },
+        {
+            id: 'tiktok',
+            name: 'TikTok',
+            icon: Video, // Fallback if Tiktok icon is missing, or use a custom SVG
+            color: 'bg-[#000000] text-white',
+            description: 'Share short-form videos.'
+        },
+        {
+            id: 'instagram',
+            name: 'Instagram',
+            icon: Instagram,
+            color: 'bg-gradient-to-tr from-[#f09433] via-[#bc1888] to-[#e6683c] text-white',
+            description: 'Post photos, reels, and stories.'
         }
     ];
 
@@ -122,8 +139,8 @@ export default function AccountsPage() {
                                             onClick={() => connectProvider(provider.id)}
                                             disabled={connected}
                                             className={`w-full py-2 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center ${connected
-                                                    ? 'bg-secondary text-muted-foreground cursor-default'
-                                                    : 'bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg'
+                                                ? 'bg-secondary text-muted-foreground cursor-default'
+                                                : 'bg-primary text-white hover:bg-primary/90 shadow-md hover:shadow-lg'
                                                 }`}
                                         >
                                             {connected ? 'Connected' : 'Connect Account'}
