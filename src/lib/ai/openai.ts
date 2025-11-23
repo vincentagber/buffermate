@@ -91,7 +91,7 @@ export class OpenAIProvider implements AIProvider {
         });
 
         return {
-            image_url: response.data[0].url || ''
+            image_url: response.data?.[0]?.url || ''
         };
     }
 }

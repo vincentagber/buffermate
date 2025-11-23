@@ -117,14 +117,13 @@ export default function LoginPage() {
                             </div>
                         )}
 
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
-                            >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
+                        >
+                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
+                        </button>
                     </form>
 
                     <p className="text-center text-sm text-slate-600">
@@ -133,7 +132,6 @@ export default function LoginPage() {
                             Sign up for free
                         </Link>
                     </p>
-                    </form>
 
                     <p className="text-center text-sm text-muted-foreground">
                         By clicking continue, you agree to our{' '}
