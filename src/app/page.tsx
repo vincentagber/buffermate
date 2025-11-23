@@ -195,7 +195,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
+            {/* Feature 1: AI Content Engine */}
             <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-600/5 transition-all duration-300">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-6 group-hover:scale-110 transition-transform">
                 <Sparkles className="w-7 h-7" />
@@ -204,14 +204,34 @@ export default function LandingPage() {
               <p className="text-slate-600 leading-relaxed mb-6">
                 Generate engaging posts, scripts, and even videos in seconds. Our AI understands your brand voice.
               </p>
-              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative">
-                <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
-                  <Sparkles className="w-12 h-12 opacity-20" />
+              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="absolute inset-0 bg-slate-50 p-4 flex flex-col gap-3">
+                  {/* Mock Chat Interface */}
+                  <div className="flex gap-2">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex-shrink-0"></div>
+                    <div className="bg-white p-2 rounded-lg rounded-tl-none text-[10px] text-slate-400 shadow-sm border border-slate-100 w-3/4">
+                      Write a post about our new coffee blend...
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-row-reverse">
+                    <div className="w-6 h-6 rounded-full bg-purple-100 flex-shrink-0"></div>
+                    <div className="bg-blue-600 p-2 rounded-lg rounded-tr-none text-[10px] text-white shadow-sm w-3/4">
+                      Here's a draft: "Wake up to the rich aroma of our new Midnight Roast! ☕️ #CoffeeLover"
+                    </div>
+                  </div>
+                  <div className="mt-auto flex gap-2">
+                    <div className="h-6 flex-1 bg-white border border-slate-200 rounded flex items-center px-2">
+                      <div className="w-16 h-1 bg-slate-200 rounded"></div>
+                    </div>
+                    <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                      <ArrowRight className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Feature 2 */}
+            {/* Feature 2: Smart Scheduling */}
             <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-purple-200 hover:shadow-xl hover:shadow-purple-600/5 transition-all duration-300">
               <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
                 <Calendar className="w-7 h-7" />
@@ -220,14 +240,32 @@ export default function LandingPage() {
               <p className="text-slate-600 leading-relaxed mb-6">
                 Queue up content for months. We automatically pick the best times to post for maximum engagement.
               </p>
-              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative">
-                <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
-                  <Calendar className="w-12 h-12 opacity-20" />
+              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="absolute inset-0 bg-slate-50 p-4">
+                  {/* Mock Calendar */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {[...Array(7)].map((_, i) => (
+                      <div key={i} className="text-[8px] text-center text-slate-400">Day</div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-7 gap-1 h-24">
+                    {[...Array(14)].map((_, i) => (
+                      <div key={i} className={`rounded-sm ${i === 3 || i === 8 || i === 12 ? 'bg-purple-100 border border-purple-200 relative group/cal' : 'bg-white border border-slate-100'}`}>
+                        {(i === 3 || i === 8 || i === 12) && (
+                          <div className="absolute inset-0.5 bg-purple-500 rounded-[1px] opacity-20"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="absolute bottom-4 right-4 bg-white px-2 py-1 rounded shadow-sm border border-slate-100 flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span className="text-[8px] font-bold text-slate-600">Best Time</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Feature 3 */}
+            {/* Feature 3: Deep Analytics */}
             <div className="group p-8 rounded-2xl bg-slate-50 border border-slate-100 hover:border-green-200 hover:shadow-xl hover:shadow-green-600/5 transition-all duration-300">
               <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-6 group-hover:scale-110 transition-transform">
                 <BarChart3 className="w-7 h-7" />
@@ -236,9 +274,18 @@ export default function LandingPage() {
               <p className="text-slate-600 leading-relaxed mb-6">
                 Understand what works. Track follower growth, engagement rates, and ROI across all channels.
               </p>
-              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative">
-                <div className="absolute inset-0 bg-slate-50 flex items-center justify-center text-slate-300">
-                  <BarChart3 className="w-12 h-12 opacity-20" />
+              <div className="aspect-video bg-white rounded-lg border border-slate-200 overflow-hidden relative shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="absolute inset-0 bg-slate-50 p-4 flex items-end justify-between gap-2">
+                  {/* Mock Chart */}
+                  {[40, 65, 45, 80, 55, 90, 70].map((h, i) => (
+                    <div key={i} className="w-full bg-green-100 rounded-t-sm relative group/bar overflow-hidden" style={{ height: `${h}%` }}>
+                      <div className="absolute bottom-0 left-0 right-0 top-0 bg-green-500 opacity-20 group-hover/bar:opacity-30 transition-opacity"></div>
+                    </div>
+                  ))}
+                </div>
+                {/* Floating Tooltip Mock */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow-lg">
+                  +124% Growth
                 </div>
               </div>
             </div>
