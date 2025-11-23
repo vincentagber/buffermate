@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { AIService } from '@/lib/ai/service';
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -17,52 +18,25 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
         }
 
-        // Mock OpenAI Script Generation
-        // In a real implementation, we would call the OpenAI API here.
-
-        const generatedScript = `
-[SCENE START]
-
-**INT. STUDIO - DAY**
-
-HOST (Excited)
-Welcome back! Today we're talking about ${topic}. You won't believe how this changes everything.
-
-[CUT TO GRAPHICS]
-
-NARRATOR (V.O.)
-${topic} is revolutionizing the industry. Here's why...
-
-[SCENE END]
-        `.trim();
-
-        const scenes = [
-            {
-                scene_number: 1,
-                description: "Host introduction in a modern studio setting.",
-                dialogue: `Welcome back! Today we're talking about ${topic}. You won't believe how this changes everything.`
-            },
-            {
-                scene_number: 2,
-                description: "Motion graphics explaining the core concept.",
-                dialogue: `${topic} is revolutionizing the industry. Here's why...`
-            }
-        ];
+        const aiService = AIService.getInstance();
+        const result = await aiService.generateScript({
+            topic,
+            tone,
+            duration
+        });
 
         // Log the generation
         await supabase.from('ai_generations').insert({
             user_id: user.id,
             prompt: JSON.stringify({ topic, tone, duration, type: 'script' }),
-            model: 'openai-gpt-4',
-            result: { script: generatedScript, scenes },
+            model: process.env.OPENAI_API_KEY ? 'openai-gpt-4' : 'mock-script',
+            result: result,
         });
 
-        return NextResponse.json({
-            script: generatedScript,
-            scenes: scenes
-        });
+        return NextResponse.json(result);
 
     } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error('Script generation error:', err);
+        return NextResponse.json({ error: err.message || 'Failed to generate script' }, { status: 500 });
     }
 }

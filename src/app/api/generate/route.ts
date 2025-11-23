@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { AIService } from '@/lib/ai/service';
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -17,33 +18,26 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
         }
 
-        // Call AI Service (Mock for now, or real if key provided)
-        // In a real implementation, we'd import the AI service here.
-
-        const suggestions = [
-            {
-                title: `Post about ${topic}`,
-                text: `Here is a suggested post about ${topic} with a ${tone || 'neutral'} tone. #AI #Buffermate`,
-                platform: platform || 'all',
-            },
-            {
-                title: `Alternative for ${topic}`,
-                text: `Another angle on ${topic}. This one is shorter.`,
-                platform: platform || 'all',
-            }
-        ];
+        const aiService = AIService.getInstance();
+        const suggestions = await aiService.generateText({
+            topic,
+            tone,
+            platform,
+            length
+        });
 
         // Log generation
         await supabase.from('ai_generations').insert({
             user_id: user.id,
             prompt: JSON.stringify({ topic, tone, length, platform }),
-            model: process.env.AI_PROVIDER || 'openai',
+            model: process.env.OPENAI_API_KEY ? 'openai' : 'mock',
             result: suggestions,
         });
 
         return NextResponse.json({ suggestions });
 
     } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+        console.error('Generation error:', err);
+        return NextResponse.json({ error: err.message || 'Failed to generate content' }, { status: 500 });
     }
 }

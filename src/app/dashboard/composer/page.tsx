@@ -18,7 +18,9 @@ import {
     Wand2,
     ChevronRight,
     LayoutTemplate,
-    Clock
+    Clock,
+    Zap,
+    Briefcase
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -38,8 +40,11 @@ export default function ComposerPage() {
     const [generatedVideoUrl, setGeneratedVideoUrl] = useState('');
     const [generatedThumbnailUrl, setGeneratedThumbnailUrl] = useState('');
 
+    // AI State
     const [aiPrompt, setAiPrompt] = useState('');
     const [showAiModal, setShowAiModal] = useState(false);
+    const [aiTone, setAiTone] = useState('professional');
+    const [professionalMode, setProfessionalMode] = useState(true);
 
     const supabase = createClient();
     const router = useRouter();
@@ -104,7 +109,11 @@ export default function ComposerPage() {
             const res = await fetch('/api/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ topic: aiPrompt, platform: 'all' }),
+                body: JSON.stringify({
+                    topic: aiPrompt,
+                    platform: 'all',
+                    tone: aiTone
+                }),
             });
             const data = await res.json();
             if (data.suggestions && data.suggestions.length > 0) {
@@ -126,7 +135,7 @@ export default function ComposerPage() {
             const res = await fetch('/api/ai/script', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ topic: videoTopic, tone: 'engaging' }),
+                body: JSON.stringify({ topic: videoTopic, tone: aiTone }),
             });
             const data = await res.json();
             if (data.script) {
@@ -279,13 +288,41 @@ export default function ComposerPage() {
                                                 className="w-full h-32 p-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none resize-none text-sm"
                                             />
                                         </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="block text-xs font-medium text-slate-700 mb-1">Tone</label>
+                                                <select
+                                                    value={aiTone}
+                                                    onChange={(e) => setAiTone(e.target.value)}
+                                                    className="w-full p-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                                >
+                                                    <option value="professional">Professional</option>
+                                                    <option value="witty">Witty</option>
+                                                    <option value="urgent">Urgent</option>
+                                                    <option value="empathetic">Empathetic</option>
+                                                    <option value="neutral">Neutral</option>
+                                                </select>
+                                            </div>
+                                            <div className="flex items-end">
+                                                <div className="w-full flex items-center justify-between p-2 border border-slate-200 rounded-md bg-slate-50">
+                                                    <span className="text-xs font-medium text-slate-600 flex items-center">
+                                                        <Briefcase className="w-3 h-3 mr-1.5" /> Pro Mode
+                                                    </span>
+                                                    <div className={`w-8 h-4 rounded-full p-0.5 cursor-pointer transition-colors ${professionalMode ? 'bg-primary' : 'bg-slate-300'}`} onClick={() => setProfessionalMode(!professionalMode)}>
+                                                        <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${professionalMode ? 'translate-x-4' : 'translate-x-0'}`} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <button
                                             onClick={handleGenerateScript}
                                             disabled={generating || !videoTopic}
                                             className="w-full btn-primary flex items-center justify-center py-2.5"
                                         >
                                             {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                                            Generate Script
+                                            {generating ? 'Generating Script...' : 'Generate Script'}
                                         </button>
                                     </div>
                                 )}
@@ -312,7 +349,7 @@ export default function ComposerPage() {
                                                 className="flex-1 btn-primary flex items-center justify-center"
                                             >
                                                 {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Video className="w-4 h-4 mr-2" />}
-                                                Produce Video
+                                                {generating ? 'Producing Video...' : 'Produce Video'}
                                             </button>
                                         </div>
                                     </div>
@@ -464,6 +501,33 @@ export default function ComposerPage() {
                                 />
                             </div>
 
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-slate-700 mb-1">Tone</label>
+                                    <select
+                                        value={aiTone}
+                                        onChange={(e) => setAiTone(e.target.value)}
+                                        className="w-full p-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                    >
+                                        <option value="professional">Professional</option>
+                                        <option value="witty">Witty</option>
+                                        <option value="urgent">Urgent</option>
+                                        <option value="empathetic">Empathetic</option>
+                                        <option value="neutral">Neutral</option>
+                                    </select>
+                                </div>
+                                <div className="flex items-end">
+                                    <div className="w-full flex items-center justify-between p-2 border border-slate-200 rounded-md bg-slate-50">
+                                        <span className="text-xs font-medium text-slate-600 flex items-center">
+                                            <Briefcase className="w-3 h-3 mr-1.5" /> Pro Mode
+                                        </span>
+                                        <div className={`w-8 h-4 rounded-full p-0.5 cursor-pointer transition-colors ${professionalMode ? 'bg-primary' : 'bg-slate-300'}`} onClick={() => setProfessionalMode(!professionalMode)}>
+                                            <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${professionalMode ? 'translate-x-4' : 'translate-x-0'}`} />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="bg-blue-50 p-3 rounded-lg flex items-start">
                                 <Sparkles className="w-4 h-4 text-primary mt-0.5 mr-2 shrink-0" />
                                 <p className="text-xs text-blue-700">
@@ -485,7 +549,7 @@ export default function ComposerPage() {
                                 className="btn-primary flex items-center"
                             >
                                 {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
-                                Generate Content
+                                {generating ? 'Generating...' : 'Generate Content'}
                             </button>
                         </div>
                     </div>
