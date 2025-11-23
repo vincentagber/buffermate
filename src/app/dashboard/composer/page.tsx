@@ -15,7 +15,10 @@ import {
     Video,
     PenTool,
     PlayCircle,
-    Wand2
+    Wand2,
+    ChevronRight,
+    LayoutTemplate,
+    Clock
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -168,189 +171,207 @@ export default function ComposerPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+        <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6 shrink-0">
                 <div>
-                    <h1 className="font-heading text-3xl font-bold">Create Content</h1>
-                    <p className="text-muted-foreground">Draft text posts or produce AI videos automatically.</p>
+                    <h1 className="font-heading text-2xl font-bold text-slate-900">Create Content</h1>
                 </div>
-                <div className="flex bg-secondary p-1 rounded-lg">
+                <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                     <button
                         onClick={() => setMode('text')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${mode === 'text' ? 'bg-background shadow text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${mode === 'text' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-900'}`}
                     >
                         Text Post
                     </button>
                     <button
                         onClick={() => setMode('video')}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center ${mode === 'video' ? 'bg-primary text-white shadow' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${mode === 'video' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:text-slate-900'}`}
                     >
-                        <Video className="w-4 h-4 mr-2" />
+                        <Video className="w-3.5 h-3.5 mr-2" />
                         Video Mode
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
                 {/* Left Column: Editor / Workflow */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 flex flex-col gap-4 min-h-0">
                     {/* Account Selector */}
-                    <div className="bg-background border border-border rounded-xl p-4 shadow-sm">
-                        <h3 className="text-sm font-medium mb-3 text-muted-foreground">Post to:</h3>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm shrink-0">
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Post to:</span>
                             {accounts.length > 0 ? accounts.map((acc) => (
                                 <button
                                     key={acc.id}
                                     onClick={() => toggleAccount(acc.id)}
-                                    className={`flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${selectedAccounts.includes(acc.id)
-                                        ? 'bg-primary text-white border-primary shadow-md'
-                                        : 'bg-secondary text-muted-foreground border-transparent hover:bg-secondary/80'
+                                    className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium border transition-all whitespace-nowrap ${selectedAccounts.includes(acc.id)
+                                        ? 'bg-slate-900 text-white border-slate-900'
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
                                         }`}
                                 >
                                     {acc.provider === 'x' ? 'X (Twitter)' : acc.provider}
-                                    {selectedAccounts.includes(acc.id) && <Check className="w-3 h-3 ml-2" />}
+                                    {selectedAccounts.includes(acc.id) && <Check className="w-3 h-3 ml-1.5" />}
                                 </button>
                             )) : (
-                                <p className="text-sm text-muted-foreground italic">No accounts connected</p>
+                                <p className="text-xs text-slate-400 italic">No accounts connected</p>
                             )}
                         </div>
                     </div>
 
                     {mode === 'text' ? (
                         /* TEXT MODE */
-                        <div className="bg-background border border-border rounded-xl shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                            <div className="p-4 border-b border-border flex justify-between items-center bg-secondary/10">
-                                <span className="text-sm font-medium">Composer</span>
-                                <button onClick={() => setShowAiModal(true)} className="text-xs flex items-center text-primary hover:underline">
-                                    <Sparkles className="w-3 h-3 mr-1" /> AI Assist
+                        <div className="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col flex-1 min-h-0">
+                            <div className="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-lg">
+                                <div className="flex space-x-1">
+                                    <button className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors" title="Add Image">
+                                        <ImageIcon className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded transition-colors" title="Add Emoji">
+                                        <Smile className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <button onClick={() => setShowAiModal(true)} className="text-xs flex items-center text-primary font-medium hover:bg-blue-50 px-2 py-1 rounded transition-colors">
+                                    <Sparkles className="w-3 h-3 mr-1.5" /> AI Assist
                                 </button>
                             </div>
                             <textarea
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
-                                placeholder="What's on your mind?"
-                                className="w-full h-64 p-6 resize-none focus:outline-none bg-transparent text-lg"
+                                placeholder="What would you like to share?"
+                                className="w-full flex-1 p-4 resize-none focus:outline-none bg-transparent text-base leading-relaxed text-slate-800 placeholder:text-slate-400"
                             />
-                            <div className="bg-secondary/30 px-4 py-3 border-t border-border flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <button className="p-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
-                                        <ImageIcon className="w-5 h-5" />
-                                    </button>
-                                    <button className="p-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
-                                        <Smile className="w-5 h-5" />
-                                    </button>
-                                </div>
-                                <span className="text-xs text-muted-foreground">
-                                    {content.length} characters
+                            <div className="p-3 border-t border-slate-100 flex items-center justify-between bg-slate-50/30 rounded-b-lg">
+                                <span className="text-xs text-slate-400 font-medium">
+                                    {content.length} chars
                                 </span>
                             </div>
                         </div>
                     ) : (
                         /* VIDEO MODE */
-                        <div className="bg-background border border-border rounded-xl shadow-sm overflow-hidden">
-                            <div className="flex border-b border-border">
+                        <div className="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col flex-1 min-h-0 overflow-hidden">
+                            {/* Stepper */}
+                            <div className="flex border-b border-slate-100 bg-slate-50/50">
                                 {[1, 2, 3].map((step) => (
-                                    <div key={step} className={`flex-1 py-3 text-center text-sm font-medium border-b-2 ${videoStep >= step ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}>
+                                    <div key={step} className={`flex-1 py-3 text-center text-xs font-semibold uppercase tracking-wider border-b-2 transition-colors ${videoStep >= step ? 'border-primary text-primary' : 'border-transparent text-slate-400'}`}>
                                         Step {step}: {step === 1 ? 'Script' : step === 2 ? 'Production' : 'Review'}
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="p-6">
+                            <div className="p-6 flex-1 overflow-y-auto">
                                 {videoStep === 1 && (
-                                    <div className="space-y-4 animate-[fade-in_0.3s_ease-out]">
-                                        <label className="block text-sm font-medium">What is your video about?</label>
-                                        <textarea
-                                            value={videoTopic}
-                                            onChange={(e) => setVideoTopic(e.target.value)}
-                                            placeholder="e.g., Top 5 tips for productivity in 2025..."
-                                            className="w-full h-32 p-3 border border-input rounded-lg bg-secondary/30 focus:ring-2 focus:ring-primary focus:outline-none resize-none"
-                                        />
+                                    <div className="space-y-6 max-w-lg mx-auto animate-[fade-in_0.3s_ease-out]">
+                                        <div className="text-center space-y-2">
+                                            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto text-primary">
+                                                <PenTool className="w-6 h-6" />
+                                            </div>
+                                            <h3 className="text-lg font-bold text-slate-900">Script Generation</h3>
+                                            <p className="text-sm text-slate-500">Enter a topic and let AI write your script.</p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <label className="block text-sm font-medium text-slate-700">Topic or Idea</label>
+                                            <textarea
+                                                value={videoTopic}
+                                                onChange={(e) => setVideoTopic(e.target.value)}
+                                                placeholder="e.g., 5 tips for remote work productivity..."
+                                                className="w-full h-32 p-3 border border-slate-200 rounded-md focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none resize-none text-sm"
+                                            />
+                                        </div>
                                         <button
                                             onClick={handleGenerateScript}
                                             disabled={generating || !videoTopic}
-                                            className="w-full flex items-center justify-center px-4 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
+                                            className="w-full btn-primary flex items-center justify-center py-2.5"
                                         >
-                                            {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <PenTool className="w-4 h-4 mr-2" />}
-                                            Generate Script with OpenAI
+                                            {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                                            Generate Script
                                         </button>
                                     </div>
                                 )}
 
                                 {videoStep === 2 && (
-                                    <div className="space-y-4 animate-[fade-in_0.3s_ease-out]">
-                                        <label className="block text-sm font-medium">Review Generated Script</label>
-                                        <div className="w-full h-48 p-4 border border-input rounded-lg bg-secondary/10 overflow-y-auto text-sm whitespace-pre-wrap font-mono">
+                                    <div className="space-y-6 h-full flex flex-col animate-[fade-in_0.3s_ease-out]">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-bold text-slate-900">Review Script</h3>
+                                            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">OpenAI Generated</span>
+                                        </div>
+                                        <div className="flex-1 p-4 border border-slate-200 rounded-md bg-slate-50 overflow-y-auto text-sm leading-relaxed text-slate-700 font-mono">
                                             {generatedScript}
                                         </div>
-                                        <div className="flex space-x-3">
+                                        <div className="flex space-x-3 pt-2">
                                             <button
                                                 onClick={() => setVideoStep(1)}
-                                                className="flex-1 px-4 py-3 border border-input rounded-lg font-medium hover:bg-secondary"
+                                                className="px-4 py-2 border border-slate-200 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50"
                                             >
                                                 Back
                                             </button>
                                             <button
                                                 onClick={handleGenerateVideo}
                                                 disabled={generating}
-                                                className="flex-[2] flex items-center justify-center px-4 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
+                                                className="flex-1 btn-primary flex items-center justify-center"
                                             >
                                                 {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Video className="w-4 h-4 mr-2" />}
-                                                Produce Video with XAI
+                                                Produce Video
                                             </button>
                                         </div>
                                     </div>
                                 )}
 
                                 {videoStep === 3 && (
-                                    <div className="space-y-4 animate-[fade-in_0.3s_ease-out]">
-                                        <label className="block text-sm font-medium">Video Preview</label>
-                                        <div className="aspect-video bg-black rounded-lg overflow-hidden relative group">
-                                            <video src={generatedVideoUrl} controls className="w-full h-full object-cover" poster={generatedThumbnailUrl} />
+                                    <div className="space-y-6 h-full flex flex-col animate-[fade-in_0.3s_ease-out]">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-bold text-slate-900">Final Review</h3>
+                                            <div className="flex items-center text-xs text-green-600 bg-green-50 px-2 py-1 rounded font-medium">
+                                                <CheckCircle className="w-3 h-3 mr-1.5" /> Ready
+                                            </div>
                                         </div>
-                                        <div className="flex items-center text-sm text-green-600">
-                                            <CheckCircle className="w-4 h-4 mr-2" />
-                                            Video generated successfully
+                                        <div className="flex-1 bg-black rounded-lg overflow-hidden relative group flex items-center justify-center">
+                                            <video src={generatedVideoUrl} controls className="max-h-full max-w-full" poster={generatedThumbnailUrl} />
                                         </div>
-                                        <button
-                                            onClick={() => setVideoStep(2)}
-                                            className="text-sm text-muted-foreground hover:underline"
-                                        >
-                                            Regenerate
-                                        </button>
+                                        <div className="flex justify-between items-center pt-2">
+                                            <button
+                                                onClick={() => setVideoStep(2)}
+                                                className="text-sm text-slate-500 hover:text-slate-900 hover:underline"
+                                            >
+                                                Regenerate
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
 
-                    {/* Scheduling */}
-                    <div className="bg-background border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center w-full sm:w-auto">
-                            <CalendarIcon className="w-5 h-5 text-muted-foreground mr-3" />
+                    {/* Scheduling & Actions */}
+                    <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center w-full sm:w-auto bg-slate-50 rounded-md border border-slate-200 px-3 py-2">
+                            <CalendarIcon className="w-4 h-4 text-slate-400 mr-3" />
                             <input
                                 type="datetime-local"
                                 value={scheduledAt}
                                 onChange={(e) => setScheduledAt(e.target.value)}
-                                className="bg-secondary/50 border border-border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                                className="bg-transparent text-sm focus:outline-none text-slate-700 w-full"
                             />
                         </div>
                         <div className="flex items-center space-x-3 w-full sm:w-auto">
-                            <button
-                                onClick={() => setScheduledAt('')}
-                                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                            >
-                                Clear Schedule
-                            </button>
+                            {scheduledAt && (
+                                <button
+                                    onClick={() => setScheduledAt('')}
+                                    className="text-xs font-medium text-slate-500 hover:text-red-600 transition-colors"
+                                >
+                                    Clear
+                                </button>
+                            )}
                             <button
                                 onClick={handlePost}
                                 disabled={loading || (mode === 'text' ? !content : !generatedVideoUrl)}
-                                className="flex-1 sm:flex-none flex items-center justify-center px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 transition-all"
+                                className="flex-1 sm:flex-none btn-primary flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                                     <>
                                         <Send className="w-4 h-4 mr-2" />
-                                        {scheduledAt ? 'Schedule' : 'Post Now'}
+                                        {scheduledAt ? 'Schedule Post' : 'Post Now'}
                                     </>
                                 )}
                             </button>
@@ -359,39 +380,60 @@ export default function ComposerPage() {
                 </div>
 
                 {/* Right Column: Preview */}
-                <div className="hidden lg:block space-y-6">
-                    <h3 className="font-heading text-lg font-bold">Platform Preview</h3>
-                    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-                        <div className="flex items-start space-x-3 mb-4">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                            <div>
-                                <div className="h-4 w-24 bg-gray-200 rounded mb-1"></div>
-                                <div className="h-3 w-16 bg-gray-100 rounded"></div>
-                            </div>
+                <div className="hidden lg:flex flex-col gap-4 min-h-0">
+                    <div className="bg-white border border-slate-200 rounded-lg shadow-sm flex flex-col flex-1 overflow-hidden">
+                        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
+                            <h3 className="font-bold text-slate-900 text-sm flex items-center">
+                                <LayoutTemplate className="w-4 h-4 mr-2 text-slate-400" />
+                                Preview
+                            </h3>
                         </div>
-                        <div className="space-y-2">
-                            {mode === 'text' ? (
-                                content ? (
-                                    <p className="text-gray-800 whitespace-pre-wrap">{content}</p>
-                                ) : (
-                                    <>
-                                        <div className="h-4 bg-gray-100 rounded w-full"></div>
-                                        <div className="h-4 bg-gray-100 rounded w-5/6"></div>
-                                        <div className="h-4 bg-gray-100 rounded w-4/6"></div>
-                                    </>
-                                )
-                            ) : (
-                                <div>
-                                    <p className="text-gray-800 mb-2">{videoTopic ? videoTopic : "Video Caption..."}</p>
-                                    <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center text-gray-400">
-                                        {generatedThumbnailUrl ? (
-                                            <img src={generatedThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover rounded-lg" />
-                                        ) : (
-                                            <Video className="w-12 h-12 opacity-20" />
-                                        )}
+                        <div className="p-6 flex-1 overflow-y-auto bg-slate-50">
+                            <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm max-w-sm mx-auto">
+                                <div className="flex items-center space-x-3 mb-4">
+                                    <div className="w-10 h-10 bg-slate-200 rounded-full shrink-0"></div>
+                                    <div>
+                                        <div className="h-3 w-24 bg-slate-200 rounded mb-1.5"></div>
+                                        <div className="h-2 w-16 bg-slate-100 rounded"></div>
                                     </div>
                                 </div>
-                            )}
+                                <div className="space-y-3">
+                                    {mode === 'text' ? (
+                                        content ? (
+                                            <p className="text-slate-800 text-sm whitespace-pre-wrap leading-relaxed">{content}</p>
+                                        ) : (
+                                            <div className="space-y-2">
+                                                <div className="h-3 bg-slate-100 rounded w-full"></div>
+                                                <div className="h-3 bg-slate-100 rounded w-5/6"></div>
+                                                <div className="h-3 bg-slate-100 rounded w-4/6"></div>
+                                            </div>
+                                        )
+                                    ) : (
+                                        <div>
+                                            <p className="text-slate-800 text-sm mb-3">{videoTopic ? videoTopic : "Video Caption..."}</p>
+                                            <div className="aspect-[9/16] bg-slate-100 rounded-lg flex items-center justify-center text-slate-300 relative overflow-hidden">
+                                                {generatedThumbnailUrl ? (
+                                                    <img src={generatedThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <Video className="w-12 h-12 opacity-20" />
+                                                )}
+                                                {generatedVideoUrl && (
+                                                    <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                                                        <PlayCircle className="w-12 h-12 text-white opacity-80" />
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
+                                    <div className="flex space-x-4 text-slate-400">
+                                        <div className="w-4 h-4 bg-slate-100 rounded"></div>
+                                        <div className="w-4 h-4 bg-slate-100 rounded"></div>
+                                        <div className="w-4 h-4 bg-slate-100 rounded"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -399,40 +441,51 @@ export default function ComposerPage() {
 
             {/* AI Modal (Text Mode) */}
             {showAiModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-background rounded-xl shadow-2xl max-w-md w-full p-6 animate-[fade-in_0.2s_ease-out]">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-heading text-xl font-bold flex items-center">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-[fade-in_0.2s_ease-out] border border-slate-200">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-heading text-xl font-bold flex items-center text-slate-900">
                                 <Sparkles className="w-5 h-5 text-primary mr-2" />
                                 AI Assistant
                             </h3>
-                            <button onClick={() => setShowAiModal(false)} className="text-muted-foreground hover:text-foreground">
+                            <button onClick={() => setShowAiModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
-                        <p className="text-muted-foreground mb-4">
-                            Describe what you want to post about, and let AI generate suggestions for you.
-                        </p>
-                        <textarea
-                            value={aiPrompt}
-                            onChange={(e) => setAiPrompt(e.target.value)}
-                            placeholder="e.g., A professional post about the importance of consistency in social media marketing..."
-                            className="w-full h-32 p-3 border border-input rounded-lg bg-secondary/30 focus:ring-2 focus:ring-primary focus:outline-none mb-4 resize-none"
-                        />
-                        <div className="flex justify-end space-x-3">
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">What should this post be about?</label>
+                                <textarea
+                                    value={aiPrompt}
+                                    onChange={(e) => setAiPrompt(e.target.value)}
+                                    placeholder="e.g., Announcing our new product launch with a focus on speed and efficiency..."
+                                    className="w-full h-32 p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none resize-none text-sm"
+                                />
+                            </div>
+
+                            <div className="bg-blue-50 p-3 rounded-lg flex items-start">
+                                <Sparkles className="w-4 h-4 text-primary mt-0.5 mr-2 shrink-0" />
+                                <p className="text-xs text-blue-700">
+                                    Pro tip: Be specific about the tone (e.g., "professional", "witty") and the target audience.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end space-x-3 mt-8">
                             <button
                                 onClick={() => setShowAiModal(false)}
-                                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-secondary rounded-lg"
+                                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleGenerateAI}
                                 disabled={generating || !aiPrompt}
-                                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50"
+                                className="btn-primary flex items-center"
                             >
-                                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                                Generate
+                                {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                                Generate Content
                             </button>
                         </div>
                     </div>
