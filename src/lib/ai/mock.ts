@@ -1,4 +1,4 @@
-import { AIProvider, AIContentRequest, AIScriptRequest, AIVideoRequest, AIImageRequest, GeneratedContent, GeneratedScript, GeneratedVideo, GeneratedImage } from './types';
+import { AIProvider, AIContentRequest, AIScriptRequest, AIVideoRequest, AIImageRequest, GeneratedContent, GeneratedScript, GeneratedVideo, GeneratedImage, GeneratedTrend, GeneratedTime } from './types';
 
 export class MockAIProvider implements AIProvider {
     async generateText(request: AIContentRequest): Promise<GeneratedContent[]> {
@@ -107,5 +107,25 @@ export class MockAIProvider implements AIProvider {
         return {
             image_url: `https://picsum.photos/seed/${Math.floor(Math.random() * 10000)}/1024/1024`
         };
+    }
+
+    async generateTrendingIdeas(topic: string): Promise<GeneratedTrend[]> {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return [
+            { topic: `${topic} Trends 2025`, description: `The latest shifts in ${topic} landscape.`, relevance: 98 },
+            { topic: `AI in ${topic}`, description: `How artificial intelligence is reshaping ${topic}.`, relevance: 95 },
+            { topic: `Sustainable ${topic}`, description: `Eco-friendly approaches to ${topic}.`, relevance: 88 },
+            { topic: `Remote ${topic}`, description: `Managing ${topic} from anywhere.`, relevance: 85 },
+            { topic: `${topic} for Beginners`, description: `A complete guide to starting with ${topic}.`, relevance: 80 }
+        ];
+    }
+
+    async generateBestTimes(topic: string): Promise<GeneratedTime[]> {
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return [
+            { day: "Tuesday", time: "10:00 AM", reason: "Highest engagement for B2B content." },
+            { day: "Thursday", time: "2:00 PM", reason: "Good for catching people after lunch." },
+            { day: "Wednesday", time: "9:00 AM", reason: "Mid-week peak activity." }
+        ];
     }
 }

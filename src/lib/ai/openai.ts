@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { AIProvider, AIContentRequest, AIScriptRequest, AIVideoRequest, AIImageRequest, GeneratedContent, GeneratedScript, GeneratedVideo, GeneratedImage } from './types';
+import { AIProvider, AIContentRequest, AIScriptRequest, AIVideoRequest, AIImageRequest, GeneratedContent, GeneratedScript, GeneratedVideo, GeneratedImage, GeneratedTrend, GeneratedTime } from './types';
 
 export class OpenAIProvider implements AIProvider {
     private client: OpenAI;
@@ -57,7 +57,7 @@ export class OpenAIProvider implements AIProvider {
         Format: JSON object with "script" (full text) and "scenes" (array of {scene_number, description, dialogue}).`;
 
         const response = await this.client.chat.completions.create({
-            model: "gpt-4", // Use GPT-4 for better creative writing
+            model: "gpt-3.5-turbo", // Switched to 3.5-turbo for better availability/cost
             messages: [
                 { role: "system", content: "You are a creative video director. Return ONLY raw JSON." },
                 { role: "user", content: prompt }
@@ -93,5 +93,55 @@ export class OpenAIProvider implements AIProvider {
         return {
             image_url: response.data?.[0]?.url || ''
         };
+    }
+
+    async generateTrendingIdeas(topic: string): Promise<GeneratedTrend[]> {
+        const prompt = `Suggest 5 trending content ideas related to "${topic}".
+        Include a brief description and a relevance score (0-100).
+        Format: JSON array of objects with "topic", "description", "relevance".`;
+
+        const response = await this.client.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a social media trend analyst. Return ONLY raw JSON." },
+                { role: "user", content: prompt }
+            ],
+            response_format: { type: "json_object" }
+        });
+
+        const content = response.choices[0].message.content;
+        if (!content) return [];
+
+        try {
+            const parsed = JSON.parse(content);
+            return Array.isArray(parsed) ? parsed : (parsed.trends || parsed.ideas || []);
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async generateBestTimes(topic: string): Promise<GeneratedTime[]> {
+        const prompt = `Suggest the 3 best times to post about "${topic}" on social media.
+        Include the day, time, and a brief reason.
+        Format: JSON array of objects with "day", "time", "reason".`;
+
+        const response = await this.client.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                { role: "system", content: "You are a social media strategist. Return ONLY raw JSON." },
+                { role: "user", content: prompt }
+            ],
+            response_format: { type: "json_object" }
+        });
+
+        const content = response.choices[0].message.content;
+        if (!content) return [];
+
+        try {
+            const parsed = JSON.parse(content);
+            return Array.isArray(parsed) ? parsed : (parsed.times || parsed.schedule || []);
+        } catch (e) {
+            return [];
+        }
     }
 }

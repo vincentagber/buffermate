@@ -1,0 +1,43 @@
+/* src/app/dashboard/design/theme.css */
+:root {
+  /* Primary palette */
+  --color-primary: hsl(210, 70%, 55%); /* vibrant blue */
+  --color-primary-dark: hsl(210, 70%, 45%);
+  --color-primary-light: hsl(210, 70%, 65%);
+
+  /* Accent palette */
+  --color-accent: hsl(340, 70%, 55%); /* pinkish */
+  --color-accent-dark: hsl(340, 70%, 45%);
+  --color-accent-light: hsl(340, 70%, 65%);
+
+  /* Neutral palette */
+  --color-bg: hsl(0, 0%, 98%);
+  --color-bg-dark: hsl(0, 0%, 12%);
+  --color-surface: rgba(255, 255, 255, 0.12);
+  --color-surface-dark: rgba(0, 0, 0, 0.24);
+  --color-text: hsl(0, 0%, 12%);
+  --color-text-muted: hsl(0, 0%, 45%);
+
+  /* Spacing */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.5rem;
+  --spacing-6: 2rem;
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+/* Dark mode overrides */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: var(--color-bg-dark);
+    --color-text: hsl(0, 0%, 90%);
+    --color-text-muted: hsl(0, 0%, 60%);
+    --color-surface: var(--color-surface-dark);
+  }
+}

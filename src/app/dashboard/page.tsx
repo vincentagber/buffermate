@@ -13,7 +13,8 @@ import { PostCard } from '@/components/dashboard/PostCard';
 export default async function DashboardPage({
     searchParams,
 }: {
-    searchParams: { view?: string };
+    // In Next.js 13, searchParams can be a Promise
+    searchParams: Promise<{ view?: string }>;
 }) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -22,7 +23,8 @@ export default async function DashboardPage({
         return <div>Please log in</div>;
     }
 
-    const view = searchParams.view || 'queue';
+    const params = await searchParams;
+    const view = params.view || 'queue';
 
     // Fetch posts based on view
     let query = supabase
