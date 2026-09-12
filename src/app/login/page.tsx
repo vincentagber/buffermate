@@ -88,14 +88,7 @@ export default function LoginPage() {
                         <span className="font-heading font-bold text-xl tracking-tight">Buffermate</span>
                     </div>
 
-                    <div className="max-w-md">
-                        <h2 className="font-heading text-4xl font-bold mb-6 leading-tight">
-                            Automate your growth with intelligent scheduling.
-                        </h2>
-                        <p className="text-white/60 text-lg">
-                            Join thousands of creators who trust Buffermate to manage their social presence efficiently.
-                        </p>
-                    </div>
+
 
                     <div className="text-sm text-white/40">
                         © 2025 Buffermate AI. All rights reserved.
