@@ -14,30 +14,40 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function seed() {
-    console.log('Seeding database...');
+    console.log('🌱 Seeding Buffermate database...');
 
-    // Create a test user (if not exists)
-    // Note: Creating users via API requires admin rights or direct auth.admin usage
-    const email = 'test@example.com';
-    const password = 'password123';
+    // Create test users
+    const testUsers = [
+        { email: 'demo@buffermate.app', password: 'Demo@12345' },
+        { email: 'test@buffermate.app', password: 'Test@12345' },
+    ];
 
-    const { data: user, error: userError } = await supabase.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-    });
+    for (const testUser of testUsers) {
+        try {
+            const { data: user, error: userError } = await supabase.auth.admin.createUser({
+                email: testUser.email,
+                password: testUser.password,
+                email_confirm: true,
+            });
 
-    if (userError) {
-        console.log('User creation failed (might already exist):', userError.message);
-    } else {
-        console.log('Test user created:', user.user.id);
+            if (userError) {
+                if (userError.message.includes('already exists')) {
+                    console.log(`✓ User ${testUser.email} already exists`);
+                } else {
+                    console.log(`✗ User creation failed for ${testUser.email}:`, userError.message);
+                }
+            } else {
+                console.log(`✓ Test user created: ${testUser.email} (ID: ${user.user.id})`);
+            }
+        } catch (err: any) {
+            console.error(`✗ Error creating user ${testUser.email}:`, err.message);
+        }
     }
 
-    // Get the user ID (either from creation or lookup)
-    // For simplicity, we'll just log that we need a user ID to seed other tables
-    // In a real scenario, we'd fetch the user by email if creation failed.
-
-    console.log('Seed complete.');
+    console.log('\n✅ Seed complete!');
+    console.log('\n📝 Test Credentials:');
+    console.log('   Email: demo@buffermate.app');
+    console.log('   Password: Demo@12345');
 }
 
 seed().catch((err) => {

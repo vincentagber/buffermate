@@ -113,7 +113,7 @@ export function useDebounce<T>(value: T, delay: number) {
  * Hook for getting the previous value
  */
 export function usePrevious<T>(value: T) {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
 
   useEffect(() => {
     ref.current = value;
