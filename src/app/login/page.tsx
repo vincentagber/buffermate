@@ -74,32 +74,11 @@ export default function LoginPage() {
 
 
     return (
-        <div className="min-h-screen flex bg-background">
-            {/* Left Side - Brand/Visual */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/40 via-black to-black z-10"></div>
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1644426358812-879f02d1d867?q=80&w=1828&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')] opacity-20 z-20"></div>
-
-                <div className="relative z-30 flex flex-col justify-between p-12 h-full text-white">
-                    <div className="flex items-center space-x-2">
-                        <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="font-heading font-bold text-xl tracking-tight">Buffermate</span>
-                    </div>
-
-
-
-                    <div className="text-sm text-white/40">
-                        © 2025 Buffermate AI. All rights reserved.
-                    </div>
-                </div>
-            </div>
-
-            {/* Right Side - Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
+        <div className="min-h-screen flex bg-white">
+            {/* Form */}
+            <div className="w-full flex items-center justify-center p-8">
                 <div className="w-full max-w-md space-y-8">
-                    <div className="text-center lg:text-left">
+                    <div className="text-center">
                         <h2 className="font-heading text-3xl font-bold tracking-tight">Welcome back</h2>
                         <p className="mt-2 text-muted-foreground">
                             Enter your credentials to access your account
@@ -266,8 +245,8 @@ export default function LoginPage() {
                         </Link>
                         .
                     </p>
-                </div >
-            </div >
-        </div >
+                </div>
+            </div>
+        </div>
     );
 }
