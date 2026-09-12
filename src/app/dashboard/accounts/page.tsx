@@ -20,6 +20,7 @@ import {
 export default function AccountsPage() {
     const [accounts, setAccounts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
     const supabase = createClient();
 
     useEffect(() => {
@@ -40,6 +41,7 @@ export default function AccountsPage() {
     }
 
     async function connectProvider(provider: string) {
+        setActionLoading(provider);
         try {
             const res = await fetch('/api/social/connect', {
                 method: 'POST',
@@ -54,6 +56,30 @@ export default function AccountsPage() {
             }
         } catch (err) {
             alert('Error connecting provider');
+        } finally {
+            setActionLoading(null);
+        }
+    }
+
+    async function disconnectProvider(provider: string) {
+        if (!confirm(`Are you sure you want to disconnect ${provider}?`)) return;
+        setActionLoading(provider);
+        try {
+            const res = await fetch('/api/social/disconnect', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ provider }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setAccounts(prev => prev.filter(acc => acc.provider !== provider));
+            } else {
+                alert('Error disconnecting: ' + (data.error || 'Unknown error'));
+            }
+        } catch (err) {
+            alert('Error disconnecting provider');
+        } finally {
+            setActionLoading(null);
         }
     }
 
@@ -159,25 +185,36 @@ export default function AccountsPage() {
                                     </p>
                                 </div>
 
-                                <button
-                                    onClick={() => connectProvider(provider.id)}
-                                    disabled={connected}
-                                    className={`w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center ${connected
-                                        ? 'bg-slate-50 text-slate-400 cursor-default border border-slate-100'
-                                        : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900'
-                                        }`}
-                                >
-                                    {connected ? (
-                                        <span className="flex items-center">
-                                            Connected
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center">
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Connect
-                                        </span>
-                                    )}
-                                </button>
+                                {connected ? (
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 py-2 px-3 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center">
+                                            <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                                            Active
+                                        </div>
+                                        <button
+                                            onClick={() => disconnectProvider(provider.id)}
+                                            disabled={actionLoading === provider.id}
+                                            className="py-2 px-3 rounded-lg text-xs font-medium text-red-600 border border-red-200 hover:bg-red-50 transition-colors disabled:opacity-50"
+                                        >
+                                            {actionLoading === provider.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Disconnect'}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => connectProvider(provider.id)}
+                                        disabled={actionLoading === provider.id}
+                                        className="w-full py-2.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center justify-center bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
+                                    >
+                                        {actionLoading === provider.id ? (
+                                            <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+                                        ) : (
+                                            <>
+                                                <Plus className="w-4 h-4 mr-2" />
+                                                Connect
+                                            </>
+                                        )}
+                                    </button>
+                                )}
                             </div>
                         );
                     })}

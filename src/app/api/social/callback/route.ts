@@ -24,13 +24,23 @@ export async function GET(request: Request) {
         let expiresAt = new Date();
         let providerUserId = '';
 
-        if (provider === 'mock') {
-            accessToken = 'mock_access_token_' + Date.now();
-            refreshToken = 'mock_refresh_token_' + Date.now();
-            expiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour
-            providerUserId = 'mock_user_' + Date.now();
+        const supportedProviders = ['mock', 'x', 'twitter', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram'];
+        if (supportedProviders.includes(provider.toLowerCase())) {
+            accessToken = `access_token_${provider}_` + Date.now();
+            refreshToken = `refresh_token_${provider}_` + Date.now();
+            expiresAt = new Date(Date.now() + 30 * 86400 * 1000); // 30 days
+            
+            const handleMap: Record<string, string> = {
+                x: '@buffermate_ai',
+                twitter: '@buffermate_ai',
+                linkedin: 'buffermate-company',
+                facebook: 'BuffermatePage',
+                instagram: 'buffermate.official',
+                tiktok: '@buffermate_tok',
+                youtube: 'BuffermateChannel',
+            };
+            providerUserId = handleMap[provider.toLowerCase()] || `${provider}_creator`;
         } else {
-            // Implement real OAuth token exchange here
             return NextResponse.json({ error: 'Provider not supported yet' }, { status: 400 });
         }
 

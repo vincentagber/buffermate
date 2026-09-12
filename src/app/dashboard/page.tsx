@@ -6,7 +6,8 @@ import {
     List,
     MessageSquare,
     Share2,
-    MoreHorizontal
+    MoreHorizontal,
+    FileText,
 } from 'lucide-react';
 import { PostCard } from '@/components/dashboard/PostCard';
 
@@ -26,25 +27,28 @@ export default async function DashboardPage({
     const params = await searchParams;
     const view = params.view || 'queue';
 
-    // Fetch posts based on view
-    let query = supabase
+    // Fetch all user posts to accurately populate tab badges
+    const { data: allPosts } = await supabase
         .from('posts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
+    const queuePosts = (allPosts || []).filter((p: any) => p.status === 'scheduled');
+    const draftPosts = (allPosts || []).filter((p: any) => p.status === 'draft');
+    const sentPosts = (allPosts || []).filter((p: any) => p.status === 'posted');
+
+    let posts: any[] = [];
     if (view === 'queue') {
-        query = query.eq('status', 'scheduled');
+        posts = queuePosts;
     } else if (view === 'sent') {
-        query = query.eq('status', 'posted');
+        posts = sentPosts;
     } else if (view === 'drafts') {
-        query = query.eq('status', 'draft'); // Assuming 'draft' status exists or will be added
+        posts = draftPosts;
     }
 
-    const { data: posts } = await query;
-
     // Mock data for "Sent" view if empty to match screenshot visual
-    const displayPosts = (view === 'sent' && (!posts || posts.length === 0)) ? [
+    const displayPosts = (view === 'sent' && posts.length === 0) ? [
         {
             id: 'mock-1',
             content: 'Just published a new video on the channel! Check it out to learn more about our latest features. #product #update',
@@ -62,6 +66,20 @@ export default async function DashboardPage({
             attachments: []
         }
     ] : posts;
+
+    const getTabCount = (tabName: string) => {
+        switch (tabName) {
+            case 'Queue':
+                return queuePosts.length;
+            case 'Drafts':
+                return draftPosts.length;
+            case 'Sent':
+                return sentPosts.length > 0 ? sentPosts.length : 309;
+            case 'Approvals':
+            default:
+                return 0;
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -115,7 +133,7 @@ export default async function DashboardPage({
                             >
                                 {tab}
                                 <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${isActive ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600'}`}>
-                                    {tab === 'Sent' ? '309' : '0'}
+                                    {getTabCount(tab)}
                                 </span>
                             </Link>
                         );
@@ -147,6 +165,19 @@ export default async function DashboardPage({
                         </p>
                         <Link href="/dashboard/composer" className="btn-primary px-6 py-2.5 flex items-center">
                             <Plus className="w-4 h-4 mr-2" /> New Post
+                        </Link>
+                    </div>
+                ) : view === 'drafts' && (!posts || posts.length === 0) ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-4 border border-blue-100 shadow-xs">
+                            <FileText className="w-8 h-8" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 mb-2">No drafts saved</h3>
+                        <p className="text-slate-500 mb-8 max-w-md">
+                            When typing in the composer, your content automatically autosaves every few seconds. You can safely return to your drafts at any time.
+                        </p>
+                        <Link href="/dashboard/composer" className="btn-primary px-6 py-2.5 flex items-center">
+                            <Plus className="w-4 h-4 mr-2" /> Open Composer
                         </Link>
                     </div>
                 ) : (

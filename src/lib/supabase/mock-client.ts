@@ -239,7 +239,9 @@ class MockQueryBuilder {
           rows[i] = { ...rows[i], ...this.pendingUpdate, updated_at: new Date().toISOString() };
         }
       }
-      const res = { data: rows.filter((r) => this.filters.every((f) => f(r))), error: null };
+      const updatedRows = rows.filter((r) => this.filters.every((f) => f(r)));
+      const resultData = this.isSingle ? (updatedRows[0] || null) : updatedRows;
+      const res = { data: resultData, error: null };
       return onfulfilled ? onfulfilled(res) : (res as any);
     }
 

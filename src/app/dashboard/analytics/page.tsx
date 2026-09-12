@@ -307,9 +307,11 @@ export default function AnalyticsPage() {
                                                         : 'text-slate-700 hover:bg-slate-50'
                                                 }`}
                                             >
-                                                <div className="flex items-center space-x-2.5">
-                                                    <ItemIcon className={`w-4 h-4 ${option.color}`} />
-                                                    <span>{option.label}</span>
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-6 h-6 rounded-md bg-slate-50 border border-slate-200/70 flex items-center justify-center shrink-0">
+                                                        <ItemIcon className={`w-3.5 h-3.5 ${option.color}`} />
+                                                    </div>
+                                                    <span className="truncate">{option.label}</span>
                                                 </div>
                                                 {isSelected && (
                                                     <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>

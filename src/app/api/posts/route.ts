@@ -41,21 +41,54 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { content, scheduled_at, social_account_ids, attachments } = body;
+        const { id, content, scheduled_at, social_account_ids, attachments, status } = body;
 
-        if (!content || !scheduled_at) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        const postStatus = status || 'scheduled';
+
+        if (postStatus !== 'draft' && !content) {
+            return NextResponse.json({ error: 'Missing required content field' }, { status: 400 });
+        }
+
+        // If an existing draft ID was provided, update that post
+        if (id) {
+            const { data: existingPost } = await supabase
+                .from('posts')
+                .select('id')
+                .eq('id', id)
+                .eq('user_id', user.id)
+                .single();
+
+            if (existingPost) {
+                const { data, error } = await supabase
+                    .from('posts')
+                    .update({
+                        content: content || '',
+                        scheduled_at: scheduled_at || new Date().toISOString(),
+                        social_account_ids: social_account_ids || [],
+                        attachments: attachments || [],
+                        status: postStatus,
+                    })
+                    .eq('id', id)
+                    .eq('user_id', user.id)
+                    .select()
+                    .single();
+
+                if (error) {
+                    return NextResponse.json({ error: error.message }, { status: 500 });
+                }
+                return NextResponse.json(data);
+            }
         }
 
         const { data, error } = await supabase
             .from('posts')
             .insert({
                 user_id: user.id,
-                content,
-                scheduled_at,
+                content: content || '',
+                scheduled_at: scheduled_at || new Date().toISOString(),
                 social_account_ids: social_account_ids || [], // Array of UUIDs
                 attachments: attachments || [],
-                status: 'scheduled',
+                status: postStatus,
             })
             .select()
             .single();
