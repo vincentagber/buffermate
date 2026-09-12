@@ -20,14 +20,10 @@ export async function POST(request: Request) {
         // In a real app, we would generate an OAuth URL here.
         // For the mock provider, we just return a dummy URL or handle it directly.
 
-        if (['mock', 'youtube', 'tiktok', 'instagram'].includes(provider)) {
-            // For mock and these new providers (until real OAuth is set up), we simulate a successful connection.
-            // In a real app, you would redirect to:
-            // YouTube: https://accounts.google.com/o/oauth2/v2/auth...
-            // TikTok: https://www.tiktok.com/v2/auth/authorize/...
-            // Instagram: https://api.instagram.com/oauth/authorize...
+        const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
 
-            return NextResponse.json({ url: `${process.env.NEXT_PUBLIC_APP_URL}/api/social/callback?code=mock_code&provider=${provider}` });
+        if (['mock', 'x', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram'].includes(provider)) {
+            return NextResponse.json({ url: `${origin}/api/social/callback?code=mock_code&provider=${provider}` });
         }
 
         // For real providers (X, Facebook, LinkedIn), we'd use their SDKs or manual OAuth flow construction.

@@ -52,7 +52,7 @@ export async function GET(request: Request) {
         }
 
         // Redirect back to accounts page
-        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/accounts`);
+        return NextResponse.redirect(new URL('/dashboard/accounts', request.url));
 
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });

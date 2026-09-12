@@ -1,0 +1,8 @@
+{
+  "name": "Buffermate AI",
+  "description": "Smart social media scheduling and AI-powered content generation dashboard",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

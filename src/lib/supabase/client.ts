@@ -1,8 +1,17 @@
 import { createBrowserClient } from '@supabase/ssr'
+import { getMockSupabaseClient } from './mock-client'
 
 export function createClient() {
-    return createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!url || !key || url.includes('placeholder')) {
+        return getMockSupabaseClient() as any;
+    }
+
+    try {
+        return createBrowserClient(url, key);
+    } catch {
+        return getMockSupabaseClient() as any;
+    }
 }

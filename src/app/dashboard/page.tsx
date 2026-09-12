@@ -158,7 +158,7 @@ export default async function DashboardPage({
                         )}
 
                         <div className="space-y-4">
-                            {displayPosts?.map((post) => (
+                            {displayPosts?.map((post: any) => (
                                 <PostCard key={post.id} post={post} />
                             ))}
                         </div>

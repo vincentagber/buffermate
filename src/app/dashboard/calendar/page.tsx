@@ -17,7 +17,7 @@ export default async function CalendarPage() {
 
     // Group posts by date
     const groupedPosts: { [key: string]: any[] } = {};
-    posts?.forEach(post => {
+    posts?.forEach((post: any) => {
         const date = new Date(post.scheduled_at).toLocaleDateString();
         if (!groupedPosts[date]) {
             groupedPosts[date] = [];
