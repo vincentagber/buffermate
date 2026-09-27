@@ -10,6 +10,8 @@ interface AutomationModalProps {
   onClose: () => void;
   onSave: (automation: SocialAutomation) => void;
   initialData?: SocialAutomation | null;
+  defaultChannel?: SocialChannel;
+  defaultTriggerType?: string;
 }
 
 export default function AutomationModal({
@@ -17,12 +19,14 @@ export default function AutomationModal({
   onClose,
   onSave,
   initialData,
+  defaultChannel,
+  defaultTriggerType,
 }: AutomationModalProps) {
   if (!isOpen) return null;
 
-  const [channel, setChannel] = useState<SocialChannel>(initialData?.channel || 'instagram');
+  const [channel, setChannel] = useState<SocialChannel>(initialData?.channel || defaultChannel || 'instagram');
   const [name, setName] = useState(initialData?.name || '');
-  const [triggerType, setTriggerType] = useState(initialData?.trigger_type || 'comment_keyword');
+  const [triggerType, setTriggerType] = useState(initialData?.trigger_type || defaultTriggerType || 'comment_keyword');
   const [keywordInput, setKeywordInput] = useState('');
   const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || ['price', 'link', 'book', 'info']);
   const [replyComment, setReplyComment] = useState(
@@ -106,8 +110,10 @@ export default function AutomationModal({
 
   const channelsList: { id: SocialChannel; name: string }[] = [
     { id: 'instagram', name: 'Instagram' },
-    { id: 'tiktok', name: 'TikTok' },
     { id: 'facebook', name: 'Facebook' },
+    { id: 'tiktok', name: 'TikTok' },
+    { id: 'twitter', name: 'X (Twitter)' },
+    { id: 'linkedin', name: 'LinkedIn' },
     { id: 'threads', name: 'Threads' },
     { id: 'whatsapp', name: 'WhatsApp' },
   ];

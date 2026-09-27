@@ -1324,79 +1324,425 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 7: CHANNEL SPECIFIC VIEWS
+              VIEW 7: CHANNEL SPECIFIC VIEWS & SUBTAB HUBS
              ========================================================= */}
-          {['whatsapp', 'instagram', 'tiktok', 'facebook', 'threads'].includes(currentTab) && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                <div>
-                  <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-[#1E293B] capitalize">
-                    {currentTab} Automation Hub
-                  </h2>
-                  <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-                    Manage active database bots and triggers for {currentTab}.
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    setEditingAutomation(null);
-                    setIsCreateAutomationOpen(true);
-                  }}
-                  className="w-full sm:w-auto px-4 py-2.5 bg-[#E05A2B] text-white rounded-2xl text-xs font-bold shadow-xs hover:bg-[#C8491E]"
-                >
-                  + Add {currentTab} Flow
-                </button>
-              </div>
+          {(() => {
+            const channelKeys = ['whatsapp', 'instagram', 'tiktok', 'facebook', 'threads', 'twitter', 'linkedin'];
+            const isChannelView = channelKeys.some(
+              (c) => currentTab === c || currentTab.startsWith(c + '-')
+            );
 
-              {/* Filtered list for this specific channel */}
-              <div className="bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
-                <div className="divide-y divide-[#F5EFE8]">
-                  {automations
-                    .filter((a) => a.channel === currentTab)
-                    .map((flow) => (
-                      <div key={flow.id} className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <h4 className="text-xs font-bold text-[#1E293B]">{flow.name}</h4>
-                            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                              Active
-                            </span>
-                          </div>
-                          <p className="text-xs text-[#64748B] mt-1">
-                            Keywords: {flow.keywords.join(', ') || 'All incoming'}
-                          </p>
-                          <p className="text-xs text-[#E05A2B] font-medium mt-0.5">
-                            Reply: "{flow.reply_comment}"
-                          </p>
+            if (!isChannelView) return null;
+
+            const activeChannel = (channelKeys.find((c) => currentTab === c || currentTab.startsWith(c + '-')) || 'instagram') as SocialChannel;
+            const subTabKey = currentTab.includes('-') ? currentTab.substring(activeChannel.length + 1) : 'all';
+
+            const channelMeta: Record<string, { name: string; desc: string; subtabs: { id: string; name: string }[] }> = {
+              instagram: {
+                name: 'Instagram',
+                desc: 'Automate comment auto-replies, private link DMs, and story response funnels.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'comments', name: 'Comment Auto-DM' },
+                  { id: 'stories', name: 'Story Reply Bot' },
+                  { id: 'dm', name: 'DM Welcome Funnel' },
+                ],
+              },
+              facebook: {
+                name: 'Facebook',
+                desc: 'Manage Messenger conversational funnels, post comment replies, and ad lead capture.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'messenger', name: 'Messenger Auto-Funnel' },
+                  { id: 'comments', name: 'Post Comment Replies' },
+                  { id: 'leads', name: 'Ad Lead Sync' },
+                ],
+              },
+              tiktok: {
+                name: 'TikTok',
+                desc: 'Turn video comments into instant DM conversions and product sales.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'comments', name: 'Comment Lead Capture' },
+                  { id: 'dm', name: 'Direct Message Deals' },
+                ],
+              },
+              twitter: {
+                name: 'X (Twitter)',
+                desc: 'Automate tweet mention replies, keyword triggers, and private DM links.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'auto', name: 'Mention Auto-Reply' },
+                  { id: 'dm', name: 'DM Lead Funnel' },
+                ],
+              },
+              linkedin: {
+                name: 'LinkedIn',
+                desc: 'Engage connection requests, post comments, and automate InMail lead generation.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'comments', name: 'Post Auto-Engage' },
+                  { id: 'dm', name: 'InMail Outbound Bot' },
+                ],
+              },
+              threads: {
+                name: 'Threads',
+                desc: 'Trigger instant private replies to replies and keywords on your Threads posts.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'auto', name: 'Keyword Link Auto-Reply' },
+                  { id: 'dm', name: 'Direct Messages' },
+                ],
+              },
+              whatsapp: {
+                name: 'WhatsApp',
+                desc: 'Deploy 24/7 instant chat routing, customer support bots, and contact lists.',
+                subtabs: [
+                  { id: 'all', name: 'All Flows' },
+                  { id: 'auto', name: 'Instant Auto-Replies' },
+                  { id: 'inbox', name: 'Live Chat Inbox' },
+                  { id: 'crm', name: 'Audience Lists' },
+                ],
+              },
+            };
+
+            const info = channelMeta[activeChannel] || {
+              name: activeChannel,
+              desc: `Manage real-time automations and triggers for ${activeChannel}.`,
+              subtabs: [{ id: 'all', name: 'All Flows' }],
+            };
+
+            // Filter automations for this channel and subtab
+            const channelAutomations = automations.filter((a) => a.channel === activeChannel);
+            const filteredAutomations = channelAutomations.filter((a) => {
+              if (subTabKey === 'all') return true;
+              if (subTabKey === 'comments') return a.trigger_type?.includes('comment') || !a.trigger_type;
+              if (subTabKey === 'stories') return a.trigger_type?.includes('story') || a.name.toLowerCase().includes('story');
+              if (subTabKey === 'dm' || subTabKey === 'messenger' || subTabKey === 'inbox') {
+                return a.trigger_type?.includes('dm') || a.trigger_type?.includes('message') || a.name.toLowerCase().includes('dm') || a.name.toLowerCase().includes('messenger');
+              }
+              if (subTabKey === 'leads' || subTabKey === 'crm') return true;
+              return true;
+            });
+
+            const totalRuns = channelAutomations.reduce((acc, a) => acc + (a.runs_total || 0), 0);
+            const totalLeads = channelAutomations.reduce((acc, a) => acc + (a.leads_captured || 0), 0);
+
+            return (
+              <div className="space-y-5 sm:space-y-6 animate-fade-in">
+                {/* Channel Header Banner */}
+                <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start sm:items-center space-x-3.5">
+                      <div className="w-12 h-12 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center shrink-0 shadow-xs">
+                        <SocialPlatformIcon channel={activeChannel} className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2.5">
+                          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+                            {info.name} Automation Hub
+                          </h2>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+                            Live Engine Active
+                          </span>
                         </div>
-                        <div className="flex items-center space-x-2 self-end sm:self-auto">
-                          <button
-                            onClick={() => {
-                              setEditingAutomation(flow);
-                              setIsCreateAutomationOpen(true);
-                            }}
-                            className="px-3 py-1.5 bg-white border border-[#E2D9CF] rounded-xl text-xs font-bold"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAutomation(flow.id)}
-                            className="p-1.5 text-neutral-400 hover:text-red-600"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                        <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+                          {info.desc}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center space-x-2.5 sm:self-auto self-stretch">
+                      <button
+                        onClick={() => setIsSimulatorOpen(true)}
+                        className="flex-1 sm:flex-initial px-3.5 py-2.5 bg-[#FAF6F0] hover:bg-[#F3ECE4] text-[#78350F] border border-[#E2D9CF] rounded-2xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Bot className="w-3.5 h-3.5 text-[#E05A2B]" />
+                        <span>Test in Simulator</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingAutomation(null);
+                          setIsCreateAutomationOpen(true);
+                        }}
+                        className="flex-1 sm:flex-initial px-4 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>+ Add {info.name} Flow</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Channel Summary Metrics */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-5 border-t border-[#F5EFE8]">
+                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Configured Flows</span>
+                      <span className="text-lg font-bold text-[#1E293B] mt-0.5 block">{channelAutomations.length}</span>
+                    </div>
+                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Dispatched Today</span>
+                      <span className="text-lg font-bold text-[#E05A2B] mt-0.5 block">{channelAutomations.reduce((acc, a) => acc + (a.runs_today || 0), 0)}</span>
+                    </div>
+                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Total Triggered</span>
+                      <span className="text-lg font-bold text-[#1E293B] mt-0.5 block">{totalRuns}</span>
+                    </div>
+                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
+                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Leads Captured</span>
+                      <span className="text-lg font-bold text-emerald-600 mt-0.5 block">{totalLeads}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sub-tabs Filter Bar */}
+                <div className="flex items-center space-x-2 overflow-x-auto pb-1 scrollbar-none">
+                  {info.subtabs.map((tab) => {
+                    const isTabActive = tab.id === 'all' ? subTabKey === 'all' : subTabKey === tab.id;
+                    const targetTabId = tab.id === 'all' ? activeChannel : `${activeChannel}-${tab.id}`;
+                    
+                    return (
+                      <button
+                        key={tab.id}
+                        onClick={() => setCurrentTab(targetTabId)}
+                        className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap flex items-center space-x-2 ${
+                          isTabActive
+                            ? 'bg-[#1E293B] text-white shadow-xs'
+                            : 'bg-white text-[#64748B] hover:text-[#1E293B] hover:bg-[#FAF6F0] border border-[#E2D9CF]'
+                        }`}
+                      >
+                        <span>{tab.name}</span>
+                        {tab.id === 'all' ? (
+                          <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${isTabActive ? 'bg-white/20 text-white' : 'bg-[#F1E9DF] text-[#64748B]'}`}>
+                            {channelAutomations.length}
+                          </span>
+                        ) : null}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Flows List Section */}
+                <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE8]">
+                    <div className="flex items-center space-x-2">
+                      <Zap className="w-4 h-4 text-[#E05A2B]" />
+                      <h3 className="text-sm font-bold text-[#1E293B]">
+                        Active Triggers & Rules
+                      </h3>
+                    </div>
+                    <span className="text-xs text-[#64748B]">
+                      Showing {filteredAutomations.length} of {channelAutomations.length} flows
+                    </span>
+                  </div>
+
+                  {/* Flow Cards */}
+                  <div className="space-y-3.5">
+                    {filteredAutomations.map((flow) => (
+                      <div
+                        key={flow.id}
+                        className="p-4 sm:p-5 rounded-2xl border border-[#F0E8DF] bg-[#FCFAF7] hover:border-[#E05A2B]/40 hover:bg-white transition-all space-y-3 shadow-2xs"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                          <div className="flex items-center space-x-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-white border border-[#E2D9CF] flex items-center justify-center text-[#E05A2B] shrink-0">
+                              <Bot className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-bold text-[#1E293B]">{flow.name}</h4>
+                              <p className="text-[11px] text-[#64748B]">
+                                Trigger: <span className="font-semibold text-[#334155]">{flow.trigger_type || 'Comment Keyword'}</span>
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-2 self-end sm:self-auto">
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                              ● Active
+                            </span>
+                            <button
+                              onClick={() => {
+                                setIsSimulatorOpen(true);
+                              }}
+                              className="px-2.5 py-1 bg-white hover:bg-[#FAF6F0] border border-[#E2D9CF] rounded-xl text-xs font-semibold text-[#78350F] transition-colors"
+                              title="Test trigger in simulator"
+                            >
+                              Test
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingAutomation(flow);
+                                setIsCreateAutomationOpen(true);
+                              }}
+                              className="px-2.5 py-1 bg-white hover:bg-[#FAF6F0] border border-[#E2D9CF] rounded-xl text-xs font-semibold text-[#1E293B] transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAutomation(flow.id)}
+                              className="p-1 text-neutral-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                              title="Delete automation"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Keyword Chips */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          <span className="text-[11px] font-bold text-[#64748B] mr-1">Triggers on:</span>
+                          {(flow.keywords || []).length > 0 ? (
+                            flow.keywords.map((kw, i) => (
+                              <span
+                                key={i}
+                                className="px-2 py-0.5 bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] rounded-md text-[11px] font-bold"
+                              >
+                                "{kw}"
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-[11px] text-[#64748B] italic">All incoming comments</span>
+                          )}
+                        </div>
+
+                        {/* Response Previews */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                          <div className="p-2.5 bg-white rounded-xl border border-[#F1E9DF] text-xs">
+                            <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
+                              Public Comment Reply
+                            </span>
+                            <p className="text-[#334155] italic font-medium leading-relaxed">
+                              "{flow.reply_comment}"
+                            </p>
+                          </div>
+                          <div className="p-2.5 bg-white rounded-xl border border-[#F1E9DF] text-xs">
+                            <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block mb-1">
+                              Instant Private DM + Link
+                            </span>
+                            <p className="text-[#334155] italic font-medium leading-relaxed">
+                              "{flow.dm_message}"
+                            </p>
+                            {flow.link_url && (
+                              <span className="text-[11px] text-[#E05A2B] font-bold mt-1 inline-block">
+                                Destination: {flow.link_url}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}
-                  {automations.filter((a) => a.channel === currentTab).length === 0 && (
-                    <div className="py-8 text-center text-xs text-[#94A3B8]">
-                      No automations configured for {currentTab} yet. Click '+ Add' above to create one.
-                    </div>
-                  )}
+
+                    {/* Empty State with Template Starters */}
+                    {filteredAutomations.length === 0 && (
+                      <div className="py-10 px-4 text-center space-y-4">
+                        <div className="w-14 h-14 rounded-3xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B] mx-auto shadow-xs">
+                          <Bot className="w-7 h-7" />
+                        </div>
+                        <div className="max-w-md mx-auto">
+                          <h4 className="text-base font-bold text-[#1E293B]">
+                            No {info.name} flows found in this view
+                          </h4>
+                          <p className="text-xs text-[#64748B] mt-1">
+                            Choose a ready-to-use template below or create your custom trigger to start capturing leads automatically.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto pt-2">
+                          <button
+                            onClick={() => {
+                              setEditingAutomation({
+                                id: '',
+                                name: `${info.name} "PRICE" Keyword Auto-DM`,
+                                channel: activeChannel,
+                                trigger_type: 'comment_keyword',
+                                keywords: ['price', 'cost', 'how much'],
+                                reply_comment: 'Just sent you our complete pricing guide and special promo in your DM! 📩',
+                                dm_message: 'Hey! Here is our current pricing and special coupon: https://buffermate.ai/pricing 🎉',
+                                link_url: 'https://buffermate.ai/pricing',
+                                status: 'active',
+                                runs_today: 0,
+                                runs_total: 0,
+                                leads_captured: 0,
+                                created_at: new Date().toISOString(),
+                              });
+                              setIsCreateAutomationOpen(true);
+                            }}
+                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                          >
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                              💰 "Price" Bot
+                            </span>
+                            <span className="text-[11px] text-[#64748B] mt-0.5 block">
+                              Auto-DM pricing & checkout links.
+                            </span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setEditingAutomation({
+                                id: '',
+                                name: `${info.name} "LINK" Lead Magnet Funnel`,
+                                channel: activeChannel,
+                                trigger_type: 'comment_keyword',
+                                keywords: ['link', 'send', 'info', 'guide'],
+                                reply_comment: 'Check your DM! Direct download link is waiting for you 🚀',
+                                dm_message: 'Here is your direct download link: https://buffermate.ai/guide 🎁 Enjoy!',
+                                link_url: 'https://buffermate.ai/guide',
+                                status: 'active',
+                                runs_today: 0,
+                                runs_total: 0,
+                                leads_captured: 0,
+                                created_at: new Date().toISOString(),
+                              });
+                              setIsCreateAutomationOpen(true);
+                            }}
+                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                          >
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                              🎁 "Link" Magnet
+                            </span>
+                            <span className="text-[11px] text-[#64748B] mt-0.5 block">
+                              Deliver ebooks & guides instantly.
+                            </span>
+                          </button>
+
+                          <button
+                            onClick={() => {
+                              setEditingAutomation({
+                                id: '',
+                                name: `${info.name} "BOOK" Consultation Bot`,
+                                channel: activeChannel,
+                                trigger_type: 'comment_keyword',
+                                keywords: ['book', 'call', 'consult', 'strategy'],
+                                reply_comment: 'Sent you my private calendar booking link in DMs! 📅',
+                                dm_message: 'Excited to connect! Grab a free 15-min strategy slot here: https://buffermate.ai/calendar ☕',
+                                link_url: 'https://buffermate.ai/calendar',
+                                status: 'active',
+                                runs_today: 0,
+                                runs_total: 0,
+                                leads_captured: 0,
+                                created_at: new Date().toISOString(),
+                              });
+                              setIsCreateAutomationOpen(true);
+                            }}
+                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                          >
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                              📅 "Book" Call
+                            </span>
+                            <span className="text-[11px] text-[#64748B] mt-0.5 block">
+                              Send Calendly & booking links.
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* =========================================================
               VIEW 6: PROFILE & ACCOUNT SETTINGS

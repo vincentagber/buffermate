@@ -61,37 +61,7 @@ export default function Sidebar({
   isCollapsed = false,
   onToggleCollapse,
 }: SidebarProps) {
-  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({
-    whatsapp: false,
-    instagram: false,
-    tiktok: false,
-    facebook: false,
-    threads: false,
-  });
-
-  const toggleDropdown = (key: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setOpenDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const handleItemClick = (tabId: string) => {
-    if (onSelectTab) onSelectTab(tabId);
-    if (onCloseMobile) onCloseMobile();
-  };
-
   const channels = [
-    {
-      id: 'whatsapp',
-      name: 'WhatsApp',
-      color: 'text-emerald-500',
-      activeCount: 'Ready',
-      items: [
-        { name: 'Auto-Responses', tab: 'whatsapp-auto' },
-        { name: 'Live Chat Inbox', tab: 'whatsapp-inbox' },
-        { name: 'Contact Lists', tab: 'social-crm' },
-      ],
-    },
     {
       id: 'instagram',
       name: 'Instagram',
@@ -101,6 +71,17 @@ export default function Sidebar({
         { name: 'Comment Auto-DM', tab: 'instagram-comments' },
         { name: 'Story Reply Bot', tab: 'instagram-stories' },
         { name: 'DM Welcome Funnel', tab: 'instagram-dm' },
+      ],
+    },
+    {
+      id: 'facebook',
+      name: 'Facebook',
+      color: 'text-blue-600',
+      activeCount: '2 flows',
+      items: [
+        { name: 'Messenger Auto-Funnel', tab: 'facebook-messenger' },
+        { name: 'Post Comment Replies', tab: 'facebook-comments' },
+        { name: 'Ad Lead Sync', tab: 'facebook-leads' },
       ],
     },
     {
@@ -114,14 +95,23 @@ export default function Sidebar({
       ],
     },
     {
-      id: 'facebook',
-      name: 'Facebook',
-      color: 'text-blue-600',
+      id: 'twitter',
+      name: 'X (Twitter)',
+      color: 'text-neutral-900',
       activeCount: '2 flows',
       items: [
-        { name: 'Messenger Auto-Funnel', tab: 'facebook-messenger' },
-        { name: 'Post Comment Replies', tab: 'facebook-comments' },
-        { name: 'Ad Lead Sync', tab: 'social-crm' },
+        { name: 'Mention Auto-Reply', tab: 'twitter-auto' },
+        { name: 'DM Lead Funnel', tab: 'twitter-dm' },
+      ],
+    },
+    {
+      id: 'linkedin',
+      name: 'LinkedIn',
+      color: 'text-blue-700',
+      activeCount: '2 flows',
+      items: [
+        { name: 'Post Auto-Engage', tab: 'linkedin-comments' },
+        { name: 'InMail Outbound Bot', tab: 'linkedin-dm' },
       ],
     },
     {
@@ -134,7 +124,62 @@ export default function Sidebar({
         { name: 'Direct Messages', tab: 'threads-dm' },
       ],
     },
+    {
+      id: 'whatsapp',
+      name: 'WhatsApp',
+      color: 'text-emerald-500',
+      activeCount: 'Ready',
+      items: [
+        { name: 'Instant Auto-Replies', tab: 'whatsapp-auto' },
+        { name: 'Live Chat Inbox', tab: 'whatsapp-inbox' },
+        { name: 'Audience Lists', tab: 'whatsapp-crm' },
+      ],
+    },
   ];
+
+  // Auto-expand channel dropdown if current tab matches that channel
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {
+      instagram: true, // open by default for primary channel
+      facebook: false,
+      tiktok: false,
+      twitter: false,
+      linkedin: false,
+      threads: false,
+      whatsapp: false,
+    };
+    channels.forEach(ch => {
+      if (currentTab.startsWith(ch.id)) {
+        initial[ch.id] = true;
+      }
+    });
+    return initial;
+  });
+
+  // Sync open state if currentTab changes externally
+  React.useEffect(() => {
+    channels.forEach(ch => {
+      if (currentTab.startsWith(ch.id)) {
+        setOpenDropdowns(prev => ({ ...prev, [ch.id]: true }));
+      }
+    });
+  }, [currentTab]);
+
+  const toggleDropdown = (key: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpenDropdowns((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleChannelClick = (channelId: string) => {
+    setOpenDropdowns((prev) => ({ ...prev, [channelId]: true }));
+    handleItemClick(channelId);
+  };
+
+  const handleItemClick = (tabId: string) => {
+    if (onSelectTab) onSelectTab(tabId);
+    if (onCloseMobile) onCloseMobile();
+  };
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white transition-all duration-300">
@@ -219,7 +264,7 @@ export default function Sidebar({
               return (
                 <div key={channel.id} className="space-y-0.5">
                   <div
-                    onClick={() => handleItemClick(channel.id)}
+                    onClick={() => handleChannelClick(channel.id)}
                     title={isCollapsed ? channel.name : undefined}
                     className={`w-full flex items-center ${
                       isCollapsed ? 'justify-center px-2 py-2.5' : 'justify-between px-3.5 py-2'
@@ -236,10 +281,12 @@ export default function Sidebar({
                     {!isCollapsed && (
                       <div className="flex items-center space-x-1.5">
                         <button
+                          type="button"
                           onClick={(e) => toggleDropdown(channel.id, e)}
-                          className="p-1 text-[#94A3B8] hover:text-[#475569] rounded"
+                          className="p-1 text-[#94A3B8] hover:text-[#475569] hover:bg-[#F3ECE4] rounded transition-colors"
+                          title={isOpen ? "Collapse submenu" : "Expand submenu"}
                         >
-                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''}`} />
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'transform rotate-180 text-[#E05A2B]' : ''}`} />
                         </button>
                       </div>
                     )}

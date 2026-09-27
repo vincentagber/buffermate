@@ -148,8 +148,42 @@ export default function Header({
         )}
 
         <div className="flex items-center space-x-2">
-          <h1 className="text-xs sm:text-base font-bold text-[#1E293B] capitalize truncate max-w-[130px] sm:max-w-none">
-            {currentTab.replace('-', ' ')}
+          <h1 className="text-xs sm:text-base font-bold text-[#1E293B] truncate max-w-[170px] sm:max-w-none">
+            {(() => {
+              const titles: Record<string, string> = {
+                overview: 'Dashboard Overview',
+                'social-crm': 'Social CRM & Leads',
+                'post-manager': 'Posts & Schedule',
+                'ai-autopilot': 'AI Auto-Pilot Studio',
+                integrations: 'Channel Integrations',
+                settings: 'Profile & Settings',
+                instagram: 'Instagram Hub',
+                'instagram-comments': 'Instagram · Comment Auto-DM',
+                'instagram-stories': 'Instagram · Story Reply Bot',
+                'instagram-dm': 'Instagram · DM Welcome Funnel',
+                facebook: 'Facebook Hub',
+                'facebook-messenger': 'Facebook · Messenger Funnel',
+                'facebook-comments': 'Facebook · Comment Replies',
+                'facebook-leads': 'Facebook · Lead Sync & CRM',
+                tiktok: 'TikTok Hub',
+                'tiktok-comments': 'TikTok · Comment Capture',
+                'tiktok-dm': 'TikTok · Direct Message Deals',
+                twitter: 'X (Twitter) Hub',
+                'twitter-auto': 'X (Twitter) · Auto-Replies',
+                'twitter-dm': 'X (Twitter) · DM Lead Funnel',
+                linkedin: 'LinkedIn Hub',
+                'linkedin-comments': 'LinkedIn · Post Outreach',
+                'linkedin-dm': 'LinkedIn · InMail Outbound',
+                threads: 'Threads Hub',
+                'threads-auto': 'Threads · Keyword Auto-Reply',
+                'threads-dm': 'Threads · Direct Messages',
+                whatsapp: 'WhatsApp Hub',
+                'whatsapp-auto': 'WhatsApp · Instant Replies',
+                'whatsapp-inbox': 'WhatsApp · Live Chat Inbox',
+                'whatsapp-crm': 'WhatsApp · Audience Lists',
+              };
+              return titles[currentTab] || currentTab.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+            })()}
           </h1>
           <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] shrink-0">
             Pro Plan

@@ -2,7 +2,7 @@
  * Common TypeScript types and interfaces used throughout SocialFlow / Buffermate
  */
 
-export type SocialChannel = 'instagram' | 'tiktok' | 'facebook' | 'threads' | 'whatsapp' | 'x' | 'linkedin';
+export type SocialChannel = 'instagram' | 'tiktok' | 'facebook' | 'threads' | 'whatsapp' | 'x' | 'twitter' | 'linkedin';
 
 export interface ApiResponse<T> {
   success: boolean;
