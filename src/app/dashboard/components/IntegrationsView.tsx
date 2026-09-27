@@ -40,6 +40,7 @@ export default function IntegrationsView() {
   const [selectedChannelForWebhook, setSelectedChannelForWebhook] = useState<ChannelIntegrationState | null>(null);
   const [selectedChannelForFunnel, setSelectedChannelForFunnel] = useState<ChannelIntegrationState | null>(null);
   const [selectedChannelForConnect, setSelectedChannelForConnect] = useState<ChannelIntegrationState | null>(null);
+  const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
   const [customHandleInput, setCustomHandleInput] = useState('');
 
   // Webhook configuration modal state
@@ -150,9 +151,13 @@ export default function IntegrationsView() {
           if (data.summary?.activeProgressText) {
             setActiveProgressText(data.summary.activeProgressText);
           }
+          setRealtimeConnected(true);
         }
       } catch (e) {}
     }
+
+    fetchInitial();
+    connectSSE();
 
     // Listen for OAuth popup completion postMessages
     const handleAuthMessage = (event: MessageEvent) => {
@@ -161,6 +166,7 @@ export default function IntegrationsView() {
         showToast(`🎉 ${provider.toUpperCase()} (${profile}) connected live!`);
         handleConnectChannel(provider as ChannelProvider, profile);
         setSelectedChannelForConnect(null);
+        setIsAddAccountModalOpen(false);
       }
     };
 
@@ -224,6 +230,7 @@ export default function IntegrationsView() {
         }
         showToast(`🎉 ${data.channel.name} connected successfully!`);
         setSelectedChannelForConnect(null);
+        setIsAddAccountModalOpen(false);
       } else {
         showToast(data.error || 'Connection failed', 'error');
       }
@@ -391,7 +398,7 @@ export default function IntegrationsView() {
         </div>
       )}
 
-      {/* Header with Title, Live SSE Banner, and Progress Counter */}
+      {/* Header with Title, Live SSE Banner, Counter, and Connect Channel Button */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2.5">
@@ -403,31 +410,31 @@ export default function IntegrationsView() {
               className={`inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-colors ${
                 realtimeConnected
                   ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'bg-amber-50 text-amber-700 border border-amber-200'
+                  : 'bg-emerald-50/70 text-emerald-600 border border-emerald-100'
               }`}
-              title={realtimeConnected ? `SSE Stream Active (${connectionLatency}ms)` : 'Connecting to real-time stream...'}
+              title={realtimeConnected ? `SSE Stream Active (${connectionLatency}ms)` : 'Connecting real-time live sync...'}
             >
-              {realtimeConnected ? (
-                <>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>Live SSE Stream</span>
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-2.5 h-2.5 animate-spin text-amber-600" />
-                  <span>Reconnecting</span>
-                </>
-              )}
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Live Real-Time Sync</span>
             </div>
           </div>
           <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-            Connected accounts for 24/7 automated comment replies, DMs, and post publishing.
+            Connected accounts for 24/7 automated comment replies, DMs, and real-time multi-platform publishing.
           </p>
         </div>
 
-        {/* Dynamic Progress Counter */}
-        <div className="flex items-center space-x-3 self-start md:self-auto">
-          <div className="px-4 py-2 bg-gradient-to-r from-[#FFF0E6] to-[#FFE4D6] border border-[#FED7AA] rounded-2xl shadow-xs flex items-center space-x-2 text-xs font-bold text-[#9A3412]">
+        {/* Action Controls & Progress Counter */}
+        <div className="flex items-center flex-wrap gap-2.5 self-start md:self-auto">
+          <button
+            type="button"
+            onClick={() => setIsAddAccountModalOpen(true)}
+            className="px-4 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Connect New Channel</span>
+          </button>
+
+          <div className="px-3.5 py-2 bg-gradient-to-r from-[#FFF0E6] to-[#FFE4D6] border border-[#FED7AA] rounded-2xl shadow-xs flex items-center space-x-2 text-xs font-bold text-[#9A3412]">
             <ShieldCheck className="w-4 h-4 text-[#E05A2B]" />
             <span id="active-channels-counter">{activeProgressText || `${connectedCount} of ${channels.length} Channels Active`}</span>
           </div>
@@ -446,7 +453,7 @@ export default function IntegrationsView() {
               className={`rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-xs border-2 border-dashed ${
                 isConnected
                   ? 'bg-white border-[#CBD5E1] hover:border-[#FED7AA] hover:shadow-md'
-                  : 'bg-[#FAF8F5]/70 border-[#CBD5E1] opacity-90'
+                  : 'bg-[#FAF8F5]/70 border-[#CBD5E1] opacity-95'
               }`}
             >
               <div className="space-y-3.5">
@@ -491,12 +498,41 @@ export default function IntegrationsView() {
                   </span>
                 </div>
 
-                {/* Active Profile Info */}
+                {/* Active Profile Info Row with Reconnect / Connect Trigger */}
                 <div className="p-2.5 rounded-xl bg-[#FCFAF7] border border-[#F5EFE8] flex items-center justify-between text-xs">
-                  <span className="text-[#64748B] text-[11px]">Active Profile:</span>
-                  <span className={`font-bold truncate max-w-[150px] ${isConnected ? 'text-[#1E293B]' : 'text-neutral-400'}`}>
-                    {channel.activeProfile}
-                  </span>
+                  <div className="flex flex-col min-w-0 pr-2">
+                    <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-wider">
+                      {isConnected ? 'Connected Profile:' : 'Status:'}
+                    </span>
+                    <span className={`font-bold truncate text-xs ${isConnected ? 'text-[#1E293B]' : 'text-neutral-400'}`}>
+                      {isConnected ? channel.activeProfile : 'Not Connected'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedChannelForConnect(channel);
+                      setCustomHandleInput(channel.activeProfile || '');
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shrink-0 transition-colors flex items-center space-x-1 ${
+                      isConnected
+                        ? 'bg-white hover:bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]'
+                        : 'bg-[#E05A2B] hover:bg-[#C8491E] text-white shadow-xs'
+                    }`}
+                    title={isConnected ? `Reconnect or switch ${channel.name} account` : `Connect ${channel.name}`}
+                  >
+                    {isConnected ? (
+                      <>
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Switch</span>
+                      </>
+                    ) : (
+                      <>
+                        <Plus className="w-3 h-3" />
+                        <span>Connect</span>
+                      </>
+                    )}
+                  </button>
                 </div>
 
                 {/* Features Checklist */}
@@ -989,6 +1025,184 @@ export default function IntegrationsView() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          MODAL 4: CONNECT NEW CHANNEL / ACCOUNT PICKER
+         ========================================================= */}
+      {isAddAccountModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
+            {/* Header */}
+            <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B]">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#1E293B]">
+                    Connect Social Channel or Account
+                  </h3>
+                  <p className="text-xs text-[#64748B]">
+                    Choose a platform to authenticate and enable real-time publishing & auto-replies.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsAddAccountModalOpen(false)}
+                className="w-8 h-8 rounded-full hover:bg-[#FAF6F0] flex items-center justify-center text-[#64748B]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Channels Grid in Modal */}
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1 space-y-4">
+              <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">
+                Select a platform to connect with 1-click OAuth:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  {
+                    provider: 'facebook' as ChannelProvider,
+                    name: 'Facebook Pages',
+                    subtitle: 'Meta Graph API v20.0',
+                    color: 'bg-[#EFF6FF] text-[#1877F2] border-[#BFDBFE]',
+                    desc: 'Page feed posts, comment triggers & Messenger'
+                  },
+                  {
+                    provider: 'instagram' as ChannelProvider,
+                    name: 'Instagram Professional',
+                    subtitle: 'Instagram Graph API',
+                    color: 'bg-gradient-to-tr from-[#FFF0F5] to-[#FFE4E6] text-[#E1306C] border-[#FECDD3]',
+                    desc: 'Feed, Reels, Story mentions & DM flows'
+                  },
+                  {
+                    provider: 'x' as ChannelProvider,
+                    name: 'X (Twitter)',
+                    subtitle: 'Twitter API v2',
+                    color: 'bg-neutral-900 text-white border-neutral-700',
+                    desc: 'Real-time tweets, mentions & instant DMs'
+                  },
+                  {
+                    provider: 'tiktok' as ChannelProvider,
+                    name: 'TikTok for Business',
+                    subtitle: 'TikTok Open API v2',
+                    color: 'bg-neutral-900 text-white border-neutral-700',
+                    desc: 'Video publishing & comment keyword leads'
+                  },
+                  {
+                    provider: 'threads' as ChannelProvider,
+                    name: 'Threads Engine',
+                    subtitle: 'Threads API v1.0',
+                    color: 'bg-neutral-950 text-white border-neutral-800',
+                    desc: 'Thread posts & keyword auto-replies'
+                  },
+                  {
+                    provider: 'whatsapp' as ChannelProvider,
+                    name: 'WhatsApp Cloud API',
+                    subtitle: 'Meta Cloud API',
+                    color: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]',
+                    desc: 'Catalog broadcasts & auto-responders'
+                  },
+                  {
+                    provider: 'linkedin' as ChannelProvider,
+                    name: 'LinkedIn Organization',
+                    subtitle: 'LinkedIn UGC Post API',
+                    color: 'bg-[#EFF6FF] text-[#0A66C2] border-[#BFDBFE]',
+                    desc: 'Company page updates & lead capture'
+                  },
+                ].map((item) => {
+                  const existing = channels.find((c) => c.provider === item.provider);
+                  const isAlreadyConnected = existing?.status === 'connected';
+
+                  return (
+                    <div
+                      key={item.provider}
+                      className="p-3.5 rounded-2xl border border-[#F0E8DF] hover:border-[#E05A2B] bg-[#FCFAF7] transition-all flex flex-col justify-between space-y-2.5 shadow-2xs group"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold shrink-0 border ${item.color}`}>
+                          <SocialPlatformIcon channel={item.provider} className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-xs font-bold text-[#1E293B] truncate">{item.name}</h4>
+                            {isAlreadyConnected && (
+                              <span className="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-md text-[9px] font-bold">
+                                Connected
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-[#94A3B8] font-mono">{item.subtitle}</p>
+                          <p className="text-[11px] text-[#64748B] mt-1 leading-tight">{item.desc}</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#F5EFE8] flex items-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAddAccountModalOpen(false);
+                            handleLaunchOAuthPopup(item.provider);
+                          }}
+                          className="flex-1 py-1.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center space-x-1"
+                        >
+                          <Globe className="w-3.5 h-3.5" />
+                          <span>{isAlreadyConnected ? 'Reconnect OAuth' : 'Connect via OAuth'}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAddAccountModalOpen(false);
+                            const channelObj: ChannelIntegrationState = channels.find((c) => c.provider === item.provider) || {
+                              id: `ch-${item.provider}`,
+                              provider: item.provider as ChannelProvider,
+                              name: item.name,
+                              api: item.subtitle,
+                              category: 'Social Media',
+                              status: 'disconnected' as const,
+                              activeProfile: '',
+                              features: ['Live Feed Publishing', 'Auto Comment Replies', 'Instant DMs'],
+                              autoCommentReply: false,
+                              leadCaptureFunnel: false,
+                              webhookUrl: `https://socialflow.studio/api/webhooks/${item.provider}`,
+                              verifyToken: `sf_verify_${item.provider}_${Date.now()}`,
+                              subscribedEvents: ['messages', 'feed_comments', 'mentions'],
+                              lastSyncedAt: new Date().toISOString(),
+                              latencyMs: 25,
+                            };
+                            setSelectedChannelForConnect(channelObj);
+                            setCustomHandleInput(channelObj.activeProfile || '');
+                          }}
+                          className="px-2.5 py-1.5 bg-white hover:bg-[#FAF6F0] text-[#475569] border border-[#E2D9CF] rounded-xl text-xs font-bold transition-colors"
+                          title="Enter custom URL or handle"
+                        >
+                          Custom Handle
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-4 sm:p-6 border-t border-[#F5EFE8] flex items-center justify-between">
+              <p className="text-[11px] text-[#94A3B8]">
+                OAuth authentication opens a secure Meta / Twitter / TikTok / LinkedIn authorization popup.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsAddAccountModalOpen(false)}
+                className="px-4 py-2 text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0] rounded-xl"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
