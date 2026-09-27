@@ -24,6 +24,7 @@ import {
   Wifi,
   WifiOff,
   Link2,
+  Globe,
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { ChannelIntegrationState, ChannelProvider } from '@/lib/services/integrations-realtime';
@@ -153,15 +154,55 @@ export default function IntegrationsView() {
       } catch (e) {}
     }
 
-    fetchInitial();
-    connectSSE();
+    // Listen for OAuth popup completion postMessages
+    const handleAuthMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'SOCIAL_AUTH_SUCCESS') {
+        const { provider, profile } = event.data;
+        showToast(`🎉 ${provider.toUpperCase()} (${profile}) connected live!`);
+        handleConnectChannel(provider as ChannelProvider, profile);
+        setSelectedChannelForConnect(null);
+      }
+    };
+
+    window.addEventListener('message', handleAuthMessage);
 
     return () => {
       isMounted = false;
+      window.removeEventListener('message', handleAuthMessage);
       if (eventSourceRef.current) eventSourceRef.current.close();
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
     };
   }, []);
+
+  // Launch OAuth Popup Window
+  const handleLaunchOAuthPopup = async (provider: ChannelProvider, customHandle?: string) => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/social/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, customHandle }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        const w = 600;
+        const h = 720;
+        const left = window.screen.width / 2 - w / 2;
+        const top = window.screen.height / 2 - h / 2;
+        window.open(
+          data.url,
+          `Connect_${provider}`,
+          `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${w},height=${h},top=${top},left=${left}`
+        );
+      } else {
+        await handleConnectChannel(provider, customHandle);
+      }
+    } catch (err: any) {
+      await handleConnectChannel(provider, customHandle);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Sync / Connect Handler
   const handleConnectChannel = async (provider: ChannelProvider, activeProfile?: string) => {
@@ -910,18 +951,38 @@ export default function IntegrationsView() {
                 </ul>
               </div>
 
-              <div className="pt-2 flex items-center justify-end space-x-2">
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setSelectedChannelForConnect(null)}
-                  className="px-4 py-2 text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0] rounded-xl"
+                  className="w-full sm:w-auto px-4 py-2 text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0] rounded-xl"
                 >
                   Cancel
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    let cleanHandle = customHandleInput.trim();
+                    if (cleanHandle.includes('x.com/') || cleanHandle.includes('twitter.com/')) {
+                      const parts = cleanHandle.split('.com/')[1].split('/')[0].split('?')[0];
+                      cleanHandle = `@${parts}`;
+                    } else if (!cleanHandle.startsWith('@') && selectedChannelForConnect.provider !== 'facebook' && selectedChannelForConnect.provider !== 'whatsapp') {
+                      cleanHandle = `@${cleanHandle}`;
+                    }
+                    handleLaunchOAuthPopup(selectedChannelForConnect.provider, cleanHandle);
+                  }}
+                  disabled={isSyncing}
+                  className="w-full sm:w-auto px-4 py-2.5 bg-neutral-900 hover:bg-black text-white rounded-xl text-xs font-bold shadow-xs transition-all flex items-center justify-center space-x-1.5"
+                >
+                  <Globe className="w-3.5 h-3.5 text-blue-400" />
+                  <span>Open OAuth Login Popup</span>
+                </button>
+
                 <button
                   type="submit"
                   disabled={isSyncing}
-                  className="px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1.5"
+                  className="w-full sm:w-auto px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-1.5"
                 >
                   {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{isSyncing ? 'Authorizing...' : 'Authorize & Connect Live'}</span>

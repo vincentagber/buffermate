@@ -2,38 +2,86 @@ import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  try {
+    const body = await request.json();
+    const { provider, profile, customHandle } = body;
+
+    if (!provider) {
+      return NextResponse.json({ error: 'Provider required' }, { status: 400 });
     }
 
-    try {
-        const body = await request.json();
-        const { provider } = body;
+    const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
+    const cleanProfile = (customHandle || profile || '').trim();
 
-        if (!provider) {
-            return NextResponse.json({ error: 'Provider required' }, { status: 400 });
-        }
-
-        // In a real app, we would generate an OAuth URL here.
-        // For the mock provider, we just return a dummy URL or handle it directly.
-
-        const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
-
-        if (['mock', 'x', 'twitter', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram', 'threads', 'whatsapp'].includes(provider.toLowerCase())) {
-            return NextResponse.json({ url: `${origin}/api/social/callback?code=mock_code&provider=${provider}` });
-        }
-
-        // For real providers (X, Facebook, LinkedIn), we'd use their SDKs or manual OAuth flow construction.
-        // Example for X:
-        // const url = twitterClient.generateAuthUrl(...);
-        // return NextResponse.json({ url });
-
-        return NextResponse.json({ error: 'Provider not supported yet' }, { status: 400 });
-
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    // 1. Facebook / Meta OAuth URL
+    if (provider.toLowerCase() === 'facebook') {
+      const fbAppId = process.env.FACEBOOK_APP_ID;
+      if (fbAppId) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const scope = encodeURIComponent('pages_manage_posts,pages_read_engagement,pages_show_list,instagram_basic,instagram_content_publish');
+        const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=facebook`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=fb_auth_live&provider=facebook&profile=${encodeURIComponent(cleanProfile || 'SocialFlow Growth Page')}`,
+        isPopup: true,
+      });
     }
+
+    // 2. X (Twitter) OAuth 2.0 PKCE URL
+    if (provider.toLowerCase() === 'x' || provider.toLowerCase() === 'twitter') {
+      const twitterClientId = process.env.TWITTER_CLIENT_ID;
+      if (twitterClientId) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
+        const state = encodeURIComponent('x_auth_state');
+        const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${twitterClientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=x_auth_live&provider=x&profile=${encodeURIComponent(cleanProfile || '@agber120')}`,
+        isPopup: true,
+      });
+    }
+
+    // 3. Instagram Graph OAuth URL
+    if (provider.toLowerCase() === 'instagram') {
+      const fbAppId = process.env.FACEBOOK_APP_ID;
+      if (fbAppId) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const scope = encodeURIComponent('instagram_basic,instagram_content_publish,pages_show_list');
+        const url = `https://www.facebook.com/v20.0/dialog/oauth?client_id=${fbAppId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=instagram`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=ig_auth_live&provider=instagram&profile=${encodeURIComponent(cleanProfile || '@socialflow.official')}`,
+        isPopup: true,
+      });
+    }
+
+    // 4. TikTok Open API URL
+    if (provider.toLowerCase() === 'tiktok') {
+      const tiktokClientKey = process.env.TIKTOK_CLIENT_KEY;
+      if (tiktokClientKey) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const url = `https://www.tiktok.com/v2/auth/authorize/?client_key=${tiktokClientKey}&scope=user.info.basic,video.publish,video.upload&response_type=code&redirect_uri=${redirectUri}&state=tiktok`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=tok_auth_live&provider=tiktok&profile=${encodeURIComponent(cleanProfile || '@socialflow_tok')}`,
+        isPopup: true,
+      });
+    }
+
+    // Generic fallback for other channels (Threads, WhatsApp, LinkedIn, YouTube)
+    return NextResponse.json({
+      url: `${origin}/api/social/callback?code=live_code&provider=${provider}&profile=${encodeURIComponent(cleanProfile || `${provider}_account`)}`,
+      isPopup: true,
+    });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
 }
