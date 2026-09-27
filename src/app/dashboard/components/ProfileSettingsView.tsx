@@ -40,7 +40,7 @@ export default function ProfileSettingsView() {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Automation & Preference fields
-  const [timezone, setTimezone] = useState('America/New_York (UTC-5)');
+  const [timezone, setTimezone] = useState('Africa/Lagos (UTC+1)');
   const [defaultDelay, setDefaultDelay] = useState('instant');
   const [defaultLink, setDefaultLink] = useState('https://socialflow.studio/special-offer');
   const [dmRateLimit, setDmRateLimit] = useState('250');
@@ -498,14 +498,109 @@ export default function ProfileSettingsView() {
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:outline-hidden"
               >
-                <option value="America/New_York (UTC-5)">Eastern Time - New York (UTC-5)</option>
-                <option value="America/Chicago (UTC-6)">Central Time - Chicago (UTC-6)</option>
-                <option value="America/Los_Angeles (UTC-8)">Pacific Time - Los Angeles (UTC-8)</option>
-                <option value="Europe/London (UTC+0)">Greenwich Mean Time - London (UTC+0)</option>
-                <option value="Europe/Paris (UTC+1)">Central European Time - Paris (UTC+1)</option>
-                <option value="Asia/Tokyo (UTC+9)">Japan Standard Time - Tokyo (UTC+9)</option>
+                <optgroup label="🌍 Africa (Including Nigeria)">
+                  <option value="Africa/Lagos (UTC+1)">Africa/Lagos (UTC+1) - West Africa Time, Nigeria (Lagos, Abuja)</option>
+                  <option value="Africa/Accra (UTC+0)">Africa/Accra (UTC+0) - Greenwich Mean Time (Ghana)</option>
+                  <option value="Africa/Cairo (UTC+2)">Africa/Cairo (UTC+2) - Eastern European Time (Egypt)</option>
+                  <option value="Africa/Johannesburg (UTC+2)">Africa/Johannesburg (UTC+2) - South Africa Standard Time</option>
+                  <option value="Africa/Nairobi (UTC+3)">Africa/Nairobi (UTC+3) - East Africa Time (Kenya, Uganda, Tanzania)</option>
+                  <option value="Africa/Casablanca (UTC+1)">Africa/Casablanca (UTC+1) - Western European Time (Morocco)</option>
+                  <option value="Africa/Algiers (UTC+1)">Africa/Algiers (UTC+1) - Central European Time (Algeria)</option>
+                  <option value="Africa/Addis_Ababa (UTC+3)">Africa/Addis_Ababa (UTC+3) - East Africa Time (Ethiopia)</option>
+                  <option value="Africa/Kigali (UTC+2)">Africa/Kigali (UTC+2) - Central Africa Time (Rwanda)</option>
+                  <option value="Africa/Dakar (UTC+0)">Africa/Dakar (UTC+0) - Greenwich Mean Time (Senegal)</option>
+                  <option value="Africa/Abidjan (UTC+0)">Africa/Abidjan (UTC+0) - GMT (Ivory Coast)</option>
+                  <option value="Africa/Harare (UTC+2)">Africa/Harare (UTC+2) - Central Africa Time (Zimbabwe)</option>
+                  <option value="Africa/Tunis (UTC+1)">Africa/Tunis (UTC+1) - Central European Time (Tunisia)</option>
+                </optgroup>
+
+                <optgroup label="🇺🇸 & 🌎 Americas (North, Central & South)">
+                  <option value="America/New_York (UTC-5)">America/New_York (UTC-5) - Eastern Time (New York, Miami, Atlanta)</option>
+                  <option value="America/Chicago (UTC-6)">America/Chicago (UTC-6) - Central Time (Chicago, Dallas, Houston)</option>
+                  <option value="America/Denver (UTC-7)">America/Denver (UTC-7) - Mountain Time (Denver, Phoenix, Salt Lake)</option>
+                  <option value="America/Los_Angeles (UTC-8)">America/Los_Angeles (UTC-8) - Pacific Time (Los Angeles, San Francisco, Seattle)</option>
+                  <option value="America/Anchorage (UTC-9)">America/Anchorage (UTC-9) - Alaska Standard Time</option>
+                  <option value="Pacific/Honolulu (UTC-10)">Pacific/Honolulu (UTC-10) - Hawaii Standard Time</option>
+                  <option value="America/Toronto (UTC-5)">America/Toronto (UTC-5) - Eastern Time (Toronto, Montreal, Canada)</option>
+                  <option value="America/Vancouver (UTC-8)">America/Vancouver (UTC-8) - Pacific Time (Vancouver, Canada)</option>
+                  <option value="America/Mexico_City (UTC-6)">America/Mexico_City (UTC-6) - Central Time (Mexico City, Guadalajara)</option>
+                  <option value="America/Bogota (UTC-5)">America/Bogota (UTC-5) - Colombia Time (Bogotá, Medellín)</option>
+                  <option value="America/Lima (UTC-5)">America/Lima (UTC-5) - Peru Time (Lima)</option>
+                  <option value="America/Sao_Paulo (UTC-3)">America/Sao_Paulo (UTC-3) - Brasília Time (São Paulo, Rio de Janeiro)</option>
+                  <option value="America/Buenos_Aires (UTC-3)">America/Buenos_Aires (UTC-3) - Argentina Time (Buenos Aires)</option>
+                  <option value="America/Santiago (UTC-4)">America/Santiago (UTC-4) - Chile Time (Santiago)</option>
+                  <option value="America/Caracas (UTC-4)">America/Caracas (UTC-4) - Venezuela Time (Caracas)</option>
+                </optgroup>
+
+                <optgroup label="🇪🇺 Europe & UK">
+                  <option value="Europe/London (UTC+0)">Europe/London (UTC+0) - Greenwich Mean Time / BST (London, UK)</option>
+                  <option value="Europe/Dublin (UTC+0)">Europe/Dublin (UTC+0) - Irish Standard Time (Dublin, Ireland)</option>
+                  <option value="Europe/Lisbon (UTC+0)">Europe/Lisbon (UTC+0) - Western European Time (Lisbon, Portugal)</option>
+                  <option value="Europe/Paris (UTC+1)">Europe/Paris (UTC+1) - Central European Time (Paris, France)</option>
+                  <option value="Europe/Berlin (UTC+1)">Europe/Berlin (UTC+1) - Central European Time (Berlin, Frankfurt, Germany)</option>
+                  <option value="Europe/Madrid (UTC+1)">Europe/Madrid (UTC+1) - Central European Time (Madrid, Barcelona, Spain)</option>
+                  <option value="Europe/Rome (UTC+1)">Europe/Rome (UTC+1) - Central European Time (Rome, Milan, Italy)</option>
+                  <option value="Europe/Amsterdam (UTC+1)">Europe/Amsterdam (UTC+1) - Central European Time (Amsterdam, Netherlands)</option>
+                  <option value="Europe/Brussels (UTC+1)">Europe/Brussels (UTC+1) - Central European Time (Brussels, Belgium)</option>
+                  <option value="Europe/Zurich (UTC+1)">Europe/Zurich (UTC+1) - Central European Time (Zurich, Geneva, Switzerland)</option>
+                  <option value="Europe/Stockholm (UTC+1)">Europe/Stockholm (UTC+1) - Central European Time (Stockholm, Sweden)</option>
+                  <option value="Europe/Oslo (UTC+1)">Europe/Oslo (UTC+1) - Central European Time (Oslo, Norway)</option>
+                  <option value="Europe/Vienna (UTC+1)">Europe/Vienna (UTC+1) - Central European Time (Vienna, Austria)</option>
+                  <option value="Europe/Warsaw (UTC+1)">Europe/Warsaw (UTC+1) - Central European Time (Warsaw, Poland)</option>
+                  <option value="Europe/Athens (UTC+2)">Europe/Athens (UTC+2) - Eastern European Time (Athens, Greece)</option>
+                  <option value="Europe/Bucharest (UTC+2)">Europe/Bucharest (UTC+2) - Eastern European Time (Bucharest, Romania)</option>
+                  <option value="Europe/Kyiv (UTC+2)">Europe/Kyiv (UTC+2) - Eastern European Time (Kyiv, Ukraine)</option>
+                  <option value="Europe/Helsinki (UTC+2)">Europe/Helsinki (UTC+2) - Eastern European Time (Helsinki, Finland)</option>
+                  <option value="Europe/Moscow (UTC+3)">Europe/Moscow (UTC+3) - Moscow Standard Time (Moscow, Russia)</option>
+                  <option value="Europe/Istanbul (UTC+3)">Europe/Istanbul (UTC+3) - Turkey Time (Istanbul, Turkey)</option>
+                </optgroup>
+
+                <optgroup label="🕌 Middle East">
+                  <option value="Asia/Dubai (UTC+4)">Asia/Dubai (UTC+4) - Gulf Standard Time (Dubai, Abu Dhabi, UAE)</option>
+                  <option value="Asia/Riyadh (UTC+3)">Asia/Riyadh (UTC+3) - Arabia Standard Time (Riyadh, Jeddah, Saudi Arabia)</option>
+                  <option value="Asia/Qatar (UTC+3)">Asia/Qatar (UTC+3) - Arabia Standard Time (Doha, Qatar)</option>
+                  <option value="Asia/Kuwait (UTC+3)">Asia/Kuwait (UTC+3) - Arabia Standard Time (Kuwait City)</option>
+                  <option value="Asia/Muscat (UTC+4)">Asia/Muscat (UTC+4) - Gulf Standard Time (Muscat, Oman)</option>
+                  <option value="Asia/Jerusalem (UTC+2)">Asia/Jerusalem (UTC+2) - Israel Standard Time (Tel Aviv, Jerusalem)</option>
+                  <option value="Asia/Beirut (UTC+2)">Asia/Beirut (UTC+2) - Eastern European Time (Beirut, Lebanon)</option>
+                  <option value="Asia/Amman (UTC+3)">Asia/Amman (UTC+3) - Arabia Time (Amman, Jordan)</option>
+                </optgroup>
+
+                <optgroup label="🌏 Asia">
+                  <option value="Asia/Kolkata (UTC+5:30)">Asia/Kolkata (UTC+5:30) - Indian Standard Time (New Delhi, Mumbai, Bengaluru)</option>
+                  <option value="Asia/Karachi (UTC+5)">Asia/Karachi (UTC+5) - Pakistan Standard Time (Karachi, Lahore)</option>
+                  <option value="Asia/Dhaka (UTC+6)">Asia/Dhaka (UTC+6) - Bangladesh Standard Time (Dhaka)</option>
+                  <option value="Asia/Colombo (UTC+5:30)">Asia/Colombo (UTC+5:30) - Sri Lanka Time (Colombo)</option>
+                  <option value="Asia/Kathmandu (UTC+5:45)">Asia/Kathmandu (UTC+5:45) - Nepal Time (Kathmandu)</option>
+                  <option value="Asia/Bangkok (UTC+7)">Asia/Bangkok (UTC+7) - Indochina Time (Bangkok, Thailand)</option>
+                  <option value="Asia/Jakarta (UTC+7)">Asia/Jakarta (UTC+7) - Western Indonesia Time (Jakarta)</option>
+                  <option value="Asia/Ho_Chi_Minh (UTC+7)">Asia/Ho_Chi_Minh (UTC+7) - Indochina Time (Ho Chi Minh City, Vietnam)</option>
+                  <option value="Asia/Singapore (UTC+8)">Asia/Singapore (UTC+8) - Singapore Standard Time (Singapore)</option>
+                  <option value="Asia/Kuala_Lumpur (UTC+8)">Asia/Kuala_Lumpur (UTC+8) - Malaysia Time (Kuala Lumpur)</option>
+                  <option value="Asia/Hong_Kong (UTC+8)">Asia/Hong_Kong (UTC+8) - Hong Kong Time (Hong Kong)</option>
+                  <option value="Asia/Shanghai (UTC+8)">Asia/Shanghai (UTC+8) - China Standard Time (Beijing, Shanghai, Shenzhen)</option>
+                  <option value="Asia/Taipei (UTC+8)">Asia/Taipei (UTC+8) - Taiwan Time (Taipei)</option>
+                  <option value="Asia/Manila (UTC+8)">Asia/Manila (UTC+8) - Philippine Standard Time (Manila)</option>
+                  <option value="Asia/Tokyo (UTC+9)">Asia/Tokyo (UTC+9) - Japan Standard Time (Tokyo, Osaka, Japan)</option>
+                  <option value="Asia/Seoul (UTC+9)">Asia/Seoul (UTC+9) - Korea Standard Time (Seoul, South Korea)</option>
+                </optgroup>
+
+                <optgroup label="🦘 Australia & Pacific">
+                  <option value="Australia/Sydney (UTC+10)">Australia/Sydney (UTC+10) - Australian Eastern Time (Sydney, Canberra)</option>
+                  <option value="Australia/Melbourne (UTC+10)">Australia/Melbourne (UTC+10) - Australian Eastern Time (Melbourne)</option>
+                  <option value="Australia/Brisbane (UTC+10)">Australia/Brisbane (UTC+10) - AEST (Brisbane, Queensland)</option>
+                  <option value="Australia/Adelaide (UTC+9:30)">Australia/Adelaide (UTC+9:30) - Australian Central Time (Adelaide)</option>
+                  <option value="Australia/Perth (UTC+8)">Australia/Perth (UTC+8) - Australian Western Time (Perth)</option>
+                  <option value="Pacific/Auckland (UTC+12)">Pacific/Auckland (UTC+12) - New Zealand Standard Time (Auckland, Wellington)</option>
+                  <option value="Pacific/Fiji (UTC+12)">Pacific/Fiji (UTC+12) - Fiji Time (Suva)</option>
+                  <option value="Pacific/Guam (UTC+10)">Pacific/Guam (UTC+10) - Chamorro Standard Time (Guam)</option>
+                </optgroup>
+
+                <optgroup label="🌐 UTC Universal">
+                  <option value="UTC (UTC+0)">UTC (UTC+0) - Coordinated Universal Time</option>
+                </optgroup>
               </select>
             </div>
 
