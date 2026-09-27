@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint src",
     "test:integrations": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_integrations.ts",
+    "test:social": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_social_connections.ts",
     "seed": "ts-node scripts/seed.ts",
     "worker": "npx ts-node worker/index.ts"
   },
