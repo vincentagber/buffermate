@@ -501,17 +501,23 @@ export default function AnalyticsPage() {
                                         <Tooltip
                                             content={({ active, payload, label }) => {
                                                 if (active && payload && payload.length) {
+                                                    if (typeof window !== 'undefined' && window.navigator && typeof window.navigator.vibrate === 'function') {
+                                                        try { window.navigator.vibrate(8); } catch (e) {}
+                                                    }
                                                     const impressions = payload[0]?.value;
                                                     const engagements = payload[0]?.payload?.engagements;
                                                     return (
-                                                        <div className="bg-slate-900 text-white p-3 rounded-lg shadow-xl text-xs border border-slate-800">
-                                                            <p className="font-semibold text-slate-200 mb-1">{label}</p>
-                                                            <div className="space-y-1">
+                                                        <div className="bg-[#1E293B] text-white p-3.5 rounded-2xl shadow-2xl text-xs border border-neutral-700 animate-fade-in">
+                                                            <p className="font-bold text-slate-200 mb-1.5 flex items-center justify-between">
+                                                                <span>{label} 2026</span>
+                                                                <span className="text-[10px] text-[#E05A2B] bg-[#FFF0E6] px-1.5 py-0.2 rounded font-mono">Live</span>
+                                                            </p>
+                                                            <div className="space-y-1.5">
                                                                 <p className="flex items-center justify-between gap-4 text-blue-300">
                                                                     <span>Impressions:</span>
                                                                     <span className="font-bold text-white">{Number(impressions).toLocaleString()}</span>
                                                                 </p>
-                                                                <p className="flex items-center justify-between gap-4 text-emerald-300">
+                                                                <p className="flex items-center justify-between gap-4 text-emerald-400">
                                                                     <span>Engagements:</span>
                                                                     <span className="font-bold text-white">{Number(engagements).toLocaleString()}</span>
                                                                 </p>

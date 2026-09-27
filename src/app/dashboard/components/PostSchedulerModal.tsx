@@ -15,8 +15,8 @@ import {
   Link as LinkIcon,
 } from 'lucide-react';
 import { Post, SocialChannel } from '@/lib/types';
-
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import { triggerConfetti } from '@/components/ui/Confetti';
 
 interface PostSchedulerModalProps {
   isOpen: boolean;
@@ -137,8 +137,12 @@ export default function PostSchedulerModal({
       } else {
         onSavePost({ id: `post-${Date.now()}`, user_id: 'user-current', ...postPayload, created_at: new Date().toISOString() } as any);
       }
+
+      // Trigger multi-channel celebration confetti
+      triggerConfetti();
     } catch (err) {
       onSavePost({ id: `post-${Date.now()}`, user_id: 'user-current', ...postPayload, created_at: new Date().toISOString() } as any);
+      triggerConfetti();
     } finally {
       setIsSubmitting(false);
       onClose();
@@ -156,7 +160,12 @@ export default function PostSchedulerModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col md:flex-row shadow-2xl border-2 border-dashed border-[#CBD5E1] overflow-hidden my-auto">
+      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[88dvh] flex flex-col md:flex-row shadow-2xl border-2 border-dashed border-[#CBD5E1] overflow-hidden my-auto animate-slide-up">
+        {/* Mobile Swipe Dismiss Handle */}
+        <div className="md:hidden pt-2.5 pb-1 flex justify-center w-full bg-white">
+          <div className="w-12 h-1.5 bg-neutral-300 rounded-full cursor-pointer" onClick={onClose} />
+        </div>
+
         {/* Left Form */}
         <div className="p-4 sm:p-6 md:w-3/5 space-y-4 sm:space-y-5 border-b md:border-b-0 md:border-r border-[#F5EFE8] overflow-y-auto flex-1">
           <div className="flex items-center justify-between">

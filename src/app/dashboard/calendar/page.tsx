@@ -16,9 +16,11 @@ import {
   Sparkles,
   Send,
   Trash2,
-  Edit3
+  Edit3,
+  GripVertical
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import { triggerConfetti } from '@/components/ui/Confetti';
 import Link from 'next/link';
 
 interface ScheduledPost {
@@ -37,8 +39,16 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<'all' | 'scheduled' | 'posted' | 'draft'>('all');
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all');
+  const [draggedPost, setDraggedPost] = useState<ScheduledPost | null>(null);
+  const [dragOverDate, setDragOverDate] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'info' } | null>(null);
 
   const supabase = createClient();
+
+  const showToast = (text: string, type: 'success' | 'info' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -58,7 +68,6 @@ export default function CalendarPage() {
         if (data && data.length > 0) {
           setPosts(data);
         } else {
-          // Curated sample scheduled posts if database is fresh
           setPosts([
             {
               id: 'p-1',
@@ -91,7 +100,6 @@ export default function CalendarPage() {
           ]);
         }
       } else {
-        // Sample posts for guest state
         setPosts([
           {
             id: 'p-1',
@@ -123,6 +131,56 @@ export default function CalendarPage() {
     }
   }
 
+  // Drag and drop handlers for rescheduling
+  const handleDragStart = (e: React.DragEvent, post: ScheduledPost) => {
+    setDraggedPost(post);
+    e.dataTransfer.setData('text/plain', post.id);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, dateKey: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverDate !== dateKey) {
+      setDragOverDate(dateKey);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, targetDateKey: string) => {
+    e.preventDefault();
+    setDragOverDate(null);
+    if (!draggedPost) return;
+
+    try {
+      // Calculate new scheduled timestamp preserving time of day
+      const oldDate = new Date(draggedPost.scheduled_at);
+      const targetBase = new Date(targetDateKey);
+      targetBase.setHours(oldDate.getHours(), oldDate.getMinutes(), 0, 0);
+
+      const newScheduledAt = targetBase.toISOString();
+
+      // Optimistic update
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === draggedPost.id ? { ...p, scheduled_at: newScheduledAt } : p
+        )
+      );
+
+      showToast(`🗓️ Rescheduled post to ${targetDateKey}!`);
+      triggerConfetti();
+
+      // Supabase update if real record
+      await supabase
+        .from('posts')
+        .update({ scheduled_at: newScheduledAt })
+        .eq('id', draggedPost.id);
+    } catch (err) {
+      console.error('Failed to update scheduled date', err);
+    } finally {
+      setDraggedPost(null);
+    }
+  };
+
   const filteredPosts = posts.filter((post) => {
     const matchesStatus = statusFilter === 'all' || post.status === statusFilter;
     const matchesPlatform =
@@ -147,7 +205,15 @@ export default function CalendarPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 font-sans pb-12 animate-fade-in">
+    <div className="max-w-6xl mx-auto space-y-6 font-sans pb-16 animate-fade-in">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-50 text-white px-4 sm:px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-2 text-xs font-bold bg-[#1E293B] animate-fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -155,7 +221,7 @@ export default function CalendarPage() {
             Content Calendar & Schedule
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-            Visual timeline of your scheduled, published, and automated social campaigns.
+            Drag and drop posts between dates to reschedule campaigns effortlessly.
           </p>
         </div>
 
@@ -243,96 +309,122 @@ export default function CalendarPage() {
 
       {/* Main Content Area */}
       {viewMode === 'agenda' ? (
-        /* Agenda Feed View */
+        /* Agenda Feed View with Drag and Drop Rescheduling */
         <div className="space-y-6">
           {Object.keys(groupedPosts).length > 0 ? (
-            Object.entries(groupedPosts).map(([dateLabel, dayPosts]) => (
-              <div key={dateLabel} className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#E05A2B]"></div>
-                  <h3 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">
-                    {dateLabel}
-                  </h3>
-                  <span className="text-xs text-[#94A3B8] font-semibold">
-                    ({dayPosts.length} {dayPosts.length === 1 ? 'post' : 'posts'})
-                  </span>
-                </div>
+            Object.entries(groupedPosts).map(([dateLabel, dayPosts]) => {
+              const isDragTarget = dragOverDate === dateLabel;
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {dayPosts.map((post) => {
-                    const postTime = new Date(post.scheduled_at).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    });
+              return (
+                <div
+                  key={dateLabel}
+                  onDragOver={(e) => handleDragOver(e, dateLabel)}
+                  onDrop={(e) => handleDrop(e, dateLabel)}
+                  className={`space-y-3 p-3 rounded-3xl transition-all duration-200 ${
+                    isDragTarget
+                      ? 'bg-[#FFF0E6] border-2 border-dashed border-[#E05A2B] scale-[1.01]'
+                      : ''
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#E05A2B]"></div>
+                      <h3 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">
+                        {dateLabel}
+                      </h3>
+                      <span className="text-xs text-[#94A3B8] font-semibold">
+                        ({dayPosts.length} {dayPosts.length === 1 ? 'post' : 'posts'})
+                      </span>
+                    </div>
 
-                    return (
-                      <div
-                        key={post.id}
-                        className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 hover:border-[#FED7AA] hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 shadow-xs"
-                      >
-                        <div className="space-y-2.5">
-                          {/* Card Top: Platforms & Status */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-1.5">
-                              {post.platforms && post.platforms.length > 0 ? (
-                                post.platforms.map((p) => (
-                                  <div
-                                    key={p}
-                                    className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center text-neutral-800"
-                                    title={p.toUpperCase()}
-                                  >
-                                    <SocialPlatformIcon channel={p} className="w-3.5 h-3.5" />
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center">
-                                  <Layers className="w-3.5 h-3.5 text-[#64748B]" />
+                    {isDragTarget && (
+                      <span className="text-xs font-bold text-[#E05A2B] animate-pulse">
+                        Drop to reschedule here 📌
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {dayPosts.map((post) => {
+                      const postTime = new Date(post.scheduled_at).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+
+                      return (
+                        <div
+                          key={post.id}
+                          draggable={true}
+                          onDragStart={(e) => handleDragStart(e, post)}
+                          className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 hover:border-[#FED7AA] hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 shadow-xs cursor-grab active:cursor-grabbing active:opacity-60"
+                        >
+                          <div className="space-y-2.5">
+                            {/* Card Top: Platforms & Status */}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-1.5">
+                                <div className="p-1 text-[#94A3B8] hover:text-[#1E293B] cursor-grab">
+                                  <GripVertical className="w-3.5 h-3.5" />
                                 </div>
-                              )}
+                                {post.platforms && post.platforms.length > 0 ? (
+                                  post.platforms.map((p) => (
+                                    <div
+                                      key={p}
+                                      className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center text-neutral-800"
+                                      title={p.toUpperCase()}
+                                    >
+                                      <SocialPlatformIcon channel={p} className="w-3.5 h-3.5" />
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center">
+                                    <Layers className="w-3.5 h-3.5 text-[#64748B]" />
+                                  </div>
+                                )}
+                              </div>
+
+                              <span
+                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize ${
+                                  post.status === 'posted'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                    : post.status === 'scheduled'
+                                    ? 'bg-blue-50 text-blue-700 border border-blue-200'
+                                    : 'bg-amber-50 text-amber-700 border border-amber-200'
+                                }`}
+                              >
+                                ● {post.status}
+                              </span>
                             </div>
 
-                            <span
-                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize ${
-                                post.status === 'posted'
-                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                  : post.status === 'scheduled'
-                                  ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                                  : 'bg-amber-50 text-amber-700 border border-amber-200'
-                              }`}
-                            >
-                              ● {post.status}
-                            </span>
+                            {/* Post Content */}
+                            <p className="text-xs sm:text-sm text-[#1E293B] font-medium line-clamp-3 leading-relaxed">
+                              {post.content}
+                            </p>
                           </div>
 
-                          {/* Post Content */}
-                          <p className="text-xs sm:text-sm text-[#1E293B] font-medium line-clamp-3 leading-relaxed">
-                            {post.content}
-                          </p>
-                        </div>
+                          {/* Card Bottom: Timestamp & Quick Action */}
+                          <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-xs">
+                            <div className="flex items-center space-x-1.5 text-[#64748B] text-[11px] font-medium">
+                              <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
+                              <span>{postTime}</span>
+                            </div>
 
-                        {/* Card Bottom: Timestamp & Quick Action */}
-                        <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-xs">
-                          <div className="flex items-center space-x-1.5 text-[#64748B] text-[11px] font-medium">
-                            <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
-                            <span>{postTime}</span>
-                          </div>
-
-                          <div className="flex items-center space-x-1">
-                            <Link
-                              href={`/dashboard/composer?draftId=${post.id}`}
-                              className="p-1.5 hover:bg-[#FAF6F0] text-[#64748B] hover:text-[#E05A2B] rounded-lg transition-colors"
-                              title="Edit in Composer"
-                            >
-                              <Edit3 className="w-3.5 h-3.5" />
-                            </Link>
+                            <div className="flex items-center space-x-1">
+                              <Link
+                                href={`/dashboard/composer?draftId=${post.id}`}
+                                className="p-1.5 hover:bg-[#FAF6F0] text-[#64748B] hover:text-[#E05A2B] rounded-lg transition-colors"
+                                title="Edit in Composer"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </Link>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="text-center py-16 bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-6">
               <CalendarIcon className="w-12 h-12 text-[#E05A2B]/40 mx-auto mb-3" />

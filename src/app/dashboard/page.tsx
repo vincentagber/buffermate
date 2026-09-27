@@ -35,7 +35,10 @@ import {
   ToggleLeft,
   ToggleRight,
   Zap,
-  Play
+  Play,
+  CheckSquare,
+  Square,
+  Check
 } from 'lucide-react';
 import Sidebar, { SocialFlowLogo } from './components/Sidebar';
 import Header from './components/Header';
@@ -46,6 +49,7 @@ import AiAutoPostStudio from './components/AiAutoPostStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import { triggerConfetti } from '@/components/ui/Confetti';
 import {
   SocialAutomation,
   ActivityEvent,
@@ -80,6 +84,7 @@ export default function DashboardPage() {
   const [activities, setActivities] = useState<ActivityEvent[]>(INITIAL_ACTIVITIES);
   const [leads, setLeads] = useState<SocialLead[]>(INITIAL_LEADS);
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
+  const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Modals state
@@ -88,6 +93,42 @@ export default function DashboardPage() {
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleToggleSelectPost = (postId: string) => {
+    setSelectedPostIds((prev) =>
+      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+    );
+  };
+
+  const handleSelectAllPosts = () => {
+    if (selectedPostIds.length === posts.length) {
+      setSelectedPostIds([]);
+    } else {
+      setSelectedPostIds(posts.map((p) => p.id));
+    }
+  };
+
+  const handleBulkStatusChange = async (newStatus: 'posted' | 'scheduled') => {
+    if (selectedPostIds.length === 0) return;
+    setPosts((prev) =>
+      prev.map((p) => (selectedPostIds.includes(p.id) ? { ...p, status: newStatus } : p))
+    );
+    if (newStatus === 'posted') {
+      triggerConfetti();
+      showToast(`🎉 Published ${selectedPostIds.length} posts to live channels!`);
+    } else {
+      showToast(`Updated ${selectedPostIds.length} posts to scheduled.`);
+    }
+    setSelectedPostIds([]);
+  };
+
+  const handleBulkDeletePosts = async () => {
+    if (selectedPostIds.length === 0) return;
+    if (!confirm(`Delete ${selectedPostIds.length} selected posts?`)) return;
+    setPosts((prev) => prev.filter((p) => !selectedPostIds.includes(p.id)));
+    showToast(`Deleted ${selectedPostIds.length} posts.`);
+    setSelectedPostIds([]);
+  };
 
   // Load real data from live Supabase APIs
   const loadDatabaseData = async () => {
@@ -1022,83 +1063,170 @@ export default function DashboardPage() {
               VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER
              ========================================================= */}
           {currentTab === 'post-manager' && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <div className="space-y-4 sm:space-y-6 animate-fade-in relative pb-16">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
                   <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-[#1E293B]">
                     Posts & Social Scheduler
                   </h2>
                   <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-                    Manage, queue, and auto-publish content across all connected channels.
+                    Manage, select multiple posts, queue, and auto-publish content across all connected channels.
                   </p>
                 </div>
 
-                <button
-                  onClick={() => setIsPostComposerOpen(true)}
-                  className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-1.5"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Create & Schedule Post</span>
-                </button>
+                <div className="flex items-center flex-wrap gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllPosts}
+                    className="px-3.5 py-2 bg-white border border-[#E2D9CF] hover:bg-[#FAF8F5] text-[#475569] rounded-2xl text-xs font-bold transition-colors flex items-center space-x-1.5 shadow-2xs"
+                  >
+                    {selectedPostIds.length === posts.length && posts.length > 0 ? (
+                      <>
+                        <CheckSquare className="w-4 h-4 text-[#E05A2B]" />
+                        <span>Deselect All</span>
+                      </>
+                    ) : (
+                      <>
+                        <Square className="w-4 h-4" />
+                        <span>Select All ({posts.length})</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={() => setIsPostComposerOpen(true)}
+                    className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-1.5"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Create & Schedule Post</span>
+                  </button>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {posts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between space-y-3.5"
-                  >
-                    <div className="space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-wrap gap-1">
-                          {post.channels?.map((ch) => (
-                            <span key={ch} className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase bg-[#FFF0E6] text-[#E05A2B]">
-                              {ch}
-                            </span>
-                          ))}
-                        </div>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            post.status === 'posted'
-                              ? 'bg-emerald-50 text-emerald-600'
-                              : 'bg-amber-50 text-amber-600'
-                          }`}
-                        >
-                          {post.status === 'posted' ? 'Published' : 'Scheduled'}
-                        </span>
-                      </div>
-
-                      {post.attachments?.[0]?.url && (
-                        <div className="rounded-2xl overflow-hidden aspect-video bg-[#F1E9DF]">
-                          <img
-                            src={post.attachments[0].url}
-                            alt="attachment"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      )}
-
-                      <p className="text-xs text-[#334155] whitespace-pre-line line-clamp-4 leading-relaxed">
-                        {post.content}
-                      </p>
-                    </div>
-
-                    <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[10px] sm:text-[11px] text-[#64748B]">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
-                        <span>
-                          {new Date(post.scheduled_at).toLocaleDateString(undefined, {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                      <span className="font-bold text-[#1E293B]">Live Queue</span>
-                    </div>
+              {/* Floating Mass Action Toolbar when posts are selected */}
+              {selectedPostIds.length > 0 && (
+                <div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#1E293B] text-white px-4 sm:px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 sm:space-x-4 border border-neutral-700 animate-slide-up">
+                  <div className="flex items-center space-x-2 pr-2 border-r border-neutral-700 text-xs font-bold">
+                    <CheckSquare className="w-4 h-4 text-[#E05A2B]" />
+                    <span>{selectedPostIds.length} Selected</span>
                   </div>
-                ))}
+
+                  <button
+                    type="button"
+                    onClick={() => handleBulkStatusChange('posted')}
+                    className="px-3.5 py-1.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Publish Now</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleBulkStatusChange('scheduled')}
+                    className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5"
+                  >
+                    <Clock className="w-3.5 h-3.5 text-orange-300" />
+                    <span>Schedule</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleBulkDeletePosts}
+                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded-xl transition-all"
+                    title="Delete selected posts"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedPostIds([])}
+                    className="text-xs text-neutral-400 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {posts.map((post) => {
+                  const isSelected = selectedPostIds.includes(post.id);
+
+                  return (
+                    <div
+                      key={post.id}
+                      onClick={() => handleToggleSelectPost(post.id)}
+                      className={`bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed transition-all flex flex-col justify-between space-y-3.5 cursor-pointer shadow-xs ${
+                        isSelected
+                          ? 'border-[#E05A2B] bg-[#FFF8F5] ring-2 ring-orange-500/20'
+                          : 'border-[#CBD5E1] hover:border-[#FED7AA]'
+                      }`}
+                    >
+                      <div className="space-y-2.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div
+                              className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${
+                                isSelected
+                                  ? 'bg-[#E05A2B] border-[#E05A2B] text-white'
+                                  : 'bg-white border-[#CBD5E1]'
+                              }`}
+                            >
+                              {isSelected && <Check className="w-3.5 h-3.5" />}
+                            </div>
+
+                            <div className="flex flex-wrap gap-1">
+                              {post.channels?.map((ch) => (
+                                <span key={ch} className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase bg-[#FFF0E6] text-[#E05A2B]">
+                                  {ch}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                              post.status === 'posted'
+                                ? 'bg-emerald-50 text-emerald-600'
+                                : 'bg-amber-50 text-amber-600'
+                            }`}
+                          >
+                            {post.status === 'posted' ? 'Published' : 'Scheduled'}
+                          </span>
+                        </div>
+
+                        {post.attachments?.[0]?.url && (
+                          <div className="rounded-2xl overflow-hidden aspect-video bg-[#F1E9DF]">
+                            <img
+                              src={post.attachments[0].url}
+                              alt="attachment"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+
+                        <p className="text-xs text-[#334155] whitespace-pre-line line-clamp-4 leading-relaxed">
+                          {post.content}
+                        </p>
+                      </div>
+
+                      <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[10px] sm:text-[11px] text-[#64748B]">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
+                          <span>
+                            {new Date(post.scheduled_at).toLocaleDateString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </span>
+                        </div>
+                        <span className="font-bold text-[#1E293B]">Live Queue</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

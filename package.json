@@ -16,6 +16,7 @@
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.116.0",
     "@types/pg": "^8.23.1",
+    "canvas-confetti": "^1.9.4",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "lucide-react": "^0.554.0",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/canvas-confetti": "^1.9.0",
     "@types/node": "^20",
     "@types/node-cron": "^3.0.11",
     "@types/react": "^19",
