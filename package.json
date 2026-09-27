@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
+    "test:integrations": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_integrations.ts",
     "seed": "ts-node scripts/seed.ts",
     "worker": "npx ts-node worker/index.ts"
   },
