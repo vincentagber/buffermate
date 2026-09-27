@@ -22,6 +22,8 @@ import {
   Clock,
   Volume2,
   Mail,
+  Crown,
+  CreditCard,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -49,10 +51,14 @@ export default function ProfileSettingsView() {
   const [soundEffects, setSoundEffects] = useState(true);
   const [leadNotifications, setLeadNotifications] = useState(true);
 
+  // Subscription state
+  const [currentPlan, setCurrentPlan] = useState<'free' | 'pro' | 'agency'>('pro');
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+
   // UI state
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [activeSettingsTab, setActiveSettingsTab] = useState<'all' | 'profile' | 'timezone' | 'automations' | 'security'>('all');
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'all' | 'profile' | 'billing' | 'timezone' | 'automations' | 'security'>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -230,6 +236,7 @@ export default function ProfileSettingsView() {
         {[
           { id: 'all', label: 'All Settings', icon: Sliders },
           { id: 'profile', label: 'Creator Profile', icon: User },
+          { id: 'billing', label: 'Pro Plans & Billing', icon: Crown },
           { id: 'timezone', label: 'Timezone & Posting', icon: Globe },
           { id: 'automations', label: 'Automation Defaults', icon: Zap },
           { id: 'security', label: 'Security & Auth', icon: Shield },
@@ -254,6 +261,174 @@ export default function ProfileSettingsView() {
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
+        {/* Pro Plans & Subscription Tier Management */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'billing') && (
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#F5EFE8]">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center font-bold">
+                <Crown className="w-5 h-5 text-[#E05A2B]" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h2 className="text-base font-bold text-[#1E293B]">Subscription & Pro Tier</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#E05A2B] text-white">
+                    PRO ACTIVE
+                  </span>
+                </div>
+                <p className="text-xs text-[#64748B]">
+                  Manage your active workspace tier, channel limits, and billing frequency.
+                </p>
+              </div>
+            </div>
+
+            {/* Billing Toggle */}
+            <div className="flex items-center space-x-2 bg-[#FCFAF7] p-1 rounded-2xl border border-[#E2D9CF] self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={() => setBillingCycle('monthly')}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                  billingCycle === 'monthly' ? 'bg-white shadow-xs text-[#1E293B]' : 'text-[#64748B]'
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                type="button"
+                onClick={() => setBillingCycle('annual')}
+                className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center space-x-1 ${
+                  billingCycle === 'annual' ? 'bg-[#1E293B] text-white shadow-xs' : 'text-[#64748B]'
+                }`}
+              >
+                <span>Annual</span>
+                <span className="px-1.5 py-0.2 bg-[#E05A2B] text-white text-[9px] rounded font-bold">
+                  -20%
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Pricing Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Free Tier */}
+            <div className="p-5 rounded-2xl bg-[#FCFAF7] border border-[#E2D9CF] flex flex-col justify-between space-y-4">
+              <div>
+                <span className="text-xs font-bold text-[#64748B] block mb-1">Starter Free</span>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-2xl font-bold text-[#1E293B]">$0</span>
+                  <span className="text-xs text-[#64748B]">/ forever</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#475569] mt-3">
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>3 Social Channels</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>10 Posts per channel</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Basic 7-day Analytics</span>
+                  </li>
+                </ul>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentPlan('free');
+                  showToast('Switched to Starter Plan');
+                }}
+                className="w-full py-2 bg-white border border-[#E2D9CF] rounded-xl text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0]"
+              >
+                {currentPlan === 'free' ? '● Active' : 'Select Free'}
+              </button>
+            </div>
+
+            {/* Pro Growth */}
+            <div className="p-5 rounded-2xl bg-gradient-to-b from-[#FFFDF9] to-[#FFF6F0] border-2 border-[#E05A2B] flex flex-col justify-between space-y-4 relative shadow-xs">
+              <div className="absolute -top-2.5 right-4 px-2.5 py-0.2 bg-[#E05A2B] text-white text-[9px] font-bold rounded-full">
+                POPULAR
+              </div>
+              <div>
+                <span className="text-xs font-bold text-[#E05A2B] block mb-1">Pro Growth</span>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-2xl font-bold text-[#1E293B]">
+                    ${billingCycle === 'annual' ? '23' : '29'}
+                  </span>
+                  <span className="text-xs text-[#64748B]">/ mo {billingCycle === 'annual' ? '(yearly)' : ''}</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#334155] mt-3">
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <span className="font-semibold">Unlimited Social Channels</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <span>Unlimited Scheduled Queue</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <span>AI Viral Script Studio (GPT-4)</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <span>24/7 Comment Keyword Auto-DMs</span>
+                  </li>
+                </ul>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentPlan('pro');
+                  showToast('Pro Growth Plan is active');
+                }}
+                className="w-full py-2 bg-[#E05A2B] text-white rounded-xl text-xs font-bold hover:bg-[#C8491E] shadow-xs"
+              >
+                {currentPlan === 'pro' ? '✓ Current Plan (Active)' : 'Upgrade to Pro'}
+              </button>
+            </div>
+
+            {/* Scale / Agency */}
+            <div className="p-5 rounded-2xl bg-[#FCFAF7] border border-[#E2D9CF] flex flex-col justify-between space-y-4">
+              <div>
+                <span className="text-xs font-bold text-blue-700 block mb-1">Scale & Agency</span>
+                <div className="flex items-baseline space-x-1">
+                  <span className="text-2xl font-bold text-[#1E293B]">
+                    ${billingCycle === 'annual' ? '63' : '79'}
+                  </span>
+                  <span className="text-xs text-[#64748B]">/ mo {billingCycle === 'annual' ? '(yearly)' : ''}</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#475569] mt-3">
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-blue-600" />
+                    <span>10 Team Member Seats</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-blue-600" />
+                    <span>White-label PDF Reports</span>
+                  </li>
+                  <li className="flex items-center space-x-1.5">
+                    <Check className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Custom Webhook Lead Sync</span>
+                  </li>
+                </ul>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentPlan('agency');
+                  showToast('Upgraded to Agency Scale Plan');
+                }}
+                className="w-full py-2 bg-white border border-[#BFDBFE] text-blue-700 rounded-xl text-xs font-bold hover:bg-[#EFF6FF]"
+              >
+                {currentPlan === 'agency' ? '● Active' : 'Upgrade to Agency'}
+              </button>
+            </div>
+          </div>
+        </div>
+        )}
+
         {/* 1. Creator Profile & Avatar Section */}
         {(activeSettingsTab === 'all' || activeSettingsTab === 'profile') && (
         <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
