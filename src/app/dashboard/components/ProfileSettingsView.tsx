@@ -52,6 +52,7 @@ export default function ProfileSettingsView() {
   // UI state
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'all' | 'profile' | 'timezone' | 'automations' | 'security'>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -208,17 +209,53 @@ export default function ProfileSettingsView() {
       )}
 
       {/* Page Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
-          Profile & Account Settings
-        </h1>
-        <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-          Manage your personal creator profile, automation defaults, and security configurations.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+            Profile & Account Settings
+          </h1>
+          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+            Manage your personal creator profile, automation defaults, and security configurations.
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl text-[11px] font-bold self-start sm:self-auto">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Auto-Synced to Supabase</span>
+        </div>
+      </div>
+
+      {/* Settings Section Tab Navigation */}
+      <div className="flex items-center space-x-2 border-b border-[#E2D9CF] pb-2 overflow-x-auto">
+        {[
+          { id: 'all', label: 'All Settings', icon: Sliders },
+          { id: 'profile', label: 'Creator Profile', icon: User },
+          { id: 'timezone', label: 'Timezone & Posting', icon: Globe },
+          { id: 'automations', label: 'Automation Defaults', icon: Zap },
+          { id: 'security', label: 'Security & Auth', icon: Shield },
+        ].map((tab) => {
+          const isActive = activeSettingsTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveSettingsTab(tab.id as any)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 shrink-0 ${
+                isActive
+                  ? 'bg-[#E05A2B] text-white shadow-xs'
+                  : 'bg-white hover:bg-[#FAF8F5] text-[#64748B] border border-[#E2D9CF]'
+              }`}
+            >
+              <tab.icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
         {/* 1. Creator Profile & Avatar Section */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'profile') && (
         <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center font-bold">
@@ -394,8 +431,10 @@ export default function ProfileSettingsView() {
             />
           </div>
         </div>
+        )}
 
         {/* 2. Automation & Dispatch Defaults */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'automations') && (
         <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] text-[#1877F2] border border-[#BFDBFE] flex items-center justify-center font-bold">
@@ -475,8 +514,10 @@ export default function ProfileSettingsView() {
             </div>
           </div>
         </div>
+        )}
 
         {/* 3. Notifications & Timezone */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'timezone') && (
         <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] flex items-center justify-center font-bold">
@@ -645,8 +686,10 @@ export default function ProfileSettingsView() {
             </div>
           </div>
         </div>
+        )}
 
         {/* 4. Security & Authentication */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'security') && (
         <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-neutral-100 text-neutral-800 flex items-center justify-center font-bold">
@@ -676,6 +719,7 @@ export default function ProfileSettingsView() {
             </button>
           </div>
         </div>
+        )}
 
         {/* Save Bar */}
         <div className="flex items-center justify-end space-x-3 pt-2">
