@@ -46,6 +46,7 @@ import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
 import AiAutoPostStudio from './components/AiAutoPostStudio';
+import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
@@ -1232,11 +1233,11 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 4: AI AUTO-POST STUDIO
+              VIEW 4: AI CONTENT STUDIO & AUTOMATION
              ========================================================= */}
           {currentTab === 'ai-autopilot' && (
             <div className="animate-fade-in">
-              <AiAutoPostStudio onSchedulePost={handleSavePost} />
+              <AiContentStudio onSchedulePost={handleSavePost} />
             </div>
           )}
 

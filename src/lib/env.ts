@@ -10,6 +10,9 @@ const requiredEnvVars = [
 
 const optionalEnvVars = [
   'DATABASE_URL',
+  'GEMINI_API_KEY',
+  'GEMINI_TEXT_MODEL',
+  'GEMINI_IMAGE_MODEL',
   'OPENAI_API_KEY',
   'ENCRYPTION_KEY',
   'NEXT_PUBLIC_APP_URL',
@@ -55,7 +58,12 @@ export const env = {
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   databaseUrl: process.env.DATABASE_URL,
 
-  // OpenAI
+  // Google Gemini AI
+  geminiApiKey: process.env.GEMINI_API_KEY,
+  geminiTextModel: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
+  geminiImageModel: process.env.GEMINI_IMAGE_MODEL || 'imagen-3.0-generate-002',
+
+  // OpenAI (fallback/optional)
   openaiApiKey: process.env.OPENAI_API_KEY,
 
   // Encryption

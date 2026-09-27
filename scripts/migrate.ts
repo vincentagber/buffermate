@@ -29,7 +29,8 @@ async function runMigrations() {
 
     const migrationFiles = [
       'migrations/init.sql',
-      'migrations/002_socialflow_automations.sql'
+      'migrations/002_socialflow_automations.sql',
+      'migrations/003_buffermate_ai_content_and_campaigns.sql'
     ];
 
     for (const file of migrationFiles) {

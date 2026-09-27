@@ -51,6 +51,16 @@ export default function ProfileSettingsView() {
   const [soundEffects, setSoundEffects] = useState(true);
   const [leadNotifications, setLeadNotifications] = useState(true);
 
+  // AI Content Generator Preferences
+  const [defaultLanguage, setDefaultLanguage] = useState('English');
+  const [defaultContentLength, setDefaultContentLength] = useState<'short' | 'medium' | 'long'>('medium');
+  const [defaultCta, setDefaultCta] = useState('Drop a comment below or DM "SCALE" for the blueprint!');
+  const [targetAudience, setTargetAudience] = useState('Business owners, founders, and creators');
+  const [brandKeywords, setBrandKeywords] = useState('growth, automation, lead conversion, ROI');
+  const [wordsToAvoid, setWordsToAvoid] = useState('cheap, freebie, guarantee, spam');
+  const [preferredHashtags, setPreferredHashtags] = useState('#buffermate, #growth, #automation, #socialmarketing');
+  const [defaultPlatforms, setDefaultPlatforms] = useState<string[]>(['facebook', 'instagram', 'linkedin', 'x', 'tiktok']);
+
   // Subscription state
   const [currentPlan, setCurrentPlan] = useState<'free' | 'pro' | 'agency'>('pro');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
@@ -686,6 +696,125 @@ export default function ProfileSettingsView() {
                 <option value="500">500 DMs / day (High-Volume Scale)</option>
                 <option value="1000">1,000 DMs / day (Enterprise VIP)</option>
               </select>
+            </div>
+          </div>
+        </div>
+        )}
+
+        {/* 2.5 Google Gemini AI Content & Brand Preferences */}
+        {(activeSettingsTab === 'all' || activeSettingsTab === 'automations') && (
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
+          <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
+            <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center font-bold">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-[#1E293B]">Google Gemini AI Content & Brand Guidelines</h2>
+              <p className="text-xs text-[#64748B]">
+                Configure AI generation defaults, tone, prohibited terms, and brand voice across all social channels.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Default Language
+              </label>
+              <select
+                value={defaultLanguage}
+                onChange={(e) => setDefaultLanguage(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+              >
+                <option value="English">English</option>
+                <option value="Pidgin English">Pidgin English</option>
+                <option value="French">French</option>
+                <option value="Spanish">Spanish</option>
+                <option value="German">German</option>
+                <option value="Yoruba">Yoruba</option>
+                <option value="Hausa">Hausa</option>
+                <option value="Igbo">Igbo</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Default Content Length
+              </label>
+              <select
+                value={defaultContentLength}
+                onChange={(e) => setDefaultContentLength(e.target.value as any)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+              >
+                <option value="short">Short & Punchy (Under 150 words)</option>
+                <option value="medium">Medium Form (150 - 300 words)</option>
+                <option value="long">Long Form & Thought Leadership (300+ words)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Target Audience Persona
+              </label>
+              <input
+                type="text"
+                value={targetAudience}
+                onChange={(e) => setTargetAudience(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                placeholder="e.g. Small business owners, marketing managers"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Default Call-To-Action (CTA)
+              </label>
+              <input
+                type="text"
+                value={defaultCta}
+                onChange={(e) => setDefaultCta(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                placeholder="e.g. Drop a comment below to get the link!"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Brand Keywords (Always Include)
+              </label>
+              <input
+                type="text"
+                value={brandKeywords}
+                onChange={(e) => setBrandKeywords(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                placeholder="growth, automation, lead conversion, ROI"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Words to Avoid (Negative Filter)
+              </label>
+              <input
+                type="text"
+                value={wordsToAvoid}
+                onChange={(e) => setWordsToAvoid(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                placeholder="cheap, freebie, guaranteed, spam"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+                Preferred Brand Hashtags
+              </label>
+              <input
+                type="text"
+                value={preferredHashtags}
+                onChange={(e) => setPreferredHashtags(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7]"
+                placeholder="#buffermate, #growth, #automation, #digitalmarketing"
+              />
             </div>
           </div>
         </div>
