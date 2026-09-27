@@ -3,71 +3,62 @@ import { createServerClient } from "@supabase/ssr";
 
 /**
  * Middleware for handling authentication and session management
- * Redirects unauthenticated users to login
+ * Ensures proper JWT verification and prevents HTML redirects on API routes
  */
 export async function middleware(request: NextRequest) {
   try {
-    // Create an unmodified response
     let response = NextResponse.next({
       request: {
         headers: request.headers,
       },
     });
 
-    // Create a Supabase client with the request context
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              request.cookies.set(name, value);
-            });
-            response = NextResponse.next({
-              request,
-            });
-            cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options);
-            });
-          },
-        },
-      }
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey =
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-    // Refresh session if needed
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    // Get the pathname
-    const { pathname } = request.nextUrl;
-
-    // Public routes that don't require authentication
-    const publicRoutes = ["/", "/login", "/signup"];
-    const isPublicRoute = publicRoutes.includes(pathname);
-
-    // Protected routes
-    const isProtectedRoute = pathname.startsWith("/dashboard") || pathname.startsWith("/api/");
-
-    // Redirect logic
-    if (!session && isProtectedRoute) {
-      // Redirect to login if accessing protected route without session
-      return NextResponse.redirect(new URL("/login", request.url));
+    if (!supabaseUrl || !supabaseKey) {
+      return response;
     }
 
-    if (session && (pathname === "/login" || pathname === "/signup")) {
-      // Redirect to dashboard if already authenticated and accessing auth pages
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
+          });
+          response = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options);
+          });
+        },
+      },
+    });
+
+    // Validate JWT token with Supabase Auth server securely
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { pathname } = request.nextUrl;
+
+    // Public auth routes
+    const isAuthPage = pathname === "/login" || pathname === "/signup";
+
+    // Redirect authenticated users away from login/signup to dashboard
+    if (user && isAuthPage) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
     return response;
   } catch (error) {
-    console.error("Middleware error:", error);
-    // Continue anyway on error
+    console.error("Middleware auth error:", error);
     return NextResponse.next({
       request: {
         headers: request.headers,
@@ -76,16 +67,8 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-// Configure which routes use this middleware
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };

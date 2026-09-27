@@ -24,7 +24,7 @@ export async function GET(request: Request) {
         let expiresAt = new Date();
         let providerUserId = '';
 
-        const supportedProviders = ['mock', 'x', 'twitter', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram'];
+        const supportedProviders = ['mock', 'x', 'twitter', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram', 'threads', 'whatsapp'];
         if (supportedProviders.includes(provider.toLowerCase())) {
             accessToken = `access_token_${provider}_` + Date.now();
             refreshToken = `refresh_token_${provider}_` + Date.now();
@@ -34,9 +34,11 @@ export async function GET(request: Request) {
                 x: '@buffermate_ai',
                 twitter: '@buffermate_ai',
                 linkedin: 'buffermate-company',
-                facebook: 'BuffermatePage',
-                instagram: 'buffermate.official',
-                tiktok: '@buffermate_tok',
+                facebook: 'SocialFlow Facebook Page',
+                instagram: '@socialflow.official',
+                tiktok: '@socialflow_tok',
+                threads: '@socialflow.threads',
+                whatsapp: '+1 (555) 019-2834',
                 youtube: 'BuffermateChannel',
             };
             providerUserId = handleMap[provider.toLowerCase()] || `${provider}_creator`;

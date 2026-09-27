@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
         const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
 
-        if (['mock', 'x', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram'].includes(provider)) {
+        if (['mock', 'x', 'twitter', 'linkedin', 'facebook', 'youtube', 'tiktok', 'instagram', 'threads', 'whatsapp'].includes(provider.toLowerCase())) {
             return NextResponse.json({ url: `${origin}/api/social/callback?code=mock_code&provider=${provider}` });
         }
 
