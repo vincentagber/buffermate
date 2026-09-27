@@ -34,8 +34,8 @@ export class TikTokProvider implements SocialProvider {
     if (accessToken.startsWith('oauth_token_tiktok') || accessToken.length > 20) {
       return {
         valid: true,
-        username: '@socialflow_tok',
-        displayName: 'SocialFlow TikTok Business',
+        username: '@buffermate_tok',
+        displayName: 'BufferMate TikTok Business',
         openId: 'tt_usr_902189410',
       };
     }
@@ -62,7 +62,7 @@ export class TikTokProvider implements SocialProvider {
     }
 
     const publishId = `v_pub_file_${Date.now()}`;
-    const liveVideoUrl = `https://www.tiktok.com/@socialflow_tok/video/${Date.now().toString().slice(0, 10)}${Math.floor(1000 + Math.random() * 9000)}`;
+    const liveVideoUrl = `https://www.tiktok.com/@buffermate_tok/video/${Date.now().toString().slice(0, 10)}${Math.floor(1000 + Math.random() * 9000)}`;
 
     return {
       id: publishId,

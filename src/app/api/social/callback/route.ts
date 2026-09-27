@@ -20,12 +20,12 @@ export async function GET(request: Request) {
     const handleMap: Record<string, string> = {
       x: '@agber120',
       twitter: '@agber120',
-      facebook: 'SocialFlow Growth Page',
-      instagram: '@socialflow.official',
-      tiktok: '@socialflow_tok',
-      threads: '@socialflow.threads',
+      facebook: 'BufferMate Growth Page',
+      instagram: '@buffermate.official',
+      tiktok: '@buffermate_tok',
+      threads: '@buffermate.threads',
       whatsapp: '+1 (555) 019-2834',
-      youtube: 'BuffermateChannel',
+      youtube: 'BufferMateChannel',
       linkedin: 'buffermate-company',
     };
 
@@ -60,7 +60,7 @@ export async function GET(request: Request) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connection Authorized | SocialFlow</title>
+  <title>Connection Authorized | BufferMate</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -139,7 +139,7 @@ export async function GET(request: Request) {
     <div class="icon-badge">✨</div>
     <h2>${provider.toUpperCase()} Connected!</h2>
     <div class="account-pill">${providerUserId}</div>
-    <p>Authentication handshake verified. Synchronizing with your SocialFlow dashboard in real-time...</p>
+    <p>Authentication handshake verified. Synchronizing with your BufferMate dashboard in real-time...</p>
     <div class="spinner"></div>
   </div>
 

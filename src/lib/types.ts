@@ -1,5 +1,5 @@
 /**
- * Common TypeScript types and interfaces used throughout SocialFlow / Buffermate
+ * Common TypeScript types and interfaces used throughout BufferMate
  */
 
 export type SocialChannel = 'instagram' | 'tiktok' | 'facebook' | 'threads' | 'whatsapp' | 'x' | 'twitter' | 'linkedin';

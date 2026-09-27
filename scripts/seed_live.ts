@@ -104,7 +104,7 @@ const INITIAL_AUTOMATIONS = [
     trigger_type: 'dm_received',
     keywords: ['hello', 'hi', 'pricing', 'support'],
     reply_comment: '',
-    dm_message: 'Hello! Thank you for contacting SocialFlow support. A representative will be with you shortly.',
+    dm_message: 'Hello! Thank you for contacting BufferMate support. A representative will be with you shortly.',
     link_url: 'https://buffermate.ai/support',
     status: 'active',
     runs_today: 15,

@@ -74,19 +74,19 @@ export default function AccountsPage() {
         } else {
           // Initialize default connected accounts state
           setAccounts([
-            { id: 'acc-ig', provider: 'instagram', username: '@socialflow.official' },
-            { id: 'acc-tt', provider: 'tiktok', username: '@socialflow_tok' },
-            { id: 'acc-fb', provider: 'facebook', username: 'SocialFlow Growth Page' },
-            { id: 'acc-th', provider: 'threads', username: '@socialflow.official' },
+            { id: 'acc-ig', provider: 'instagram', username: '@buffermate.official' },
+            { id: 'acc-tt', provider: 'tiktok', username: '@buffermate_tok' },
+            { id: 'acc-fb', provider: 'facebook', username: 'BufferMate Growth Page' },
+            { id: 'acc-th', provider: 'threads', username: '@buffermate.official' },
             { id: 'acc-wa', provider: 'whatsapp', username: '+1 (555) 019-2834' },
           ]);
         }
       } else {
         setAccounts([
-          { id: 'acc-ig', provider: 'instagram', username: '@socialflow.official' },
-          { id: 'acc-tt', provider: 'tiktok', username: '@socialflow_tok' },
-          { id: 'acc-fb', provider: 'facebook', username: 'SocialFlow Growth Page' },
-          { id: 'acc-th', provider: 'threads', username: '@socialflow.official' },
+          { id: 'acc-ig', provider: 'instagram', username: '@buffermate.official' },
+          { id: 'acc-tt', provider: 'tiktok', username: '@buffermate_tok' },
+          { id: 'acc-fb', provider: 'facebook', username: 'BufferMate Growth Page' },
+          { id: 'acc-th', provider: 'threads', username: '@buffermate.official' },
           { id: 'acc-wa', provider: 'whatsapp', username: '+1 (555) 019-2834' },
         ]);
       }

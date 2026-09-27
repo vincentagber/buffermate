@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         }
       }
 
-      const activeProfile = matchedAccount?.provider_user_id || (provider === 'x' ? '@agber120' : 'SocialFlow');
+      const activeProfile = matchedAccount?.provider_user_id || (provider === 'x' ? '@agber120' : 'BufferMate');
 
       try {
         const result = await socialManager.publish(

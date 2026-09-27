@@ -40,7 +40,7 @@ import {
   Square,
   Check
 } from 'lucide-react';
-import Sidebar, { SocialFlowLogo } from './components/Sidebar';
+import Sidebar, { BufferMateLogo } from './components/Sidebar';
 import Header from './components/Header';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';

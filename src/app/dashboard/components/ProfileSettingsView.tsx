@@ -33,18 +33,18 @@ export default function ProfileSettingsView() {
   // Profile fields
   const [fullName, setFullName] = useState('Alex Morgan');
   const [handle, setHandle] = useState('alexmorgan');
-  const [email, setEmail] = useState('alex@socialflow.studio');
+  const [email, setEmail] = useState('alex@buffermate.ai');
   const [phone, setPhone] = useState('+1 (555) 234-5678');
   const [bio, setBio] = useState('Founder & Social Growth Strategist. Automating high-converting DM funnels across IG, TikTok & Threads.');
   const [niche, setNiche] = useState('Creator & Growth Strategist');
-  const [businessName, setBusinessName] = useState('SocialFlow Media LLC');
+  const [businessName, setBusinessName] = useState('BufferMate Media LLC');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   // Automation & Preference fields
   const [timezone, setTimezone] = useState('Africa/Lagos (UTC+1)');
   const [defaultDelay, setDefaultDelay] = useState('instant');
-  const [defaultLink, setDefaultLink] = useState('https://socialflow.studio/special-offer');
+  const [defaultLink, setDefaultLink] = useState('https://buffermate.ai/special-offer');
   const [dmRateLimit, setDmRateLimit] = useState('250');
   const [aiTone, setAiTone] = useState('viral');
   const [emailAlerts, setEmailAlerts] = useState(true);
@@ -71,7 +71,7 @@ export default function ProfileSettingsView() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          setEmail(user.email || 'alex@socialflow.studio');
+          setEmail(user.email || 'alex@buffermate.ai');
           const meta = user.user_metadata || {};
           if (meta.name) setFullName(meta.name);
           if (meta.handle) setHandle(meta.handle);
@@ -86,7 +86,7 @@ export default function ProfileSettingsView() {
           if (meta.ai_tone) setAiTone(meta.ai_tone);
         } else {
           // Check local storage for persistent profile in demo mode
-          const cached = localStorage.getItem('socialflow_user_profile');
+          const cached = localStorage.getItem('buffermate_user_profile') || localStorage.getItem('socialflow_user_profile');
           if (cached) {
             try {
               const data = JSON.parse(cached);
@@ -165,7 +165,7 @@ export default function ProfileSettingsView() {
       });
 
       // 2. Cache in localStorage for immediate sync across views
-      localStorage.setItem('socialflow_user_profile', JSON.stringify({
+      localStorage.setItem('buffermate_user_profile', JSON.stringify({
         fullName,
         handle,
         phone,
@@ -570,7 +570,7 @@ export default function ProfileSettingsView() {
                 value={businessName}
                 onChange={(e) => setBusinessName(e.target.value)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B]"
-                placeholder="SocialFlow Media"
+                placeholder="BufferMate Media"
               />
             </div>
 

@@ -57,7 +57,7 @@ export default function IntegrationsView() {
   // Lead funnel modal state
   const [keywordFilterInput, setKeywordFilterInput] = useState('price, link, deal, info, guide');
   const [funnelDmMessage, setFunnelDmMessage] = useState(
-    'Hey! Here is your exclusive 20% access link: https://socialflow.studio/special-deal 🚀'
+    'Hey! Here is your exclusive 20% access link: https://buffermate.ai/special-deal 🚀'
   );
 
   // Toast notifications
@@ -966,7 +966,7 @@ export default function IntegrationsView() {
                   type="text"
                   value={customHandleInput}
                   onChange={(e) => setCustomHandleInput(e.target.value)}
-                  placeholder={selectedChannelForConnect.provider === 'x' ? 'https://x.com/agber120 or @agber120' : selectedChannelForConnect.activeProfile || '@socialflow.official'}
+                  placeholder={selectedChannelForConnect.provider === 'x' ? 'https://x.com/agber120 or @agber120' : selectedChannelForConnect.activeProfile || '@buffermate.official'}
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B]"
                 />
@@ -1169,8 +1169,8 @@ export default function IntegrationsView() {
                               features: ['Live Feed Publishing', 'Auto Comment Replies', 'Instant DMs'],
                               autoCommentReply: false,
                               leadCaptureFunnel: false,
-                              webhookUrl: `https://socialflow.studio/api/webhooks/${item.provider}`,
-                              verifyToken: `sf_verify_${item.provider}_${Date.now()}`,
+                              webhookUrl: `https://buffermate.ai/api/webhooks/${item.provider}`,
+                              verifyToken: `bm_verify_${item.provider}_${Date.now()}`,
                               subscribedEvents: ['messages', 'feed_comments', 'mentions'],
                               lastSyncedAt: new Date().toISOString(),
                               latencyMs: 25,

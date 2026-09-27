@@ -32,7 +32,7 @@ export class InstagramProvider implements SocialProvider {
 
     return {
       valid: true,
-      username: '@socialflow.official',
+      username: '@buffermate.official',
       igUserId: '17841405309211844',
     };
   }
@@ -54,7 +54,7 @@ export class InstagramProvider implements SocialProvider {
 
     const token = accessToken || process.env.INSTAGRAM_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     const igUserId = options?.igUserId || process.env.INSTAGRAM_ACCOUNT_ID || '17841405309211844';
-    const username = options?.igUsername?.replace('@', '') || 'socialflow.official';
+    const username = options?.igUsername?.replace('@', '') || 'buffermate.official';
 
     if (token && token.length > 30 && !token.startsWith('access_token_') && !token.startsWith('oauth_token_')) {
       try {

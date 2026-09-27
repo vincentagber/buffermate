@@ -15,7 +15,7 @@ export class ThreadsProvider implements SocialProvider {
     options?: { threadsUserId?: string; username?: string }
   ): Promise<ProviderResult> {
     const token = accessToken || process.env.THREADS_ACCESS_TOKEN;
-    const username = options?.username?.replace('@', '') || 'socialflow.threads';
+    const username = options?.username?.replace('@', '') || 'buffermate.threads';
 
     console.log(`[ThreadsProvider] Dispatching real-time Threads post for @${username}...`);
 

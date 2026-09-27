@@ -95,7 +95,7 @@ async function runIntegrationsTestSuite() {
   );
 
   // Restore Instagram for clean default state
-  integrationsManager.connectChannel('instagram', '@socialflow.official');
+  integrationsManager.connectChannel('instagram', '@buffermate.official');
   integrationsManager.disconnectChannel('x');
 
   const finalSummary = integrationsManager.getSummary();

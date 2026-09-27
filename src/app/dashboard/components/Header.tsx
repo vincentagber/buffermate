@@ -16,7 +16,7 @@ import {
   PanelLeftOpen,
   Settings,
 } from 'lucide-react';
-import { SocialFlowLogo } from './Sidebar';
+import { BufferMateLogo } from './Sidebar';
 import { createClient } from '@/lib/supabase/client';
 
 interface HeaderProps {
@@ -62,7 +62,7 @@ export default function Header({
           if (user.user_metadata.name) setActiveUserName(user.user_metadata.name);
           if (user.user_metadata.avatar_url) setAvatarUrl(user.user_metadata.avatar_url);
         } else {
-          const cached = localStorage.getItem('socialflow_user_profile');
+          const cached = localStorage.getItem('buffermate_user_profile') || localStorage.getItem('socialflow_user_profile');
           if (cached) {
             const parsed = JSON.parse(cached);
             if (parsed.fullName) setActiveUserName(parsed.fullName);
@@ -129,7 +129,7 @@ export default function Header({
 
         {/* Brand indicator on mobile */}
         <div className="md:hidden flex items-center space-x-2">
-          <SocialFlowLogo className="w-6 h-6" />
+          <BufferMateLogo className="w-6 h-6" />
         </div>
 
         {/* Sidebar Collapse Toggle Button (Desktop) */}

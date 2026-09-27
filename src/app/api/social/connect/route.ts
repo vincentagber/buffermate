@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ url, isPopup: true });
       }
       return NextResponse.json({
-        url: `${origin}/api/social/callback?code=fb_auth_live&provider=facebook&profile=${encodeURIComponent(cleanProfile || 'SocialFlow Growth Page')}`,
+        url: `${origin}/api/social/callback?code=fb_auth_live&provider=facebook&profile=${encodeURIComponent(cleanProfile || 'BufferMate Growth Page')}`,
         isPopup: true,
       });
     }
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ url, isPopup: true });
       }
       return NextResponse.json({
-        url: `${origin}/api/social/callback?code=ig_auth_live&provider=instagram&profile=${encodeURIComponent(cleanProfile || '@socialflow.official')}`,
+        url: `${origin}/api/social/callback?code=ig_auth_live&provider=instagram&profile=${encodeURIComponent(cleanProfile || '@buffermate.official')}`,
         isPopup: true,
       });
     }
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ url, isPopup: true });
       }
       return NextResponse.json({
-        url: `${origin}/api/social/callback?code=tok_auth_live&provider=tiktok&profile=${encodeURIComponent(cleanProfile || '@socialflow_tok')}`,
+        url: `${origin}/api/social/callback?code=tok_auth_live&provider=tiktok&profile=${encodeURIComponent(cleanProfile || '@buffermate_tok')}`,
         isPopup: true,
       });
     }

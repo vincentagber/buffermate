@@ -90,12 +90,12 @@ export default function PostSchedulerModal({
         setContent(data.data[0].content);
       } else {
         setContent(
-          `🚀 3 Simple automation strategies that saved our team 20+ hours this week:\n\n1. Instant keyword comment-to-DM triggers\n2. AI multi-channel post queuing\n3. 24/7 lead capture on autopilot\n\nDrop "PLAYBOOK" below to get our free step-by-step setup guide! 👇\n\n#socialflow #growthhacks #automation #marketingtools`
+          `🚀 3 Simple automation strategies that saved our team 20+ hours this week:\n\n1. Instant keyword comment-to-DM triggers\n2. AI multi-channel post queuing\n3. 24/7 lead capture on autopilot\n\nDrop "PLAYBOOK" below to get our free step-by-step setup guide! 👇\n\n#buffermate #growthhacks #automation #marketingtools`
         );
       }
     } catch (err) {
       setContent(
-        `🚀 3 Simple automation strategies that saved our team 20+ hours this week:\n\n1. Instant keyword comment-to-DM triggers\n2. AI multi-channel post queuing\n3. 24/7 lead capture on autopilot\n\nDrop "PLAYBOOK" below to get our free step-by-step setup guide! 👇\n\n#socialflow #growthhacks #automation #marketingtools`
+        `🚀 3 Simple automation strategies that saved our team 20+ hours this week:\n\n1. Instant keyword comment-to-DM triggers\n2. AI multi-channel post queuing\n3. 24/7 lead capture on autopilot\n\nDrop "PLAYBOOK" below to get our free step-by-step setup guide! 👇\n\n#buffermate #growthhacks #automation #marketingtools`
       );
     } finally {
       setIsAiGenerating(false);
@@ -443,7 +443,7 @@ export default function PostSchedulerModal({
                   <SocialPlatformIcon channel={activePreview} className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#1E293B]">socialflow.studio</p>
+                  <p className="text-xs font-bold text-[#1E293B]">buffermate.ai</p>
                   <p className="text-[10px] text-[#94A3B8] capitalize">{activePreview} post</p>
                 </div>
               </div>

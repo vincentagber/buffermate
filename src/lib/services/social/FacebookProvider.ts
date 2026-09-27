@@ -39,7 +39,7 @@ export class FacebookProvider implements SocialProvider {
           if (data?.id) {
             return {
               valid: true,
-              pageName: data.name || 'SocialFlow Growth Page',
+              pageName: data.name || 'BufferMate Growth Page',
               pageId: data.id,
             };
           }
@@ -51,7 +51,7 @@ export class FacebookProvider implements SocialProvider {
 
     return {
       valid: true,
-      pageName: 'SocialFlow Growth Page',
+      pageName: 'BufferMate Growth Page',
       pageId: '104928194829',
     };
   }

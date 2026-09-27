@@ -24,8 +24,8 @@ import {
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 
-// SocialFlow Brand Logo
-export function SocialFlowLogo({ className = "w-7 h-7" }: { className?: string }) {
+// BufferMate Brand Logo
+export function BufferMateLogo({ className = "w-7 h-7" }: { className?: string }) {
   return (
     <div className={`${className} bg-gradient-to-br from-[#F06535] to-[#E05A2B] rounded-xl flex items-center justify-center text-white shadow-sm shadow-orange-500/30 flex-shrink-0`}>
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -37,6 +37,9 @@ export function SocialFlowLogo({ className = "w-7 h-7" }: { className?: string }
     </div>
   );
 }
+
+// Backward-compatible alias
+export const SocialFlowLogo = BufferMateLogo;
 
 interface SidebarProps {
   currentTab?: string;
@@ -189,11 +192,11 @@ export default function Sidebar({
           className="flex items-center space-x-2.5 cursor-pointer overflow-hidden"
           onClick={() => handleItemClick('overview')}
         >
-          <SocialFlowLogo />
+          <BufferMateLogo />
           {!isCollapsed && (
             <div className="animate-fade-in">
               <div className="flex items-center space-x-1.5">
-                <span className="font-bold text-[15px] tracking-tight text-[#1E293B]">SocialFlow</span>
+                <span className="font-bold text-[15px] tracking-tight text-[#1E293B]">BufferMate</span>
               </div>
               <span className="text-[10px] font-semibold text-[#E05A2B] tracking-wider uppercase">AI STUDIO</span>
             </div>
