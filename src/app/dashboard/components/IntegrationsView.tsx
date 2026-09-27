@@ -842,7 +842,7 @@ export default function IntegrationsView() {
          ========================================================= */}
       {selectedChannelForConnect && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-[#F0E8DF] my-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
             {/* Header */}
             <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -854,7 +854,7 @@ export default function IntegrationsView() {
                     Connect {selectedChannelForConnect.name}
                   </h3>
                   <p className="text-xs text-[#64748B]">
-                    Authorize SocialFlow to manage automated comment replies & DMs.
+                    Link your live profile for real-time publishing, auto-replies, and DM funnels.
                   </p>
                 </div>
               </div>
@@ -870,33 +870,43 @@ export default function IntegrationsView() {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleConnectChannel(selectedChannelForConnect.provider, customHandleInput.trim());
+                let cleanHandle = customHandleInput.trim();
+                if (cleanHandle.includes('x.com/') || cleanHandle.includes('twitter.com/')) {
+                  const parts = cleanHandle.split('.com/')[1].split('/')[0].split('?')[0];
+                  cleanHandle = `@${parts}`;
+                } else if (!cleanHandle.startsWith('@') && selectedChannelForConnect.provider !== 'facebook' && selectedChannelForConnect.provider !== 'whatsapp') {
+                  cleanHandle = `@${cleanHandle}`;
+                }
+                handleConnectChannel(selectedChannelForConnect.provider, cleanHandle);
               }}
               className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1"
             >
               <div>
                 <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
-                  Account Handle or Business Page Name
+                  Profile URL, Handle or Page Name
                 </label>
                 <input
                   type="text"
                   value={customHandleInput}
                   onChange={(e) => setCustomHandleInput(e.target.value)}
-                  placeholder={selectedChannelForConnect.activeProfile || '@buffermate_ai'}
+                  placeholder={selectedChannelForConnect.provider === 'x' ? 'https://x.com/agber120 or @agber120' : selectedChannelForConnect.activeProfile || '@socialflow.official'}
                   required
                   className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B]"
                 />
+                <p className="text-[10px] text-[#94A3B8] mt-1">
+                  Example: <span className="font-mono text-[#E05A2B]">https://x.com/agber120</span> or <span className="font-mono text-[#E05A2B]">@agber120</span>
+                </p>
               </div>
 
               <div className="p-3.5 bg-[#FAF8F5] border border-[#F0E8DF] rounded-2xl space-y-2 text-xs text-[#475569]">
                 <p className="font-bold text-[#1E293B] flex items-center space-x-1.5">
                   <Lock className="w-3.5 h-3.5 text-[#E05A2B]" />
-                  <span>Permissions Requested:</span>
+                  <span>Real-Time Live Permissions:</span>
                 </p>
                 <ul className="list-disc pl-5 space-y-1 text-[11px] text-[#64748B]">
-                  <li>Read follower comments & mentions in real time</li>
-                  <li>Publish automated direct replies on keyword match</li>
-                  <li>Dispatch 1-on-1 private direct messages (DMs) with deal links</li>
+                  <li>Direct real-time posting to live feed & timeline</li>
+                  <li>Live comment keyword monitoring & auto-replies</li>
+                  <li>Instant private DM dispatch upon keyword trigger</li>
                 </ul>
               </div>
 
@@ -914,7 +924,7 @@ export default function IntegrationsView() {
                   className="px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1.5"
                 >
                   {isSyncing ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                  <span>{isSyncing ? 'Connecting...' : 'Authorize & Connect Channel'}</span>
+                  <span>{isSyncing ? 'Authorizing...' : 'Authorize & Connect Live'}</span>
                 </button>
               </div>
             </form>

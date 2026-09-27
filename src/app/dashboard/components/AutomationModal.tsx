@@ -114,7 +114,7 @@ export default function AutomationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-[#F0E8DF] my-auto">
+      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
           <div className="flex items-center space-x-3">

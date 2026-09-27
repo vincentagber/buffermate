@@ -113,6 +113,19 @@ export default function PostSchedulerModal({
     };
 
     try {
+      if (isImmediate) {
+        // Dispatch directly to live social publisher (X / Facebook / IG / Threads)
+        await fetch('/api/social/publish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: postPayload.content,
+            channels: postPayload.channels,
+            attachments: imageUrl ? [imageUrl] : [],
+          }),
+        });
+      }
+
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -133,16 +146,17 @@ export default function PostSchedulerModal({
   };
 
   const allChannels: { id: SocialChannel; label: string }[] = [
+    { id: 'x', label: 'X (Twitter)' },
+    { id: 'facebook', label: 'Facebook' },
     { id: 'instagram', label: 'Instagram' },
     { id: 'tiktok', label: 'TikTok' },
-    { id: 'facebook', label: 'Facebook' },
     { id: 'threads', label: 'Threads' },
     { id: 'whatsapp', label: 'WhatsApp' },
   ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col md:flex-row shadow-2xl border border-[#F0E8DF] overflow-hidden my-auto">
+      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] flex flex-col md:flex-row shadow-2xl border-2 border-dashed border-[#CBD5E1] overflow-hidden my-auto">
         {/* Left Form */}
         <div className="p-4 sm:p-6 md:w-3/5 space-y-4 sm:space-y-5 border-b md:border-b-0 md:border-r border-[#F5EFE8] overflow-y-auto flex-1">
           <div className="flex items-center justify-between">
