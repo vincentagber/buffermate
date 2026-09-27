@@ -404,7 +404,7 @@ export default function AnalyticsPage() {
             {/* Key Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {data.metrics.map((metric, i) => (
-                    <div key={i} id={`metric-card-${i}`} className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                    <div key={i} id={`metric-card-${i}`} className="bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm">
                         <div className="flex items-center justify-between mb-4">
                             <div className="p-2 bg-slate-50 rounded-lg text-slate-500">
                                 <metric.icon className="w-5 h-5" />
@@ -437,7 +437,7 @@ export default function AnalyticsPage() {
 
             {/* Charts & Top Posts */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="lg:col-span-2 bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm flex flex-col justify-between">
                     <div>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
                             <div>
@@ -589,7 +589,7 @@ export default function AnalyticsPage() {
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm flex flex-col justify-between">
                     <div>
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="font-bold text-slate-900">Top Performing Posts</h3>

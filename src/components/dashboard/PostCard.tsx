@@ -126,7 +126,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     };
 
     return (
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
+        <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
             <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2.5 mb-3">

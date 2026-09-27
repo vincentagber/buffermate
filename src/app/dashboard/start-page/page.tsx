@@ -12,7 +12,7 @@ export default function StartPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Link href="/dashboard/composer" className="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+                <Link href="/dashboard/composer" className="group bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
                     <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600 mb-4 group-hover:scale-110 transition-transform">
                         <Plus className="w-6 h-6" />
                     </div>
@@ -20,7 +20,7 @@ export default function StartPage() {
                     <p className="text-sm text-slate-500">Draft a new post or use AI to generate content ideas.</p>
                 </Link>
 
-                <Link href="/dashboard/composer" className="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all">
+                <Link href="/dashboard/composer" className="group bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm hover:shadow-md hover:border-purple-200 transition-all">
                     <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center text-purple-600 mb-4 group-hover:scale-110 transition-transform">
                         <Zap className="w-6 h-6" />
                     </div>
@@ -28,7 +28,7 @@ export default function StartPage() {
                     <p className="text-sm text-slate-500">Let AI brainstorm your next viral campaign.</p>
                 </Link>
 
-                <Link href="/dashboard" className="group bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+                <Link href="/dashboard" className="group bg-white p-6 rounded-xl border-2 border-dashed border-[#CBD5E1] shadow-sm hover:shadow-md hover:border-green-200 transition-all">
                     <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-green-600 mb-4 group-hover:scale-110 transition-transform">
                         <Layout className="w-6 h-6" />
                     </div>

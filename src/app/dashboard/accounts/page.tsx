@@ -170,9 +170,9 @@ export default function AccountsPage() {
                         return (
                             <div
                                 key={provider.id}
-                                className={`group relative bg-white border rounded-2xl p-5 sm:p-6 transition-all duration-200 ${connected
+                                className={`group relative bg-white border-2 border-dashed rounded-2xl p-5 sm:p-6 transition-all duration-200 ${connected
                                         ? 'border-emerald-300 shadow-sm ring-1 ring-emerald-100'
-                                        : 'border-[#F0E8DF] shadow-xs hover:shadow-md hover:border-[#FED7AA]'
+                                        : 'border-[#CBD5E1] shadow-xs hover:shadow-md hover:border-[#FED7AA]'
                                     }`}
                             >
                                 <div className="flex items-start justify-between mb-4">
@@ -229,7 +229,7 @@ export default function AccountsPage() {
                 </div>
             )}
 
-            <div className="mt-8 bg-white border border-[#F0E8DF] rounded-2xl p-4 sm:p-5 flex items-start shadow-xs">
+            <div className="mt-8 bg-white border-2 border-dashed border-[#CBD5E1] rounded-2xl p-4 sm:p-5 flex items-start shadow-xs">
                 <AlertCircle className="w-5 h-5 text-[#E05A2B] mt-0.5 mr-3 shrink-0" />
                 <div>
                     <h4 className="text-xs sm:text-sm font-bold text-slate-900">About Permissions & Security</h4>

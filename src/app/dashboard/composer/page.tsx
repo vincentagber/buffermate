@@ -715,7 +715,7 @@ export default function ComposerPage() {
                     )}
 
                     {/* Account Selector */}
-                    <div className="bg-white border border-slate-200 rounded-lg p-3 shadow-xs shrink-0">
+                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg p-3 shadow-xs shrink-0">
                         <div className="flex items-center gap-2 overflow-x-auto pb-1">
                             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2 shrink-0">Post to:</span>
                             {accounts.length > 0 ? (
@@ -744,7 +744,7 @@ export default function ComposerPage() {
 
                     {/* Editor */}
                     {mode === 'text' ? (
-                        <div className="bg-white border border-slate-200 rounded-lg shadow-xs flex flex-col flex-1 min-h-0">
+                        <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg shadow-xs flex flex-col flex-1 min-h-0">
                             {/* Toolbar */}
                             <div className="p-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/60 rounded-t-lg">
                                 <div className="flex items-center space-x-1">
@@ -900,7 +900,7 @@ export default function ComposerPage() {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white border border-slate-200 rounded-lg shadow-xs flex flex-col flex-1 min-h-0 overflow-hidden">
+                        <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg shadow-xs flex flex-col flex-1 min-h-0 overflow-hidden">
                             {/* Stepper */}
                             <div className="flex border-b border-slate-100 bg-slate-50/50">
                                 {[1, 2, 3].map((step) => (
@@ -1031,7 +1031,7 @@ export default function ComposerPage() {
                     )}
 
                     {/* Scheduling & Actions */}
-                    <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-xs shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg p-4 shadow-xs shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div className="flex items-center w-full sm:w-auto bg-slate-50 rounded-md border border-slate-200 px-3 py-2">
                             <CalendarIcon className="w-4 h-4 text-slate-400 mr-3" />
                             <input

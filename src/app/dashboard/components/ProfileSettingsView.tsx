@@ -219,7 +219,7 @@ export default function ProfileSettingsView() {
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
         {/* 1. Creator Profile & Avatar Section */}
-        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-[#F0E8DF] shadow-xs space-y-6">
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center font-bold">
               <User className="w-5 h-5" />
@@ -396,7 +396,7 @@ export default function ProfileSettingsView() {
         </div>
 
         {/* 2. Automation & Dispatch Defaults */}
-        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-[#F0E8DF] shadow-xs space-y-6">
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#EFF6FF] text-[#1877F2] border border-[#BFDBFE] flex items-center justify-center font-bold">
               <Zap className="w-5 h-5" />
@@ -477,7 +477,7 @@ export default function ProfileSettingsView() {
         </div>
 
         {/* 3. Notifications & Timezone */}
-        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-[#F0E8DF] shadow-xs space-y-4">
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] flex items-center justify-center font-bold">
               <Bell className="w-5 h-5" />
@@ -552,7 +552,7 @@ export default function ProfileSettingsView() {
         </div>
 
         {/* 4. Security & Authentication */}
-        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-[#F0E8DF] shadow-xs space-y-4">
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
           <div className="flex items-center space-x-3 pb-4 border-b border-[#F5EFE8]">
             <div className="w-10 h-10 rounded-2xl bg-neutral-100 text-neutral-800 flex items-center justify-center font-bold">
               <Shield className="w-5 h-5" />

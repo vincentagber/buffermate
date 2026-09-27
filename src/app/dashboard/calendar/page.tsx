@@ -46,7 +46,7 @@ export default async function CalendarPage() {
                             <h3 className="text-lg font-bold mb-4">{date}</h3>
                             <div className="grid gap-4">
                                 {dayPosts.map((post: any) => (
-                                    <div key={post.id} className="bg-background border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-all group">
+                                    <div key={post.id} className="bg-background border-2 border-dashed border-[#CBD5E1] rounded-xl p-5 shadow-sm hover:shadow-md transition-all group">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center text-xs text-muted-foreground mb-2">

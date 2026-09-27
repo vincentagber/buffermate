@@ -127,7 +127,7 @@ export default function AiAutoPostStudio({ onSchedulePost }: AiAutoPostStudioPro
       )}
 
       {/* Auto-Pilot Banner */}
-      <div className="bg-gradient-to-br from-[#FFF7ED] via-[#FFFBF7] to-[#FEF3E2] border border-[#FED7AA] rounded-3xl p-4 sm:p-6 shadow-sm">
+      <div className="bg-gradient-to-br from-[#FFF7ED] via-[#FFFBF7] to-[#FEF3E2] border-2 border-dashed border-[#FED7AA] rounded-3xl p-4 sm:p-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1.5 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
@@ -218,7 +218,7 @@ export default function AiAutoPostStudio({ onSchedulePost }: AiAutoPostStudioPro
       </div>
 
       {/* AI Suggestion Generator Form */}
-      <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#F0E8DF] shadow-xs space-y-3.5">
+      <div className="bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-sm sm:text-base font-bold text-[#1E293B]">OpenAI Viral Post Generator</h3>
@@ -258,7 +258,7 @@ export default function AiAutoPostStudio({ onSchedulePost }: AiAutoPostStudioPro
           {suggestions.map((sug) => (
             <div
               key={sug.id}
-              className="bg-white rounded-3xl border border-[#F0E8DF] hover:border-[#FED7AA] p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3.5"
+              className="bg-white rounded-3xl border-2 border-dashed border-[#CBD5E1] hover:border-[#FED7AA] p-4 sm:p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-3.5"
             >
               <div className="space-y-2.5">
                 {/* Meta Header */}

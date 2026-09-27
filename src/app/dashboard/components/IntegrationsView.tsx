@@ -402,10 +402,10 @@ export default function IntegrationsView() {
             <div
               key={channel.id}
               id={`channel-card-${channel.provider}`}
-              className={`rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-xs ${
+              className={`rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-xs border-2 border-dashed ${
                 isConnected
-                  ? 'bg-white border border-[#F0E8DF] hover:border-[#FED7AA] hover:shadow-md'
-                  : 'bg-[#FAF8F5]/70 border-2 border-dashed border-[#CBD5E1] opacity-90'
+                  ? 'bg-white border-[#CBD5E1] hover:border-[#FED7AA] hover:shadow-md'
+                  : 'bg-[#FAF8F5]/70 border-[#CBD5E1] opacity-90'
               }`}
             >
               <div className="space-y-3.5">

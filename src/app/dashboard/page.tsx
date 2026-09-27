@@ -392,7 +392,7 @@ export default function DashboardPage() {
               {/* 5 Channel Cards Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
                 {/* 1. Instagram */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2.5">
@@ -438,7 +438,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 2. TikTok */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2.5">
@@ -484,7 +484,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 3. Facebook */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2.5">
@@ -530,7 +530,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 4. Threads */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2.5">
@@ -576,7 +576,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 5. WhatsApp */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between mb-2 sm:mb-3">
                       <div className="flex items-center space-x-2.5">
@@ -626,7 +626,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                 
                 {/* Left Column: Active Multi-Channel Automations List */}
-                <div className="lg:col-span-8 bg-white rounded-3xl p-4 sm:p-6 border border-[#F0E8DF] shadow-xs space-y-4">
+                <div className="lg:col-span-8 bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#F5EFE8]">
                     <div>
                       <div className="flex items-center space-x-2">
@@ -742,7 +742,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Right Column: Live Activity Stream */}
-                <div className="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-6 border border-[#F0E8DF] shadow-xs space-y-4 flex flex-col justify-between">
+                <div className="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4 flex flex-col justify-between">
                   <div>
                     <div className="pb-3 border-b border-[#F5EFE8]">
                       <div className="flex items-center justify-between">
@@ -879,7 +879,7 @@ export default function DashboardPage() {
               {/* 8 Stat KPI Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
                 {/* 1. Total Contacts */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       TOTAL CONTACTS
@@ -895,7 +895,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 2. Messages Sent Today */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       MESSAGES SENT TODAY
@@ -914,7 +914,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 3. Active Automations */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       ACTIVE AUTOMATIONS
@@ -930,7 +930,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 4. Response Rate */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       RESPONSE RATE
@@ -949,7 +949,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 5. Leads Captured Today */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       LEADS CAPTURED TODAY
@@ -968,7 +968,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 6. Lead Pages */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       LEAD PAGES
@@ -984,7 +984,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 7. Workflows */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       WORKFLOWS
@@ -1000,7 +1000,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 8. Social Channels */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs space-y-2.5">
+                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
                       SOCIAL CHANNELS
@@ -1046,7 +1046,7 @@ export default function DashboardPage() {
                 {posts.map((post) => (
                   <div
                     key={post.id}
-                    className="bg-white rounded-3xl p-4 sm:p-5 border border-[#F0E8DF] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between space-y-3.5"
+                    className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between space-y-3.5"
                   >
                     <div className="space-y-2.5">
                       <div className="flex items-center justify-between">
@@ -1135,7 +1135,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Table of Leads with responsive horizontal scrolling */}
-              <div className="bg-white rounded-3xl border border-[#F0E8DF] shadow-xs overflow-hidden">
+              <div className="bg-white rounded-3xl border-2 border-dashed border-[#CBD5E1] shadow-xs overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[640px]">
                     <thead className="bg-[#FAF7F2] text-[#64748B] font-bold uppercase tracking-wider border-b border-[#F0E8DF]">
@@ -1221,7 +1221,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Filtered list for this specific channel */}
-              <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#F0E8DF] shadow-xs space-y-4">
+              <div className="bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
                 <div className="divide-y divide-[#F5EFE8]">
                   {automations
                     .filter((a) => a.channel === currentTab)
