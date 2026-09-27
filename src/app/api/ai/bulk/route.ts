@@ -3,16 +3,12 @@ import { NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/ai/gemini';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
-  }
-
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const body = await request.json();
     const {
       campaignName = 'Automated Campaign',
@@ -46,91 +42,93 @@ export async function POST(request: Request) {
 
     let campaignId: string | null = null;
 
-    // Save Campaign to database
-    try {
-      const { data: campaignRecord } = await supabase
-        .from('campaigns')
-        .insert({
-          user_id: user.id,
-          name: campaignName,
-          topic: topic,
-          target_audience: targetAudience,
-          tone: tone,
-          platforms: platforms,
-          duration_days: durationDays,
-          frequency: frequency,
-          start_date: startDate,
-          preferred_time: preferredTime,
-          status: 'ACTIVE',
-        })
-        .select('id')
-        .single();
+    // Save Campaign to database if user is logged in
+    if (user) {
+      try {
+        const { data: campaignRecord } = await supabase
+          .from('campaigns')
+          .insert({
+            user_id: user.id,
+            name: campaignName,
+            topic: topic,
+            target_audience: targetAudience,
+            tone: tone,
+            platforms: platforms,
+            duration_days: durationDays,
+            frequency: frequency,
+            start_date: startDate,
+            preferred_time: preferredTime,
+            status: 'ACTIVE',
+          })
+          .select('id')
+          .single();
 
-      if (campaignRecord) {
-        campaignId = campaignRecord.id;
+        if (campaignRecord) {
+          campaignId = campaignRecord.id;
 
-        // Save each post
-        for (const post of campaignResult.posts) {
-          const scheduledIso = `${post.scheduledDate}T${post.scheduledTime}:00Z`;
+          // Save each post
+          for (const post of campaignResult.posts) {
+            const scheduledIso = `${post.scheduledDate}T${post.scheduledTime}:00Z`;
 
-          // Insert into contents table
-          const { data: contentRecord } = await supabase
-            .from('contents')
-            .insert({
-              user_id: user.id,
-              campaign_id: campaignId,
-              title: post.topicTitle,
-              topic: topic,
-              content: post.mainCaption,
-              hook: post.hook,
-              call_to_action: post.callToAction,
-              hashtags: post.hashtags,
-              content_type: 'bulk_campaign',
-              tone: tone,
-              image_prompt: post.imagePrompt,
-              ai_model: campaignResult.aiModel,
-              status: autoSchedule ? 'SCHEDULED' : 'READY',
-            })
-            .select('id')
-            .single();
+            // Insert into contents table
+            const { data: contentRecord } = await supabase
+              .from('contents')
+              .insert({
+                user_id: user.id,
+                campaign_id: campaignId,
+                title: post.topicTitle,
+                topic: topic,
+                content: post.mainCaption,
+                hook: post.hook,
+                call_to_action: post.callToAction,
+                hashtags: post.hashtags,
+                content_type: 'bulk_campaign',
+                tone: tone,
+                image_prompt: post.imagePrompt,
+                ai_model: campaignResult.aiModel,
+                status: autoSchedule ? 'SCHEDULED' : 'READY',
+              })
+              .select('id')
+              .single();
 
-          if (contentRecord) {
-            // Save platform variants
-            const variantInserts = Object.entries(post.platformVariants).map(([pKey, cap]) => ({
-              content_id: contentRecord.id,
-              platform: pKey,
-              caption: cap,
-              hook: post.hook,
-              body: cap,
-              call_to_action: post.callToAction,
-              hashtags: post.hashtags,
-              character_count: cap.length,
-              status: autoSchedule ? 'SCHEDULED' : 'READY',
-            }));
+            if (contentRecord) {
+              // Save platform variants
+              const variantInserts = Object.entries(post.platformVariants).map(([pKey, cap]) => ({
+                content_id: contentRecord.id,
+                platform: pKey,
+                caption: cap,
+                hook: post.hook,
+                body: cap,
+                call_to_action: post.callToAction,
+                hashtags: post.hashtags,
+                character_count: cap.length,
+                status: autoSchedule ? 'SCHEDULED' : 'READY',
+              }));
 
-            if (variantInserts.length > 0) {
-              await supabase.from('content_variants').insert(variantInserts);
-            }
+              if (variantInserts.length > 0) {
+                await supabase.from('content_variants').insert(variantInserts);
+              }
 
-            // If autoSchedule is selected, create scheduled_posts rows
-            if (autoSchedule && socialAccountIds.length > 0) {
-              for (const accId of socialAccountIds) {
-                await supabase.from('scheduled_posts').insert({
-                  user_id: user.id,
-                  content_id: contentRecord.id,
-                  campaign_id: campaignId,
-                  social_account_id: accId,
-                  platform: platforms[0] || 'facebook',
-                  scheduled_for: scheduledIso,
-                  status: 'QUEUED',
-                });
+              // If autoSchedule is selected, create scheduled_posts rows
+              if (autoSchedule && socialAccountIds.length > 0) {
+                for (const accId of socialAccountIds) {
+                  await supabase.from('scheduled_posts').insert({
+                    user_id: user.id,
+                    content_id: contentRecord.id,
+                    campaign_id: campaignId,
+                    social_account_id: accId,
+                    platform: platforms[0] || 'facebook',
+                    scheduled_for: scheduledIso,
+                    status: 'QUEUED',
+                  });
+                }
               }
             }
           }
         }
+      } catch (dbErr) {
+        console.warn('[api/ai/bulk] DB Save notice:', dbErr);
       }
-    } catch (dbErr) {
-      console.warn('[api/ai/bulk] DB Save notice:', dbErr);
     }
 
     return NextResponse.json({

@@ -1,17 +1,7 @@
-import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/ai/gemini';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
-  }
-
   try {
     const body = await request.json();
     const { topic, targetAudience, count = 5, platform = 'all' } = body;

@@ -3,16 +3,12 @@ import { NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/ai/gemini';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
-  }
-
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const body = await request.json();
     const {
       topic,
@@ -53,8 +49,8 @@ export async function POST(request: Request) {
 
     let savedContentId: string | null = null;
 
-    // Persist to contents and content_variants tables if enabled
-    if (autoSave) {
+    // Persist to contents and content_variants tables if user is logged in
+    if (user && autoSave) {
       try {
         const { data: contentRecord, error: contentError } = await supabase
           .from('contents')

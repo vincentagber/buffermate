@@ -199,7 +199,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
   };
 
   // 1. Generate Full Social Post with Gemini
-  const handleGeneratePost = async () => {
+  const handleGeneratePost = async (): Promise<GeneratedPostData | null> => {
     setIsGeneratingPost(true);
     try {
       const res = await fetch('/api/ai/social-post', {
@@ -222,26 +222,36 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
 
       const json = await res.json();
       if (json.success && json.data) {
-        setGeneratedData(json.data);
-        setEditableCaption(json.data.mainCaption);
+        const postData = json.data;
+        setGeneratedData((prev) => ({
+          ...postData,
+          imageUrl: prev?.imageUrl || postData.imageUrl,
+        }));
+        
+        // Prefill the active platform or main caption immediately
+        const activeVariant = postData.platformVariants?.[activePreviewPlatform];
+        setEditableCaption(activeVariant?.caption || postData.mainCaption);
         setApprovalStatus('APPROVED');
-        showToast('Google Gemini generated your high-converting post and platform variants!');
+        showToast('Google Gemini generated your post and platform variants!');
+        return postData;
       } else {
         showToast('Generated post concepts.');
+        return null;
       }
     } catch (e: any) {
       console.error(e);
       showToast('Error generating content.');
+      return null;
     } finally {
       setIsGeneratingPost(false);
     }
   };
 
   // 2. Generate Image with Google Gemini/Imagen
-  const handleGenerateImage = async () => {
+  const handleGenerateImage = async (overridePrompt?: string): Promise<string | null> => {
     setIsGeneratingImage(true);
     try {
-      const promptToUse = generatedData?.imagePrompt || topic;
+      const promptToUse = overridePrompt || generatedData?.imagePrompt || topic;
       const res = await fetch('/api/ai/image', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -253,23 +263,92 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
       });
 
       const json = await res.json();
-      if (json.imageUrl || json.image_url) {
-        const url = json.imageUrl || json.image_url;
-        setGeneratedData((prev) => (prev ? { ...prev, imageUrl: url } : null));
+      const url = json.imageUrl || json.image_url;
+      if (url) {
+        setGeneratedData((prev) => (prev ? { ...prev, imageUrl: url, imagePrompt: promptToUse } : {
+          mainCaption: editableCaption,
+          hook: '',
+          body: '',
+          callToAction: '',
+          hashtags: [],
+          suggestedMedia: 'image',
+          imagePrompt: promptToUse,
+          imageUrl: url,
+          platformVariants: {},
+          aiModel: 'imagen-3.0-generate-002',
+        }));
         showToast('Google Gemini generated a high-resolution visual matching your post!');
+        return url;
       }
+      return null;
     } catch (e) {
       console.error(e);
       showToast('Image generation notice.');
+      return null;
     } finally {
       setIsGeneratingImage(false);
     }
   };
 
-  // 3. Generate Both
+  // 3. Generate Both in Real-Time
   const handleGenerateBoth = async () => {
-    await handleGeneratePost();
-    await handleGenerateImage();
+    setIsGeneratingPost(true);
+    setIsGeneratingImage(true);
+    try {
+      // Execute post generation and image generation in parallel
+      const postPromise = fetch('/api/ai/social-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic,
+          contentType,
+          targetAudience,
+          tone,
+          platform: selectedPlatforms[0] || 'all',
+          language,
+          desiredLength,
+          callToAction,
+          keywords: keywords.split(',').map((k) => k.trim()),
+          brandInfo: { name: brandName },
+          additionalInstructions,
+        }),
+      }).then((r) => r.json());
+
+      const imagePromise = fetch('/api/ai/image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: topic,
+          style: 'photorealistic',
+          aspectRatio: '1:1',
+        }),
+      }).then((r) => r.json());
+
+      const [postRes, imgRes] = await Promise.all([postPromise, imagePromise]);
+
+      const postData = postRes?.data;
+      const imageUrl = imgRes?.imageUrl || imgRes?.image_url;
+
+      if (postData) {
+        setGeneratedData({
+          ...postData,
+          imageUrl: imageUrl || postData.imageUrl,
+        });
+        const activeVariant = postData.platformVariants?.[activePreviewPlatform];
+        setEditableCaption(activeVariant?.caption || postData.mainCaption);
+        setApprovalStatus('APPROVED');
+      } else if (imageUrl) {
+        setGeneratedData((prev) => prev ? { ...prev, imageUrl } : null);
+      }
+
+      showToast('Google Gemini generated both your post and visual asset!');
+    } catch (e) {
+      console.error('Generate Both error:', e);
+      showToast('Error during combined generation.');
+    } finally {
+      setIsGeneratingPost(false);
+      setIsGeneratingImage(false);
+    }
   };
 
   // 4. Refine Content (Improve, Shorten, Expand, Change Tone, Translate)
@@ -571,7 +650,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
               <div className="grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  onClick={handleGeneratePost}
+                  onClick={() => handleGeneratePost()}
                   disabled={isGeneratingPost}
                   className="w-full py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] disabled:opacity-50 text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-2"
                 >
@@ -581,7 +660,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
 
                 <button
                   type="button"
-                  onClick={handleGenerateImage}
+                  onClick={() => handleGenerateImage()}
                   disabled={isGeneratingImage}
                   className="w-full py-2.5 bg-[#1E293B] hover:bg-black disabled:opacity-50 text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center space-x-2"
                 >
@@ -592,7 +671,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
 
               <button
                 type="button"
-                onClick={handleGenerateBoth}
+                onClick={() => handleGenerateBoth()}
                 disabled={isGeneratingPost || isGeneratingImage}
                 className="w-full py-2.5 bg-gradient-to-r from-[#E05A2B] via-[#EA580C] to-[#F97316] hover:brightness-105 disabled:opacity-50 text-white rounded-2xl text-xs font-black shadow-md shadow-orange-500/25 transition-all flex items-center justify-center space-x-2"
               >
@@ -726,7 +805,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
                       <span>AI Generated Media Asset</span>
                     </span>
                     <button
-                      onClick={handleGenerateImage}
+                      onClick={() => handleGenerateImage()}
                       disabled={isGeneratingImage}
                       className="text-[11px] text-[#E05A2B] hover:underline font-bold flex items-center space-x-1"
                     >

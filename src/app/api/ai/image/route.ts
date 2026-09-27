@@ -3,16 +3,12 @@ import { NextResponse } from 'next/server';
 import { GeminiService } from '@/lib/ai/gemini';
 
 export async function POST(request: Request) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
-  }
-
   try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
     const body = await request.json();
     const { prompt, style = 'photorealistic', aspectRatio = '1:1', contentId } = body;
 
@@ -26,8 +22,8 @@ export async function POST(request: Request) {
       aspectRatio,
     });
 
-    // Update content record if contentId provided
-    if (contentId) {
+    // Update content record if user is authenticated and contentId provided
+    if (user && contentId) {
       try {
         await supabase
           .from('contents')
@@ -43,16 +39,18 @@ export async function POST(request: Request) {
       }
     }
 
-    // Log AI generation
-    try {
-      await supabase.from('ai_generations').insert({
-        user_id: user.id,
-        prompt: JSON.stringify({ prompt, style, aspectRatio, type: 'image' }),
-        model: result.model,
-        result: { image_url: result.imageUrl, prompt: result.prompt },
-      });
-    } catch (logErr) {
-      // Ignored if table not created
+    // Log AI generation if user logged in
+    if (user) {
+      try {
+        await supabase.from('ai_generations').insert({
+          user_id: user.id,
+          prompt: JSON.stringify({ prompt, style, aspectRatio, type: 'image' }),
+          model: result.model,
+          result: { image_url: result.imageUrl, prompt: result.prompt },
+        });
+      } catch (logErr) {
+        // Ignored
+      }
     }
 
     return NextResponse.json({
