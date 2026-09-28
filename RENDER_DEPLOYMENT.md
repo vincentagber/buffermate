@@ -54,11 +54,3 @@ If deploying as a standalone Web Service:
 | `SCHEDULER_MAX_CONCURRENT` | `25` | Concurrency limit for post processing |
 | `TIKTOK_CLIENT_KEY` | `awdvm98qc28kdjk5` | TikTok Developer Client Key |
 | `TIKTOK_CLIENT_SECRET` | `8czka5XteUDakK3jLRj4gSgcpsS90Gmo` | TikTok Developer Client Secret |
-
----
-
-## 🐳 Option 3: Docker Deployment
-
-Render also supports Docker deployments out of the box using our multi-stage [`Dockerfile`](./Dockerfile):
-- Select **Runtime: Docker** in Render.
-- Render will automatically build the optimized standalone Next.js container image.
