@@ -1,9 +1,8 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: "standalone",
   
-  // Enable React Strict Mode for development
+  // Enable React Strict Mode
   reactStrictMode: true,
   
   // Optimize images
@@ -26,7 +25,7 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Turbopack configuration (Next.js 16 default)
+  // Turbopack configuration (Next.js 16)
   turbopack: {
     resolveAlias: {
       "@": "./src",
