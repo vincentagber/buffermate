@@ -1,252 +1,412 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Zap, ArrowRight, Mail, Lock, Loader2, Github } from 'lucide-react';
+import {
+  Sparkles,
+  ArrowRight,
+  Mail,
+  Lock,
+  Loader2,
+  CheckCircle2,
+  Zap,
+  TrendingUp,
+  ShieldCheck,
+  Bot,
+  MessageCircle,
+  Clock,
+  Key,
+} from 'lucide-react';
 import { signInWithMagicLink } from '@/lib/magic-link';
-import { OAUTH_PROVIDERS, getOAuthConfig } from '@/lib/oauth-config';
+import { SocialPlatformIcon } from '@/components/SocialIcons';
 
-type AuthMethod = 'password' | 'magic-link' | 'oauth';
+type AuthMethod = 'password' | 'magic-link';
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [authMethod, setAuthMethod] = useState<AuthMethod>('password');
-    const [magicLinkSent, setMagicLinkSent] = useState(false);
-    const router = useRouter();
-    const supabase = createClient();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [authMethod, setAuthMethod] = useState<AuthMethod>('password');
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const router = useRouter();
+  const supabase = createClient();
 
-    const handlePasswordLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-        if (error) {
-            setError(error.message);
-            setLoading(false);
-        } else {
-            router.push('/dashboard');
-            router.refresh();
-        }
-    };
+    if (signInError) {
+      setError(signInError.message);
+      setLoading(false);
+    } else {
+      router.push('/dashboard');
+      router.refresh();
+    }
+  };
 
-    const handleMagicLink = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-        const result = await signInWithMagicLink(email);
-        setLoading(false);
+    const result = await signInWithMagicLink(email);
+    setLoading(false);
 
-        if (!result.success) {
-            setError(result.error || 'Failed to send magic link');
-        } else {
-            setMagicLinkSent(true);
-        }
-    };
+    if (!result.success) {
+      setError(result.error || 'Failed to send magic link');
+    } else {
+      setMagicLinkSent(true);
+    }
+  };
 
-    const handleOAuthSignIn = async (provider: 'google' | 'github') => {
-        setLoading(true);
-        setError(null);
+  const handleOAuthSignIn = async (provider: 'google' | 'github') => {
+    setLoading(true);
+    setError(null);
 
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider,
-            options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`,
-            },
-        });
+    const { error: oauthError } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000')}/auth/callback`,
+      },
+    });
 
-        if (error) {
-            setError(error.message);
-            setLoading(false);
-        }
-    };
+    if (oauthError) {
+      setError(oauthError.message);
+      setLoading(false);
+    }
+  };
 
+  const handleQuickDemoLogin = () => {
+    setEmail('alex@buffermate.ai');
+    setPassword('DemoPass2026!');
+  };
 
+  return (
+    <div className="min-h-screen bg-[#FAF7F2] font-sans antialiased text-[#1E293B] flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+      {/* Background ambient gradient blurs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#FED7AA]/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FFE4D6]/40 rounded-full blur-3xl pointer-events-none" />
 
-    return (
-        <div className="min-h-screen flex bg-white">
-            {/* Form */}
-            <div className="w-full flex items-center justify-center p-8">
-                <div className="w-full max-w-md space-y-8">
-                    <div className="text-center">
-                        <h2 className="font-heading text-3xl font-bold tracking-tight">Welcome back</h2>
-                        <p className="mt-2 text-muted-foreground">
-                            Enter your credentials to access your account
-                        </p>
-                    </div>
-
-                    <form className="mt-8 space-y-6" onSubmit={authMethod === 'password' ? handlePasswordLogin : handleMagicLink}>
-                        {!magicLinkSent ? (
-                            <>
-                                <div className="flex space-x-2 p-1 bg-muted rounded-lg">
-                                    <button
-                                        type="button"
-                                        onClick={() => setAuthMethod('password')}
-                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
-                                            authMethod === 'password'
-                                                ? 'bg-background text-foreground shadow-sm'
-                                                : 'text-muted-foreground hover:text-foreground'
-                                        }`}
-                                    >
-                                        Password
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setAuthMethod('magic-link')}
-                                        className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
-                                            authMethod === 'magic-link'
-                                                ? 'bg-background text-foreground shadow-sm'
-                                                : 'text-muted-foreground hover:text-foreground'
-                                        }`}
-                                    >
-                                        Magic Link
-                                    </button>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Mail className="h-5 w-5 text-muted-foreground" />
-                                        </div>
-                                        <input
-                                            id="email"
-                                            name="email"
-                                            type="email"
-                                            autoComplete="email"
-                                            required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            className="block w-full pl-10 pr-3 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all"
-                                            placeholder="name@example.com"
-                                        />
-                                    </div>
-                                    {authMethod === 'password' && (
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <Lock className="h-5 w-5 text-muted-foreground" />
-                                            </div>
-                                            <input
-                                                id="password"
-                                                name="password"
-                                                type="password"
-                                                autoComplete="current-password"
-                                                required={authMethod === 'password'}
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                className="block w-full pl-10 pr-3 py-3 border border-input rounded-lg bg-background focus:ring-2 focus:ring-primary focus:border-primary sm:text-sm transition-all"
-                                                placeholder="••••••••"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-
-                                {error && (
-                                    <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm font-medium animate-[fade-in_0.3s_ease-out]">
-                                        {error}
-                                    </div>
-                                )}
-
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-lg shadow-blue-600/20 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
-                                >
-                                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                                        <>
-                                            Sign In {authMethod === 'magic-link' ? 'with Magic Link' : ''}
-                                            {!loading && <ArrowRight className="ml-2 w-4 h-4" />}
-                                        </>
-                                    )}
-                                </button>
-                            </>
-                        ) : (
-                            <div className="space-y-4 text-center">
-                                <div className="p-4 rounded-lg bg-primary/10 text-primary">
-                                    <p className="font-medium">✓ Magic link sent!</p>
-                                    <p className="text-sm mt-1">Check your email for the sign-in link.</p>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setMagicLinkSent(false);
-                                        setEmail('');
-                                        setError(null);
-                                    }}
-                                    className="text-sm text-primary hover:text-primary/80 font-medium"
-                                >
-                                    Back to login
-                                </button>
-                            </div>
-                        )}
-                    </form>
-
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-input"></div>
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-background text-muted-foreground">Or continue with</span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <button
-                            type="button"
-                            onClick={() => handleOAuthSignIn('google')}
-                            disabled={loading}
-                            className="flex items-center justify-center py-3 px-4 border border-input rounded-lg hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                                <>
-                                    <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                                        <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                        <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                        <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                        <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                    </svg>
-                                    Google
-                                </>
-                            )}
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => handleOAuthSignIn('github')}
-                            disabled={loading}
-                            className="flex items-center justify-center py-3 px-4 border border-input rounded-lg hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                                <>
-                                    <Github className="w-5 h-5 mr-2" />
-                                    GitHub
-                                </>
-                            )}
-                        </button>
-                    </div>
-
-                    <p className="text-center text-sm text-muted-foreground">
-                        By clicking continue, you agree to our{' '}
-                        <Link href="#" className="font-medium text-primary hover:text-primary/80">
-                            Terms of Service
-                        </Link>{' '}
-                        and{' '}
-                        <Link href="#" className="font-medium text-primary hover:text-primary/80">
-                            Privacy Policy
-                        </Link>
-                        .
-                    </p>
+      {/* Main Glass/Dotted Container */}
+      <div className="w-full max-w-5xl bg-white/80 backdrop-blur-md rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-[#CBD5E1] shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 relative z-10">
+        
+        {/* Left Column: Interactive Login Form (6 Cols) */}
+        <div className="lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
+          <div className="space-y-6">
+            
+            {/* Brand Logo & Header */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#E05A2B] to-[#F97316] text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20">
+                  <Zap className="w-5 h-5 fill-current" />
                 </div>
+                <div className="flex items-baseline space-x-1.5">
+                  <span className="text-xl font-black tracking-tight text-[#1E293B]">BufferMate</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#E05A2B]" />
+                </div>
+              </div>
+
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#1E293B] mt-2">
+                  Welcome back
+                </h1>
+                <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+                  Enter your credentials to access your autonomous AI social growth suite.
+                </p>
+              </div>
             </div>
+
+            {/* Auth Method Segmented Pill Control */}
+            <div className="inline-flex w-full bg-[#F1E9DF] p-1.5 rounded-2xl border border-[#E8DFC9]">
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMethod('password');
+                  setError(null);
+                }}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center ${
+                  authMethod === 'password'
+                    ? 'bg-white text-[#E05A2B] shadow-xs'
+                    : 'text-[#64748B] hover:text-[#1E293B]'
+                }`}
+              >
+                Password Login
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthMethod('magic-link');
+                  setError(null);
+                }}
+                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center ${
+                  authMethod === 'magic-link'
+                    ? 'bg-white text-[#E05A2B] shadow-xs'
+                    : 'text-[#64748B] hover:text-[#1E293B]'
+                }`}
+              >
+                Magic Link
+              </button>
+            </div>
+
+            {/* Form */}
+            {!magicLinkSent ? (
+              <form onSubmit={authMethod === 'password' ? handlePasswordLogin : handleMagicLink} className="space-y-4">
+                {/* Email Input */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-[#334155] uppercase tracking-wider block">
+                    Work Email
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
+                      <Mail className="h-4 w-4" />
+                    </div>
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="alex@buffermate.ai"
+                      className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:bg-white focus:outline-hidden transition-all text-[#1E293B]"
+                    />
+                  </div>
+                </div>
+
+                {/* Password Input (If Password Method) */}
+                {authMethod === 'password' && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-[#334155] uppercase tracking-wider">
+                        Password
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleQuickDemoLogin}
+                        className="text-[11px] font-bold text-[#E05A2B] hover:underline flex items-center space-x-1"
+                      >
+                        <Key className="w-3 h-3" />
+                        <span>Fill Demo Login</span>
+                      </button>
+                    </div>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
+                        <Lock className="h-4 w-4" />
+                      </div>
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required={authMethod === 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:bg-white focus:outline-hidden transition-all text-[#1E293B]"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Error Banner */}
+                {error && (
+                  <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold animate-fade-in flex items-center space-x-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+
+                {/* Primary Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3.5 px-4 bg-[#E05A2B] hover:bg-[#C8491E] disabled:opacity-50 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span>{authMethod === 'password' ? 'Sign In to BufferMate' : 'Send Magic Sign-In Link'}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : (
+              /* Magic Link Sent State */
+              <div className="bg-[#FFF0E6] border border-[#FED7AA] rounded-2xl p-5 text-center space-y-3 animate-fade-in">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <h4 className="text-sm font-bold text-[#1E293B]">Magic Link Dispatched</h4>
+                <p className="text-xs text-[#64748B]">
+                  We sent a secure instant sign-in link to <span className="font-bold text-[#1E293B]">{email}</span>.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMagicLinkSent(false);
+                    setError(null);
+                  }}
+                  className="text-xs text-[#E05A2B] font-bold hover:underline"
+                >
+                  ← Back to standard login
+                </button>
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-[#E2D9CF]"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-3 bg-white text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            {/* Social OAuth Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => handleOAuthSignIn('google')}
+                disabled={loading}
+                className="flex items-center justify-center py-2.5 px-3 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2"
+              >
+                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span>Google</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleOAuthSignIn('github')}
+                disabled={loading}
+                className="flex items-center justify-center py-2.5 px-3 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2"
+              >
+                <svg className="w-4 h-4 fill-current shrink-0 text-[#1E293B]" viewBox="0 0 24 24">
+                  <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                </svg>
+                <span>GitHub</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Footer Terms & Signup link */}
+          <div className="space-y-3 pt-4 border-t border-[#F5EFE8] text-center">
+            <p className="text-xs text-[#64748B]">
+              Don&apos;t have an account yet?{' '}
+              <Link href="/signup" className="font-bold text-[#E05A2B] hover:underline">
+                Create Account
+              </Link>
+            </p>
+
+            <p className="text-[11px] text-[#94A3B8]">
+              By signing in, you agree to BufferMate&apos;s{' '}
+              <Link href="#" className="underline hover:text-[#1E293B]">Terms of Service</Link>
+              {' '}and{' '}
+              <Link href="#" className="underline hover:text-[#1E293B]">Privacy Policy</Link>.
+            </p>
+          </div>
         </div>
-    );
+
+        {/* Right Column: Visual Feature Showcase & Live Automation Preview (6 Cols) */}
+        <div className="hidden lg:flex lg:col-span-6 bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#1E293B] p-10 flex-col justify-between text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#E05A2B]/20 rounded-full blur-3xl pointer-events-none" />
+          
+          {/* Top Pill */}
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold text-[#FED7AA]">
+              <Sparkles className="w-3.5 h-3.5 text-[#E05A2B]" />
+              <span>Google Gemini AI Engine</span>
+            </div>
+
+            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              ● 24/7 Auto-Pilot
+            </span>
+          </div>
+
+          {/* Center Showcase Card */}
+          <div className="space-y-5 my-auto relative z-10">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black tracking-tight leading-snug">
+                Autonomous Social Selling & Multi-Channel Publishing
+              </h3>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Connect your social accounts to automatically turn comments into qualified DM leads and publish AI-tailored content on auto-pilot.
+              </p>
+            </div>
+
+            {/* Simulated Live Action Card */}
+            <div className="bg-slate-800/90 border-2 border-dashed border-slate-700 rounded-3xl p-5 shadow-lg space-y-3.5 backdrop-blur-md">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-700/80">
+                <div className="flex items-center space-x-2">
+                  <div className="w-7 h-7 rounded-lg bg-[#E05A2B] text-white flex items-center justify-center font-bold text-xs">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-white">Instant Keyword Auto-DM</h5>
+                    <p className="text-[10px] text-slate-400">Trigger: "SCALE" or "PRICE"</p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-800/60">
+                  ⚡ 2.4s Response
+                </span>
+              </div>
+
+              {/* Supported Platforms Strip */}
+              <div className="flex items-center justify-between text-[11px] text-slate-300">
+                <span className="font-semibold text-slate-400">Connected Channels:</span>
+                <div className="flex items-center space-x-1.5">
+                  {(['instagram', 'tiktok', 'facebook', 'threads', 'whatsapp'] as const).map((ch) => (
+                    <span key={ch} className="p-1.5 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center">
+                      <SocialPlatformIcon channel={ch} className="w-3.5 h-3.5" />
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Live Metric Row */}
+              <div className="grid grid-cols-2 gap-2.5 pt-2 border-t border-slate-700/80 text-xs">
+                <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/50">
+                  <span className="text-[10px] text-slate-400 block">Lead Velocity</span>
+                  <span className="text-sm font-black text-emerald-400">+391% Lift</span>
+                </div>
+                <div className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-700/50">
+                  <span className="text-[10px] text-slate-400 block">Content Output</span>
+                  <span className="text-sm font-black text-[#FED7AA]">30 Days in 1-Click</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Security / Trust Footer */}
+          <div className="flex items-center justify-between text-[11px] text-slate-400 pt-4 border-t border-slate-800 relative z-10">
+            <span className="flex items-center space-x-1">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>AES-256 Token Encryption</span>
+            </span>
+            <span>© 2026 BufferMate Inc.</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
 }
