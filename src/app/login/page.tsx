@@ -86,8 +86,8 @@ export default function LoginPage() {
   };
 
   const handleQuickDemoLogin = () => {
-    setEmail('alex@buffermate.ai');
-    setPassword('DemoPass2026!');
+    setEmail('demo@buffermate.app');
+    setPassword('Demo@12345');
   };
 
   return (
@@ -157,6 +157,26 @@ export default function LoginPage() {
               </button>
             </div>
 
+            {/* Demo Quick-Fill Pill Banner */}
+            <div className="bg-[#FFF7ED] border border-[#FED7AA] rounded-2xl p-3 flex items-center justify-between text-xs">
+              <div className="space-y-0.5">
+                <span className="font-bold text-[#E05A2B] flex items-center space-x-1 text-[11px]">
+                  <Key className="w-3 h-3" />
+                  <span>Demo Credentials</span>
+                </span>
+                <p className="text-[10px] text-[#475569] font-mono">
+                  demo@buffermate.app • Demo@12345
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleQuickDemoLogin}
+                className="px-3 py-1.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-[11px] font-bold shadow-xs transition-all cursor-pointer"
+              >
+                1-Click Fill
+              </button>
+            </div>
+
             {/* Form */}
             {!magicLinkSent ? (
               <form onSubmit={authMethod === 'password' ? handlePasswordLogin : handleMagicLink} className="space-y-4">
@@ -177,7 +197,7 @@ export default function LoginPage() {
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="alex@buffermate.ai"
+                      placeholder="demo@buffermate.app"
                       className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:bg-white focus:outline-hidden transition-all text-[#1E293B]"
                     />
                   </div>
