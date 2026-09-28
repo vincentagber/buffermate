@@ -1,0 +1,95 @@
+# ==============================================================================
+# BUFFERMATE RENDER BLUEPRINT CONFIGURATION
+# ==============================================================================
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. BUFFERMATE WEB APPLICATION (Next.js 16 Production Web Service)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: buffermate-web
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /login
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_TEXT_MODEL
+        value: gemini-2.5-flash
+      - key: GEMINI_IMAGE_MODEL
+        value: gemini-2.5-flash-image
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: AI_FORCE_MOCK
+        value: "false"
+      - key: TIKTOK_CLIENT_KEY
+        sync: false
+      - key: TIKTOK_CLIENT_SECRET
+        sync: false
+      - key: FACEBOOK_APP_ID
+        sync: false
+      - key: FACEBOOK_APP_SECRET
+        sync: false
+      - key: TWITTER_CLIENT_ID
+        sync: false
+      - key: TWITTER_CLIENT_SECRET
+        sync: false
+      - key: LINKEDIN_CLIENT_ID
+        sync: false
+      - key: LINKEDIN_CLIENT_SECRET
+        sync: false
+      - key: SCHEDULER_MAX_CONCURRENT
+        value: "25"
+
+  # ----------------------------------------------------------------------------
+  # 2. BUFFERMATE AUTO-PUBLISHING BACKGROUND WORKER (Optional Worker Service)
+  # ----------------------------------------------------------------------------
+  - type: worker
+    name: buffermate-worker
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm run worker
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        fromService:
+          type: web
+          name: buffermate-web
+          envVarKey: NEXT_PUBLIC_SUPABASE_URL
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        fromService:
+          type: web
+          name: buffermate-web
+          envVarKey: SUPABASE_SERVICE_ROLE_KEY
+      - key: ENCRYPTION_KEY
+        fromService:
+          type: web
+          name: buffermate-web
+          envVarKey: ENCRYPTION_KEY
+      - key: SCHEDULER_MAX_CONCURRENT
+        value: "25"

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3000 -H 0.0.0.0",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "eslint src",
     "test:integrations": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_integrations.ts",
     "test:social": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_social_connections.ts",
