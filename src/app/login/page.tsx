@@ -195,19 +195,9 @@ export default function LoginPage() {
             {/* Password Input (If Password Method) */}
             {authMethod === 'password' && (
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#334155] uppercase tracking-wider">
-                    Password
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleQuickDemoLogin}
-                    className="text-[11px] font-bold text-[#E05A2B] hover:underline flex items-center space-x-1"
-                  >
-                    <Key className="w-3 h-3" />
-                    <span>Fill Demo</span>
-                  </button>
-                </div>
+                <label className="text-xs font-bold text-[#334155] uppercase tracking-wider block">
+                  Password
+                </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
                     <Lock className="h-4 w-4" />
