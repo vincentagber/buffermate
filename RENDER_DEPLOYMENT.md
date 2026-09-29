@@ -39,7 +39,9 @@ If deploying as a standalone Web Service:
 | Key | Example Value | Description |
 | :--- | :--- | :--- |
 | `NODE_ENV` | `production` | Enables Next.js production optimizations |
-| `NEXT_PUBLIC_APP_URL` | `https://buffermate-web.onrender.com` | Your Render app URL or custom domain |
+| `NODE_OPTIONS` | `--max-http-header-size=131072` | **Critical**: Increases Node header buffer to 128KB to prevent HTTP 431 |
+| `BUN_OPTIONS` | `--max-http-header-size=131072` | Increases Bun header buffer to 128KB if running on Bun runtime |
+| `NEXT_PUBLIC_APP_URL` | `https://buffermate.onrender.com` | Your Render app URL or custom domain |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://sgsmadjmfwgvtbqrmbhw.supabase.co` | Supabase Project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGciOi...` | Supabase Public Anon Key |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`| `sb_publishable_...` | Supabase Publishable Key |
@@ -54,3 +56,22 @@ If deploying as a standalone Web Service:
 | `SCHEDULER_MAX_CONCURRENT` | `25` | Concurrency limit for post processing |
 | `TIKTOK_CLIENT_KEY` | `awdvm98qc28kdjk5` | TikTok Developer Client Key |
 | `TIKTOK_CLIENT_SECRET` | `8czka5XteUDakK3jLRj4gSgcpsS90Gmo` | TikTok Developer Client Secret |
+
+---
+
+## ⚠️ Troubleshooting HTTP ERROR 431 (Request Header Fields Too Large)
+
+If you see `HTTP ERROR 431` when visiting your deployed app:
+
+1. **Why it happens**:
+   - `*.onrender.com` is a shared public domain. Your browser may have accumulated over 16KB of cookies from previous sessions, OAuth handshakes, or other Render services.
+   - Node.js and Bun have a default maximum header limit of 16KB (16,384 bytes). When browser cookies exceed this limit, the server immediately returns HTTP 431.
+
+2. **Immediate Client Fix**:
+   - Open `https://buffermate.onrender.com/` in an **Incognito / Private Window** (which starts with clean cookies).
+   - Or clear cookies for `onrender.com` in your browser settings (**Settings** $\to$ **Privacy and Security** $\to$ **Cookies** $\to$ Search `onrender.com` $\to$ Delete).
+
+3. **Permanent Server Fix (Configured in this repo)**:
+   - `package.json` and `render.yaml` include `NODE_OPTIONS="--max-http-header-size=131072"` and `BUN_OPTIONS="--max-http-header-size=131072"`, raising the header limit to 128KB.
+   - In Render Dashboard under **Environment Variables**, make sure `NODE_OPTIONS` is set to `--max-http-header-size=131072`.
+

@@ -3,25 +3,25 @@ import { createServerClient } from "@supabase/ssr";
 
 /**
  * Middleware for handling authentication and session management
- * Ensures proper JWT verification and prevents HTML redirects on API routes
+ * Ensures proper JWT verification and prevents header bloat / cookie accumulation
  */
 export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    return response;
+  }
+
   try {
-    let response = NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
-
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey =
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-
-    if (!supabaseUrl || !supabaseKey) {
-      return response;
-    }
-
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll() {
@@ -53,22 +53,21 @@ export async function middleware(request: NextRequest) {
 
     // Redirect authenticated users away from login/signup to dashboard
     if (user && isAuthPage) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      const redirectResponse = NextResponse.redirect(new URL("/dashboard", request.url));
+      response.cookies.getAll().forEach((c) => {
+        redirectResponse.cookies.set(c);
+      });
+      return redirectResponse;
     }
-
-    return response;
   } catch (error) {
-    console.error("Middleware auth error:", error);
-    return NextResponse.next({
-      request: {
-        headers: request.headers,
-      },
-    });
+    console.warn("Middleware auth token refresh skipped:", error);
   }
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
