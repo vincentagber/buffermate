@@ -22,9 +22,19 @@ import {
     RotateCcw,
     Trash2,
     Cloud,
+    Clock,
+    Globe,
+    ExternalLink,
+    CheckSquare,
+    Square,
+    AlertCircle,
+    Layers,
+    Share2,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { PostPreview, PlatformType } from '@/components/dashboard/PostPreview';
+import { triggerConfetti } from '@/components/ui/Confetti';
+import { SocialPlatformIcon } from '@/components/SocialIcons';
 
 const QUICK_EMOJIS = ['🚀', '✨', '🔥', '💡', '📈', '👏', '🎯', '👇', '🎉', '❤️', '💼', '🧵'];
 
@@ -96,6 +106,26 @@ export default function ComposerPage() {
         source: string;
     } | null>(null);
 
+    // Live WAT clock (West Africa Time - UTC+1, Nigeria)
+    const [watTime, setWatTime] = useState<string>('');
+    const [publishResult, setPublishResult] = useState<{
+        isOpen: boolean;
+        isScheduled?: boolean;
+        scheduledTimeStr?: string;
+        success: boolean;
+        title: string;
+        message: string;
+        publishedCount: number;
+        results: Array<{
+            provider: string;
+            profile?: string;
+            status: 'success' | 'failed';
+            post_id?: string;
+            url?: string;
+            error?: string;
+        }>;
+    } | null>(null);
+
     // Refs for safe synchronous state tracking in debounced/interval/event handlers
     const initializedRef = useRef(false);
     const hasUnsavedRef = useRef(false);
@@ -109,35 +139,110 @@ export default function ComposerPage() {
     useEffect(() => {
         fetchAccounts();
         initDraft();
+
+        // 1. Live West Africa Time (WAT) Clock updater
+        const updateWatClock = () => {
+            try {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('en-US', {
+                    timeZone: 'Africa/Lagos',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true,
+                });
+                const dateStr = now.toLocaleDateString('en-US', {
+                    timeZone: 'Africa/Lagos',
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                });
+                setWatTime(`${timeStr} WAT (${dateStr})`);
+            } catch {
+                setWatTime(new Date().toLocaleTimeString() + ' WAT');
+            }
+        };
+        updateWatClock();
+        const watTimer = setInterval(updateWatClock, 1000);
+        return () => clearInterval(watTimer);
     }, []);
 
-    async function fetchAccounts() {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+    const applySchedulePreset = (minutesAhead: number) => {
+        const target = new Date(Date.now() + minutesAhead * 60000);
+        const year = target.getFullYear();
+        const month = String(target.getMonth() + 1).padStart(2, '0');
+        const day = String(target.getDate()).padStart(2, '0');
+        const hours = String(target.getHours()).padStart(2, '0');
+        const mins = String(target.getMinutes()).padStart(2, '0');
+        setScheduledAt(`${year}-${month}-${day}T${hours}:${mins}`);
+    };
 
-        if (user.user_metadata?.name) {
-            setUserName(user.user_metadata.name);
-            setUserHandle(user.user_metadata.name.toLowerCase().replace(/\s+/g, '_'));
-        } else if (user.email) {
-            const handle = user.email.split('@')[0];
-            setUserHandle(handle);
-            setUserName(handle.charAt(0).toUpperCase() + handle.slice(1));
+    const applyTonightPeakPreset = (targetHour = 20) => {
+        const target = new Date();
+        target.setHours(targetHour, 0, 0, 0);
+        if (target.getTime() <= Date.now()) {
+            target.setDate(target.getDate() + 1);
+        }
+        const year = target.getFullYear();
+        const month = String(target.getMonth() + 1).padStart(2, '0');
+        const day = String(target.getDate()).padStart(2, '0');
+        const hours = String(target.getHours()).padStart(2, '0');
+        const mins = String(target.getMinutes()).padStart(2, '0');
+        setScheduledAt(`${year}-${month}-${day}T${hours}:${mins}`);
+    };
+
+    const handleSelectAllAccounts = () => {
+        if (selectedAccounts.length === accounts.length) {
+            setSelectedAccounts([]);
+        } else {
+            setSelectedAccounts(accounts.map((a: any) => a.id));
+        }
+    };
+
+    async function fetchAccounts() {
+        let loadedAccounts: any[] = [];
+        try {
+            const res = await fetch('/api/social/accounts');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.accounts && data.accounts.length > 0) {
+                    loadedAccounts = data.accounts;
+                    setAccounts(data.accounts);
+                    setSelectedAccounts(data.accounts.map((a: any) => a.id));
+
+                    const xAcc = data.accounts.find((a: any) => a.provider === 'x');
+                    if (xAcc?.username) {
+                        setUserHandle(xAcc.username.replace('@', ''));
+                        setUserName('Vincent Agber');
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching accounts from API:', e);
         }
 
-        const { data } = await supabase.from('social_accounts').select('*').eq('user_id', user.id);
-        if (data && data.length > 0) {
-            setAccounts(data);
-            setSelectedAccounts(data.map((a: any) => a.id));
-        } else {
-            const fallbackAccounts = [
-                { id: 'acc-ig', provider: 'instagram', username: '@buffermate.official' },
-                { id: 'acc-x', provider: 'x', username: '@agber120' },
-                { id: 'acc-fb', provider: 'facebook', username: 'BufferMate Growth Page' },
-                { id: 'acc-li', provider: 'linkedin', username: 'Buffermate Professional Growth' },
-                { id: 'acc-tt', provider: 'tiktok', username: '@buffermate_tok' },
-            ];
-            setAccounts(fallbackAccounts);
-            setSelectedAccounts(fallbackAccounts.map((a) => a.id));
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                if (user.user_metadata?.name) {
+                    setUserName(user.user_metadata.name);
+                    setUserHandle(user.user_metadata.name.toLowerCase().replace(/\s+/g, '_'));
+                } else if (user.email) {
+                    const handle = user.email.split('@')[0];
+                    setUserHandle(handle);
+                    setUserName(handle.charAt(0).toUpperCase() + handle.slice(1));
+                }
+
+                if (loadedAccounts.length === 0) {
+                    const { data } = await supabase.from('social_accounts').select('*').eq('user_id', user.id);
+                    if (data && data.length > 0) {
+                        setAccounts(data);
+                        setSelectedAccounts(data.map((a: any) => a.id));
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn('Error fetching user auth in composer:', err);
         }
     }
 
@@ -533,7 +638,7 @@ export default function ComposerPage() {
                 body: JSON.stringify({
                     id: draftPostId || undefined,
                     content: postContent,
-                    scheduled_at: scheduledAt || new Date().toISOString(),
+                    scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : new Date().toISOString(),
                     social_account_ids: selectedAccounts,
                     attachments,
                     status: isImmediate ? 'posting' : 'scheduled',
@@ -542,7 +647,14 @@ export default function ComposerPage() {
 
             if (!res.ok) {
                 const data = await res.json();
-                alert('Error creating post: ' + data.error);
+                setPublishResult({
+                    isOpen: true,
+                    success: false,
+                    title: 'Database Error',
+                    message: data.error || 'Failed to save post to database',
+                    publishedCount: 0,
+                    results: [],
+                });
                 setLoading(false);
                 return;
             }
@@ -568,27 +680,65 @@ export default function ComposerPage() {
                     localStorage.removeItem(DRAFT_STORAGE_KEY);
                 } catch {}
 
-                if (pubData.success) {
-                    const successCount = (pubData.results || []).filter((r: any) => r.status === 'success').length;
-                    alert(`🚀 Published successfully to ${successCount} account${successCount === 1 ? '' : 's'}!`);
-                } else {
-                    alert(`⚠️ Post dispatched with issues: ${pubData.error || 'Check post history on Dashboard'}`);
+                const successCount = (pubData.results || []).filter((r: any) => r.status === 'success').length;
+
+                if (pubData.success || successCount > 0) {
+                    triggerConfetti();
                 }
 
-                router.push('/dashboard');
-                router.refresh();
+                setPublishResult({
+                    isOpen: true,
+                    isScheduled: false,
+                    success: pubData.success || successCount > 0,
+                    title: pubData.success ? '🚀 Published Live to Social Channels!' : '⚠️ Dispatch Completed with Warnings',
+                    message: pubData.success
+                        ? `Your post was published live to ${successCount} account${successCount === 1 ? '' : 's'}. Live on your accounts!`
+                        : (pubData.error || 'One or more accounts encountered issues.'),
+                    publishedCount: successCount,
+                    results: pubData.results || [],
+                });
                 return;
             } else {
                 try {
                     localStorage.removeItem(DRAFT_STORAGE_KEY);
                 } catch {}
-                alert(`📅 Post scheduled successfully for ${new Date(scheduledAt).toLocaleString()}`);
-                router.push('/dashboard');
-                router.refresh();
+
+                triggerConfetti();
+
+                const formattedTime = new Date(scheduledAt).toLocaleString('en-US', {
+                    timeZone: 'Africa/Lagos',
+                    dateStyle: 'full',
+                    timeStyle: 'short',
+                });
+
+                setPublishResult({
+                    isOpen: true,
+                    isScheduled: true,
+                    scheduledTimeStr: `${formattedTime} WAT (Nigerian Time)`,
+                    success: true,
+                    title: '📅 Post Scheduled in Nigerian Time (WAT)!',
+                    message: `Your post is queued and will automatically publish at ${formattedTime} WAT via the background worker.`,
+                    publishedCount: selectedAccounts.length,
+                    results: selectedAccounts.map(id => {
+                        const acc = accounts.find(a => a.id === id);
+                        return {
+                            provider: acc?.provider || 'social',
+                            profile: acc?.username || acc?.provider_user_id || 'Connected Account',
+                            status: 'success' as const,
+                        };
+                    }),
+                });
                 return;
             }
-        } catch (err) {
-            alert('Failed to process post');
+        } catch (err: any) {
+            setPublishResult({
+                isOpen: true,
+                success: false,
+                title: 'Publishing Error',
+                message: err.message || 'An unexpected network error occurred.',
+                publishedCount: 0,
+                results: [],
+            });
         } finally {
             setLoading(false);
         }
@@ -788,30 +938,69 @@ export default function ComposerPage() {
                         </div>
                     )}
 
-                    {/* Account Selector */}
-                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg p-3 shadow-xs shrink-0">
-                        <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2 shrink-0">Post to:</span>
+                    {/* Agency Multi-Channel Account Selector */}
+                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-2xl p-3 sm:p-4 shadow-xs shrink-0 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                                <span className="text-[11px] font-bold text-[#64748B] uppercase tracking-wider flex items-center">
+                                    <Share2 className="w-3.5 h-3.5 mr-1.5 text-[#E05A2B]" />
+                                    Publishing Channels
+                                </span>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
+                                    {selectedAccounts.length} of {accounts.length} active
+                                </span>
+                            </div>
+                            {accounts.length > 0 && (
+                                <div className="flex items-center space-x-1.5">
+                                    <button
+                                        type="button"
+                                        onClick={handleSelectAllAccounts}
+                                        className="text-[11px] font-semibold text-[#64748B] hover:text-[#1E293B] px-2 py-1 rounded-md hover:bg-slate-100 transition-colors"
+                                    >
+                                        {selectedAccounts.length === accounts.length ? 'Clear All' : 'Select All'}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 scrollbar-thin">
                             {accounts.length > 0 ? (
                                 accounts.map((acc) => {
                                     const isSelected = selectedAccounts.includes(acc.id);
+                                    const provider = (acc.provider || 'x').toLowerCase();
+                                    const username = acc.username || acc.provider_user_id || 'Connected';
                                     return (
                                         <button
                                             key={acc.id}
                                             onClick={() => toggleAccount(acc.id, acc.provider)}
-                                            className={`flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
+                                            className={`group flex items-center space-x-2 px-3 py-2 rounded-xl text-xs font-semibold border transition-all whitespace-nowrap ${
                                                 isSelected
-                                                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
-                                                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                                                    ? 'bg-[#1E293B] text-white border-[#1E293B] shadow-sm'
+                                                    : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#CBD5E1] hover:bg-slate-50'
                                             }`}
                                         >
-                                            {acc.provider === 'x' ? 'X (Twitter)' : acc.provider.toUpperCase()}
-                                            {isSelected && <Check className="w-3 h-3 ml-1.5" />}
+                                            <div className="relative flex items-center justify-center shrink-0">
+                                                <SocialPlatformIcon channel={provider} className="w-3.5 h-3.5" />
+                                                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-emerald-500 ring-1 ring-white" />
+                                            </div>
+                                            <div className="flex flex-col text-left">
+                                                <span className="leading-tight text-[11px] font-bold">
+                                                    {provider === 'x' ? 'X (Twitter)' : provider.charAt(0).toUpperCase() + provider.slice(1)}
+                                                </span>
+                                                <span className={`text-[10px] truncate max-w-[110px] ${isSelected ? 'text-slate-300' : 'text-[#94A3B8]'}`}>
+                                                    {username}
+                                                </span>
+                                            </div>
+                                            <div className={`w-4 h-4 rounded-md flex items-center justify-center border transition-colors ${
+                                                isSelected ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-300 bg-white'
+                                            }`}>
+                                                {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                            </div>
                                         </button>
                                     );
                                 })
                             ) : (
-                                <p className="text-xs text-slate-400 italic">No accounts connected</p>
+                                <p className="text-xs text-slate-400 italic">No connected accounts found. Connect on the Integrations page.</p>
                             )}
                         </div>
                     </div>
@@ -1104,66 +1293,132 @@ export default function ComposerPage() {
                         </div>
                     )}
 
-                    {/* Scheduling & Actions */}
-                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-lg p-4 shadow-xs shrink-0 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center w-full sm:w-auto bg-slate-50 rounded-md border border-slate-200 px-3 py-2">
-                            <CalendarIcon className="w-4 h-4 text-slate-400 mr-3" />
-                            <input
-                                type="datetime-local"
-                                value={scheduledAt}
-                                onChange={(e) => setScheduledAt(e.target.value)}
-                                className="bg-transparent text-sm focus:outline-none text-slate-700 w-full"
-                            />
+                    {/* Scheduling & Agency Actions Card */}
+                    <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-2xl p-4 sm:p-5 shadow-xs shrink-0 space-y-3.5">
+                        {/* Timezone & Clock Bar */}
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2 border-b border-slate-100">
+                            <div className="flex items-center space-x-2">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    🇳🇬 Nigerian Time (WAT / UTC+1)
+                                </span>
+                                <span className="text-[11px] font-semibold text-[#64748B] flex items-center">
+                                    <Clock className="w-3 h-3 mr-1 text-emerald-600" />
+                                    {watTime || 'Loading local time...'}
+                                </span>
+                            </div>
+                            {/* X 280-char counter */}
+                            <div className="flex items-center space-x-2 text-xs">
+                                <span className={`font-mono font-bold text-xs ${
+                                    content.length > 280 ? 'text-rose-600 animate-pulse' : content.length > 240 ? 'text-amber-600' : 'text-[#64748B]'
+                                }`}>
+                                    {content.length}/280 chars
+                                </span>
+                                {content.length > 280 && (
+                                    <span className="text-[10px] font-bold bg-rose-50 text-rose-700 px-1.5 py-0.5 rounded border border-rose-200">
+                                        Exceeds X limit
+                                    </span>
+                                )}
+                            </div>
                         </div>
-                        <div className="flex items-center space-x-2.5 w-full sm:w-auto justify-end">
-                            {scheduledAt && (
-                                <button
-                                    type="button"
-                                    onClick={() => setScheduledAt('')}
-                                    className="text-xs font-medium text-slate-500 hover:text-red-600 transition-colors px-1"
-                                >
-                                    Clear Time
-                                </button>
-                            )}
-                            {(content || videoTopic || imageUrl || generatedVideoUrl || draftPostId) && (
-                                <button
-                                    type="button"
-                                    onClick={handleDiscardDraft}
-                                    className="text-xs font-medium text-slate-500 hover:text-rose-600 flex items-center transition-colors px-2 py-1.5 rounded-md hover:bg-rose-50"
-                                    title="Discard current draft"
-                                >
-                                    <Trash2 className="w-3.5 h-3.5 mr-1" />
-                                    Discard
-                                </button>
-                            )}
+
+                        {/* Quick Presets Bar */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+                            <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider shrink-0 mr-1">Presets:</span>
                             <button
                                 type="button"
-                                onClick={handleManualSaveDraft}
-                                disabled={isSavingDraft || (!content && !videoTopic && !imageUrl && !generatedVideoUrl)}
-                                className="px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-md text-sm font-semibold flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
-                                title="Save as draft to finish later (Cmd/Ctrl + S)"
+                                onClick={() => applySchedulePreset(15)}
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-[#475569] transition-colors whitespace-nowrap"
                             >
-                                {isSavingDraft ? (
-                                    <Loader2 className="w-4 h-4 animate-spin mr-1.5 text-slate-600" />
-                                ) : (
-                                    <Save className="w-4 h-4 mr-1.5 text-slate-500" />
-                                )}
-                                Save Draft
+                                +15 Mins
                             </button>
                             <button
-                                onClick={handlePost}
-                                disabled={loading || (mode === 'text' ? (!content && !imageUrl) : !generatedVideoUrl)}
-                                className="flex-1 sm:flex-none btn-primary flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                                type="button"
+                                onClick={() => applySchedulePreset(60)}
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-[#475569] transition-colors whitespace-nowrap"
                             >
-                                {loading ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                    <>
-                                        <Send className="w-4 h-4 mr-2" />
-                                        {scheduledAt ? 'Schedule Post' : 'Post Now'}
-                                    </>
-                                )}
+                                +1 Hour
                             </button>
+                            <button
+                                type="button"
+                                onClick={() => applyTonightPeakPreset(20)}
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-[#FFF0E6] hover:bg-[#FFE0CE] text-[#E05A2B] border border-[#FED7AA] transition-colors whitespace-nowrap"
+                            >
+                                Tonight 8 PM (WAT Peak)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => applyTonightPeakPreset(9)}
+                                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-[#475569] transition-colors whitespace-nowrap"
+                            >
+                                Tomorrow 9 AM
+                            </button>
+                        </div>
+
+                        {/* Datetime Input & Primary Controls */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                            <div className="flex items-center w-full sm:w-auto bg-slate-50 rounded-xl border border-slate-200 px-3 py-2 shadow-2xs">
+                                <CalendarIcon className="w-4 h-4 text-emerald-600 mr-2.5 shrink-0" />
+                                <input
+                                    type="datetime-local"
+                                    value={scheduledAt}
+                                    onChange={(e) => setScheduledAt(e.target.value)}
+                                    className="bg-transparent text-xs font-semibold focus:outline-none text-[#1E293B] w-full"
+                                    title="Set scheduled time in West Africa Time (WAT)"
+                                />
+                                {scheduledAt && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setScheduledAt('')}
+                                        className="text-[11px] font-bold text-slate-400 hover:text-rose-600 transition-colors ml-2"
+                                    >
+                                        Clear
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                                {(content || videoTopic || imageUrl || generatedVideoUrl || draftPostId) && (
+                                    <button
+                                        type="button"
+                                        onClick={handleDiscardDraft}
+                                        className="text-xs font-medium text-slate-500 hover:text-rose-600 flex items-center transition-colors px-2 py-2 rounded-xl hover:bg-rose-50"
+                                        title="Discard current draft"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5 mr-1" />
+                                        Discard
+                                    </button>
+                                )}
+
+                                <button
+                                    type="button"
+                                    onClick={handleManualSaveDraft}
+                                    disabled={isSavingDraft || (!content && !videoTopic && !imageUrl && !generatedVideoUrl)}
+                                    className="px-3.5 py-2.5 border border-slate-200 hover:bg-slate-50 text-[#334155] rounded-xl text-xs font-bold flex items-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
+                                    title="Save as draft to finish later"
+                                >
+                                    {isSavingDraft ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5 text-slate-600" />
+                                    ) : (
+                                        <Save className="w-3.5 h-3.5 mr-1.5 text-slate-500" />
+                                    )}
+                                    Save Draft
+                                </button>
+
+                                <button
+                                    onClick={handlePost}
+                                    disabled={loading || (mode === 'text' ? (!content && !imageUrl) : !generatedVideoUrl)}
+                                    className="flex-1 sm:flex-none btn-primary px-5 py-2.5 rounded-xl font-bold text-xs flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all"
+                                >
+                                    {loading ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <>
+                                            <Send className="w-3.5 h-3.5 mr-2" />
+                                            {scheduledAt ? 'Schedule in WAT' : 'Post Now'}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1263,6 +1518,110 @@ export default function ComposerPage() {
                                     </ul>
                                 )}
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Real-Time Publishing / Scheduling Confirmation Modal */}
+            {publishResult?.isOpen && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in">
+                    <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-5 animate-slide-up">
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-center space-x-3">
+                                <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${
+                                    publishResult.success ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-rose-50 text-rose-600 border border-rose-200'
+                                }`}>
+                                    {publishResult.success ? <CheckCircle2 className="w-6 h-6" /> : <AlertCircle className="w-6 h-6" />}
+                                </div>
+                                <div>
+                                    <h3 className="font-heading text-lg font-bold text-[#1E293B]">{publishResult.title}</h3>
+                                    <p className="text-xs text-[#64748B] mt-0.5">{publishResult.message}</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setPublishResult(null)}
+                                className="p-1 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Scheduled time info if scheduled */}
+                        {publishResult.isScheduled && publishResult.scheduledTimeStr && (
+                            <div className="p-3 bg-emerald-50/80 rounded-2xl border border-emerald-200 text-xs text-emerald-900 space-y-1">
+                                <div className="font-bold flex items-center">
+                                    <Clock className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+                                    Queued for: {publishResult.scheduledTimeStr}
+                                </div>
+                                <p className="text-[11px] text-emerald-700">The Buffermate background worker daemon will dispatch automatically at this exact time.</p>
+                            </div>
+                        )}
+
+                        {/* Channel results with live links */}
+                        {publishResult.results && publishResult.results.length > 0 && (
+                            <div className="space-y-2">
+                                <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Dispatched Channel Status:</span>
+                                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                                    {publishResult.results.map((r, idx) => (
+                                        <div key={idx} className="flex items-center justify-between p-2.5 rounded-xl border border-slate-100 bg-slate-50 text-xs">
+                                            <div className="flex items-center space-x-2">
+                                                <SocialPlatformIcon channel={r.provider} className="w-4 h-4 shrink-0" />
+                                                <span className="font-bold text-[#1E293B] capitalize">{r.provider}</span>
+                                                <span className="text-slate-400 truncate max-w-[120px]">{r.profile}</span>
+                                            </div>
+                                            <div className="flex items-center space-x-2">
+                                                {r.status === 'success' ? (
+                                                    <span className="inline-flex items-center text-[10px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full">
+                                                        Published
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center text-[10px] font-bold text-rose-700 bg-rose-100/70 px-2 py-0.5 rounded-full" title={r.error}>
+                                                        Failed
+                                                    </span>
+                                                )}
+                                                {r.url && (
+                                                    <a
+                                                        href={r.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center text-[11px] font-bold text-[#E05A2B] hover:underline"
+                                                    >
+                                                        Live Post <ExternalLink className="w-3 h-3 ml-1" />
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Action buttons */}
+                        <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+                            <button
+                                onClick={() => {
+                                    setPublishResult(null);
+                                    setContent('');
+                                    setImageUrl('');
+                                    setGeneratedVideoUrl('');
+                                    setScheduledAt('');
+                                    setDraftPostId(null);
+                                }}
+                                className="px-4 py-2 rounded-xl text-xs font-bold text-[#64748B] hover:text-[#1E293B] hover:bg-slate-100 transition-colors"
+                            >
+                                Compose Another Post
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setPublishResult(null);
+                                    router.push('/dashboard');
+                                    router.refresh();
+                                }}
+                                className="btn-primary px-4 py-2 rounded-xl text-xs font-bold flex items-center shadow-sm"
+                            >
+                                Go to Dashboard
+                            </button>
                         </div>
                     </div>
                 </div>

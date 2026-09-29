@@ -33,12 +33,24 @@ export async function POST(request: Request) {
 
     // 2. X (Twitter) OAuth 2.0 PKCE URL
     if (provider.toLowerCase() === 'x' || provider.toLowerCase() === 'twitter') {
+      const { useEnvKeys } = body;
+      // If user chooses to connect using the pre-configured access token from .env
+      if (useEnvKeys && process.env.TWITTER_ACCESS_TOKEN) {
+        return NextResponse.json({
+          url: `${origin}/api/social/callback?code=x_auth_live&provider=x&profile=@agber120`,
+          isPopup: true,
+        });
+      }
+
       const twitterClientId = process.env.TWITTER_CLIENT_ID;
       if (twitterClientId) {
         const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
         const scope = encodeURIComponent('tweet.read tweet.write users.read offline.access');
-        const state = encodeURIComponent('x_auth_state');
-        const url = `https://twitter.com/i/oauth2/authorize?response_type=code&client_id=${twitterClientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&code_challenge=challenge&code_challenge_method=plain`;
+        const stateUserId = user?.id || 'primary_user';
+        const state = encodeURIComponent(`x:${stateUserId}`);
+        // RFC 7636 strictly requires code_challenge to be between 43 and 128 characters
+        const pkceChallenge = 'buffermate_pkce_challenge_verifier_secure_token_1234567890';
+        const url = `https://x.com/i/oauth2/authorize?response_type=code&client_id=${twitterClientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}&code_challenge=${pkceChallenge}&code_challenge_method=plain`;
         return NextResponse.json({ url, isPopup: true });
       }
       return NextResponse.json({

@@ -45,6 +45,9 @@ async function processPosts() {
     console.log(`Found ${posts.length} posts to process.`);
 
     for (const post of posts) {
+        if (post.provider_results?.is_draft) {
+            continue;
+        }
         await processSinglePost(post);
     }
 }
@@ -141,8 +144,19 @@ async function processSinglePost(post: any) {
                         success: true,
                         response: result,
                     });
+
+                    await supabase.from('social_activity_stream').insert({
+                        user_id: post.user_id,
+                        event_type: 'post_published',
+                        channel: account.provider === 'twitter' ? 'x' : account.provider,
+                        title: `Scheduled post published to ${account.provider.toUpperCase()}`,
+                        description: (post.content || '').slice(0, 100) + ((post.content || '').length > 100 ? '...' : ''),
+                        user_handle: account.provider_user_id,
+                        post_reference: result.id,
+                        metadata: { url: result.url, provider: account.provider },
+                    });
                 } catch (logErr) {
-                    console.warn('Failed to insert post_attempt:', logErr);
+                    console.warn('Failed to insert post_attempt or stream:', logErr);
                 }
 
             } catch (err: any) {

@@ -54,6 +54,9 @@ export default function AccountsPage() {
         showToast(`🎉 ${provider.toUpperCase()} (${profile}) connected live!`);
         fetchAccounts();
         setSelectedProviderForConnect(null);
+      } else if (event.data?.type === 'SOCIAL_AUTH_ERROR') {
+        const { provider, error } = event.data;
+        showToast(`⚠️ ${provider?.toUpperCase() || 'OAuth'} Error: ${error}`, 'error');
       }
     };
 
@@ -63,6 +66,15 @@ export default function AccountsPage() {
 
   async function fetchAccounts() {
     try {
+      const res = await fetch('/api/social/accounts');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.accounts && Array.isArray(data.accounts)) {
+          setAccounts(data.accounts);
+          return;
+        }
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const { data } = await supabase
@@ -79,39 +91,27 @@ export default function AccountsPage() {
           }));
           setAccounts(normalized);
         } else {
-          // Initialize default connected accounts state
-          setAccounts([
-            { id: 'acc-ig', provider: 'instagram', username: '@buffermate.official' },
-            { id: 'acc-tt', provider: 'tiktok', username: '@buffermate_tok' },
-            { id: 'acc-fb', provider: 'facebook', username: 'BufferMate Growth Page' },
-            { id: 'acc-th', provider: 'threads', username: '@buffermate.official' },
-            { id: 'acc-wa', provider: 'whatsapp', username: '+1 (555) 019-2834' },
-          ]);
+          setAccounts([]);
         }
       } else {
-        setAccounts([
-          { id: 'acc-ig', provider: 'instagram', username: '@buffermate.official' },
-          { id: 'acc-tt', provider: 'tiktok', username: '@buffermate_tok' },
-          { id: 'acc-fb', provider: 'facebook', username: 'BufferMate Growth Page' },
-          { id: 'acc-th', provider: 'threads', username: '@buffermate.official' },
-          { id: 'acc-wa', provider: 'whatsapp', username: '+1 (555) 019-2834' },
-        ]);
+        setAccounts([]);
       }
     } catch (e) {
       console.error('Error fetching accounts:', e);
+      setAccounts([]);
     } finally {
       setLoading(false);
     }
   }
 
   // Launch OAuth Popup Window (Meta/Twitter/TikTok/LinkedIn)
-  const handleLaunchOAuthPopup = async (provider: string, customHandle?: string) => {
+  const handleLaunchOAuthPopup = async (provider: string, customHandle?: string, useEnvKeys?: boolean) => {
     setActionLoading(provider);
     try {
       const res = await fetch('/api/social/connect', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ provider, customHandle }),
+        body: JSON.stringify({ provider, customHandle, useEnvKeys }),
       });
       const data = await res.json();
       if (data.url) {
@@ -402,32 +402,47 @@ export default function AccountsPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center space-x-2">
-                      <button
-                        type="button"
-                        onClick={() => handleLaunchOAuthPopup(provider.id)}
-                        disabled={isLoading}
-                        className="flex-1 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/20 flex items-center justify-center space-x-1.5"
-                      >
-                        {isLoading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Plus className="w-4 h-4" />
-                        )}
-                        <span>Connect via OAuth Popup</span>
-                      </button>
+                    <div className="flex flex-col space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => handleLaunchOAuthPopup(provider.id)}
+                          disabled={isLoading}
+                          className="flex-1 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/20 flex items-center justify-center space-x-1.5"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Plus className="w-4 h-4" />
+                          )}
+                          <span>Connect via OAuth Popup</span>
+                        </button>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedProviderForConnect(provider);
-                          setCustomHandleInput(provider.id === 'x' ? 'https://x.com/agber120' : '@mybrand');
-                        }}
-                        className="px-3 py-2.5 bg-white hover:bg-[#FAF6F0] text-[#475569] border border-[#E2D9CF] rounded-xl text-xs font-bold transition-colors"
-                        title="Connect with custom profile handle / URL"
-                      >
-                        Handle
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedProviderForConnect(provider);
+                            setCustomHandleInput(provider.id === 'x' ? 'https://x.com/agber120' : '@mybrand');
+                          }}
+                          className="px-3 py-2.5 bg-white hover:bg-[#FAF6F0] text-[#475569] border border-[#E2D9CF] rounded-xl text-xs font-bold transition-colors"
+                          title="Connect with custom profile handle / URL"
+                        >
+                          Handle
+                        </button>
+                      </div>
+
+                      {provider.id === 'x' && (
+                        <button
+                          type="button"
+                          onClick={() => handleLaunchOAuthPopup('x', undefined, true)}
+                          disabled={isLoading}
+                          className="w-full py-2 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#0F172A] border border-[#CBD5E1] rounded-xl text-xs font-semibold transition-colors flex items-center justify-center space-x-1.5"
+                          title="Instant connect using TWITTER_ACCESS_TOKEN configured in .env.local"
+                        >
+                          <Zap className="w-3.5 h-3.5 text-blue-600" />
+                          <span>Link via .env.local Keys (@agber120)</span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
