@@ -4,6 +4,8 @@ import { TwitterProvider } from './TwitterProvider';
 import { FacebookProvider } from './FacebookProvider';
 import { InstagramProvider } from './InstagramProvider';
 import { ThreadsProvider } from './ThreadsProvider';
+import { LinkedInProvider } from './LinkedInProvider';
+import { TikTokProvider } from './TikTokProvider';
 
 export class SocialManager {
   private static instance: SocialManager;
@@ -15,6 +17,8 @@ export class SocialManager {
     const facebook = new FacebookProvider();
     const instagram = new InstagramProvider();
     const threads = new ThreadsProvider();
+    const linkedin = new LinkedInProvider();
+    const tiktok = new TikTokProvider();
 
     // Register real live providers
     this.providers.set('x', twitter);
@@ -22,10 +26,10 @@ export class SocialManager {
     this.providers.set('facebook', facebook);
     this.providers.set('instagram', instagram);
     this.providers.set('threads', threads);
-    this.providers.set('tiktok', mock);
+    this.providers.set('linkedin', linkedin);
+    this.providers.set('tiktok', tiktok);
     this.providers.set('whatsapp', mock);
     this.providers.set('youtube', mock);
-    this.providers.set('linkedin', mock);
     this.providers.set('mock', mock);
   }
 

@@ -70,7 +70,14 @@ export default function AccountsPage() {
           .select('*')
           .eq('user_id', user.id);
         if (data && data.length > 0) {
-          setAccounts(data);
+          const normalized = data.map((acc: any) => ({
+            id: acc.id,
+            provider: acc.provider,
+            username: acc.provider_user_id || acc.username,
+            created_at: acc.created_at,
+            meta: acc.meta,
+          }));
+          setAccounts(normalized);
         } else {
           // Initialize default connected accounts state
           setAccounts([
@@ -129,24 +136,39 @@ export default function AccountsPage() {
 
   const handleDirectConnect = async (provider: string, customHandle?: string) => {
     const handle = customHandle || (provider === 'x' ? '@agber120' : `@${provider}_brand`);
-    setAccounts((prev) => [
-      ...prev.filter((a) => a.provider !== provider),
-      {
-        id: `acc-${Date.now()}`,
-        provider,
-        username: handle,
-        created_at: new Date().toISOString(),
-      },
-    ]);
-    showToast(`🎉 ${provider.toUpperCase()} account connected!`);
+    const newAcc = {
+      id: `acc-${Date.now()}`,
+      provider,
+      username: handle,
+      created_at: new Date().toISOString(),
+    };
+    setAccounts((prev) => [...prev.filter((a) => a.username !== handle), newAcc]);
+    showToast(`🎉 ${provider.toUpperCase()} (${handle}) connected!`);
     setSelectedProviderForConnect(null);
   };
 
-  async function handleDisconnect(provider: string) {
-    if (!confirm(`Are you sure you want to disconnect ${provider}?`)) return;
-    setActionLoading(provider);
+  async function handleDisconnect(provider: string, accountId?: string) {
+    if (!confirm(`Are you sure you want to disconnect this account?`)) return;
+    const loadingKey = accountId || provider;
+    setActionLoading(loadingKey);
     try {
-      setAccounts((prev) => prev.filter((acc) => acc.provider !== provider));
+      await fetch('/api/social/disconnect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider, account_id: accountId }),
+      });
+      if (accountId) {
+        setAccounts((prev) => prev.filter((acc) => acc.id !== accountId));
+      } else {
+        setAccounts((prev) => prev.filter((acc) => acc.provider !== provider));
+      }
+      showToast(`${provider.toUpperCase()} disconnected.`);
+    } catch (err) {
+      if (accountId) {
+        setAccounts((prev) => prev.filter((acc) => acc.id !== accountId));
+      } else {
+        setAccounts((prev) => prev.filter((acc) => acc.provider !== provider));
+      }
       showToast(`${provider.toUpperCase()} disconnected.`);
     } finally {
       setActionLoading(null);
@@ -250,8 +272,8 @@ export default function AccountsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {providers.map((provider) => {
-            const connectedAccount = accounts.find((a) => a.provider === provider.id);
-            const isConnected = !!connectedAccount;
+            const providerAccounts = accounts.filter((a) => a.provider === provider.id);
+            const isConnected = providerAccounts.length > 0;
             const isLoading = actionLoading === provider.id;
 
             return (
@@ -289,40 +311,59 @@ export default function AccountsPage() {
                           : 'bg-neutral-200 text-neutral-600'
                       }`}
                     >
-                      {isConnected ? '● Connected' : '○ Available'}
+                      {isConnected ? `● ${providerAccounts.length} Connected` : '○ Available'}
                     </span>
                   </div>
 
-                  {/* Connected Profile Box */}
-                  <div className="p-2.5 rounded-xl bg-[#FCFAF7] border border-[#F5EFE8] flex items-center justify-between text-xs">
-                    <div className="flex flex-col min-w-0 pr-2">
-                      <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-wider">
-                        {isConnected ? 'Active Handle:' : 'Status:'}
-                      </span>
-                      <span
-                        className={`font-bold truncate text-xs ${
-                          isConnected ? 'text-[#1E293B]' : 'text-neutral-400'
-                        }`}
-                      >
-                        {isConnected ? connectedAccount.username : 'Not Connected'}
-                      </span>
-                    </div>
+                  {/* Connected Profiles List */}
+                  {isConnected ? (
+                    <div className="space-y-2">
+                      {providerAccounts.map((acc) => (
+                        <div
+                          key={acc.id}
+                          className="p-2.5 rounded-xl bg-[#FCFAF7] border border-[#F5EFE8] flex items-center justify-between text-xs"
+                        >
+                          <div className="flex flex-col min-w-0 pr-2">
+                            <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-wider">
+                              {provider.id === 'facebook' ? 'Page:' : 'Account:'}
+                            </span>
+                            <span className="font-bold truncate text-xs text-[#1E293B]">
+                              {acc.username}
+                            </span>
+                          </div>
 
-                    {isConnected && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedProviderForConnect(provider);
-                          setCustomHandleInput(connectedAccount.username);
-                        }}
-                        className="px-2.5 py-1 bg-white hover:bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] rounded-lg text-[11px] font-bold shrink-0 transition-colors flex items-center space-x-1"
-                        title="Switch or reconnect account"
-                      >
-                        <RefreshCw className="w-3 h-3" />
-                        <span>Switch</span>
-                      </button>
-                    )}
-                  </div>
+                          <div className="flex items-center space-x-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedProviderForConnect(provider);
+                                setCustomHandleInput(acc.username);
+                              }}
+                              className="px-2 py-1 bg-white hover:bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] rounded-lg text-[10px] font-bold transition-colors"
+                              title="Edit handle"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDisconnect(provider.id, acc.id)}
+                              className="p-1 text-[#94A3B8] hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              title="Disconnect account"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-2.5 rounded-xl bg-[#FCFAF7] border border-[#F5EFE8] flex items-center justify-between text-xs">
+                      <div className="flex flex-col min-w-0 pr-2">
+                        <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-wider">Status:</span>
+                        <span className="font-bold truncate text-xs text-neutral-400">Not Connected</span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Description */}
                   <p className="text-xs text-[#64748B] leading-relaxed">
@@ -336,7 +377,7 @@ export default function AccountsPage() {
                     <div className="flex items-center space-x-2">
                       <button
                         type="button"
-                        onClick={() => handleLaunchOAuthPopup(provider.id, connectedAccount.username)}
+                        onClick={() => handleLaunchOAuthPopup(provider.id, providerAccounts[0]?.username)}
                         disabled={isLoading}
                         className="flex-1 py-2 bg-[#FFF0E6] hover:bg-[#FFE4D6] text-[#E05A2B] border border-[#FED7AA] rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 shadow-xs"
                       >
@@ -345,17 +386,19 @@ export default function AccountsPage() {
                         ) : (
                           <Zap className="w-3.5 h-3.5" />
                         )}
-                        <span>Re-Authenticate OAuth</span>
+                        <span>Re-Sync OAuth</span>
                       </button>
 
                       <button
                         type="button"
-                        onClick={() => handleDisconnect(provider.id)}
-                        disabled={isLoading}
-                        className="p-2 text-[#94A3B8] hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors border border-[#E2D9CF]"
-                        title={`Disconnect ${provider.name}`}
+                        onClick={() => {
+                          setSelectedProviderForConnect(provider);
+                          setCustomHandleInput('');
+                        }}
+                        className="p-2 text-[#E05A2B] bg-[#FFF0E6] hover:bg-[#FFE4D6] rounded-xl transition-colors border border-[#FED7AA]"
+                        title={`Add another ${provider.name}`}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ) : (

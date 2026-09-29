@@ -26,17 +26,76 @@ export async function GET(request: Request) {
       threads: '@buffermate.threads',
       whatsapp: '+1 (555) 019-2834',
       youtube: 'BufferMateChannel',
-      linkedin: 'buffermate-company',
+      linkedin: 'Buffermate Professional Growth',
     };
 
-    const providerKey = provider.toLowerCase();
-    const providerUserId = customProfile || handleMap[providerKey] || `${providerKey}_creator`;
+    const providerKey = (provider === 'twitter' ? 'x' : provider).toLowerCase();
+    let providerUserId = customProfile || handleMap[providerKey] || `${providerKey}_creator`;
 
-    const accessToken = `oauth_token_${providerKey}_${Date.now()}`;
-    const refreshToken = `oauth_refresh_${providerKey}_${Date.now()}`;
+    let accessToken = `oauth_token_${providerKey}_${Date.now()}`;
+    let refreshToken = `oauth_refresh_${providerKey}_${Date.now()}`;
     const expiresAt = new Date(Date.now() + 60 * 86400 * 1000); // 60 days
+    const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
+    const redirectUri = `${origin}/api/social/callback`;
 
-    // If authenticated in Supabase, store securely
+    // Real Meta (Facebook & Instagram) Token & Pages Extraction Handshake
+    if (providerKey === 'facebook' && process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET && !code.startsWith('fb_auth_live')) {
+      try {
+        const tokenRes = await fetch(
+          `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&client_secret=${process.env.FACEBOOK_APP_SECRET}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`
+        );
+        if (tokenRes.ok) {
+          const tokenData = await tokenRes.json();
+          if (tokenData?.access_token) {
+            accessToken = tokenData.access_token;
+            // Fetch all managed Facebook Pages and linked Instagram accounts
+            const pagesRes = await fetch(
+              `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,access_token,category,instagram_business_account{id,username}&access_token=${accessToken}`
+            );
+            if (pagesRes.ok) {
+              const pagesData = await pagesRes.json();
+              if (pagesData?.data && pagesData.data.length > 0 && user) {
+                for (const page of pagesData.data) {
+                  // Upsert Facebook Page
+                  await supabase.from('social_accounts').upsert({
+                    user_id: user.id,
+                    provider: 'facebook',
+                    provider_user_id: page.name || 'Facebook Page',
+                    access_token_encrypted: encrypt(page.access_token || accessToken),
+                    refresh_token_encrypted: encrypt(refreshToken),
+                    token_expires_at: expiresAt.toISOString(),
+                    meta: { page_id: page.id, category: page.category },
+                    updated_at: new Date().toISOString(),
+                  }, { onConflict: 'user_id, provider, provider_user_id' });
+
+                  // Upsert linked Instagram Business Account if present
+                  if (page.instagram_business_account?.id) {
+                    const igHandle = page.instagram_business_account.username
+                      ? `@${page.instagram_business_account.username}`
+                      : `@${(page.name || 'brand').toLowerCase().replace(/\s+/g, '')}.ig`;
+                    await supabase.from('social_accounts').upsert({
+                      user_id: user.id,
+                      provider: 'instagram',
+                      provider_user_id: igHandle,
+                      access_token_encrypted: encrypt(page.access_token || accessToken),
+                      refresh_token_encrypted: encrypt(refreshToken),
+                      token_expires_at: expiresAt.toISOString(),
+                      meta: { ig_user_id: page.instagram_business_account.id, page_id: page.id },
+                      updated_at: new Date().toISOString(),
+                    }, { onConflict: 'user_id, provider, provider_user_id' });
+                  }
+                }
+                providerUserId = pagesData.data[0].name;
+              }
+            }
+          }
+        }
+      } catch (metaErr) {
+        console.warn('Meta token exchange fallback:', metaErr);
+      }
+    }
+
+    // If authenticated in Supabase, store primary/simulated account securely
     if (user) {
       await supabase
         .from('social_accounts')
@@ -47,6 +106,7 @@ export async function GET(request: Request) {
           access_token_encrypted: encrypt(accessToken),
           refresh_token_encrypted: encrypt(refreshToken),
           token_expires_at: expiresAt.toISOString(),
+          meta: { auto_connected_at: new Date().toISOString() },
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id, provider, provider_user_id' });
     }

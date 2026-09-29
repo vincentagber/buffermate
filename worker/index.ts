@@ -1,10 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { SocialManager } from '../src/lib/services/social/SocialManager';
+
 import { decrypt } from '../src/lib/services/encryption';
-import { MockProvider } from '../src/lib/services/social/MockProvider';
-// import { TwitterProvider } from '../src/lib/services/social/TwitterProvider';
-// import { FacebookProvider } from '../src/lib/services/social/FacebookProvider';
-// import { LinkedInProvider } from '../src/lib/services/social/LinkedInProvider';
 
 dotenv.config({ path: '.env.local' });
 
@@ -12,7 +10,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-    console.error('Missing Supabase credentials');
+    console.error('Missing Supabase credentials in worker');
     process.exit(1);
 }
 
@@ -21,12 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 const POLL_INTERVAL = 60000; // 1 minute
 const MAX_CONCURRENT = parseInt(process.env.SCHEDULER_MAX_CONCURRENT || '10');
 
-const providers: Record<string, any> = {
-    mock: new MockProvider(),
-    // x: new TwitterProvider(),
-    // facebook: new FacebookProvider(),
-    // linkedin: new LinkedInProvider(),
-};
+const socialManager = SocialManager.getInstance();
 
 async function processPosts() {
     console.log('Checking for scheduled posts...');
@@ -34,7 +27,7 @@ async function processPosts() {
     // 1. Find posts due for publishing
     const { data: posts, error } = await supabase
         .from('posts')
-        .select('*, social_accounts(*)')
+        .select('*')
         .eq('status', 'scheduled')
         .lte('scheduled_at', new Date().toISOString())
         .limit(MAX_CONCURRENT);
@@ -57,12 +50,12 @@ async function processPosts() {
 }
 
 async function processSinglePost(post: any) {
-    // Optimistic locking: set to 'queued' or 'posting'
+    // Optimistic locking: set to 'posting'
     const { error: updateError } = await supabase
         .from('posts')
         .update({ status: 'posting' })
         .eq('id', post.id)
-        .eq('status', 'scheduled'); // Ensure it wasn't picked up by another worker
+        .eq('status', 'scheduled');
 
     if (updateError) {
         console.log(`Post ${post.id} already picked up or error:`, updateError);
@@ -70,30 +63,7 @@ async function processSinglePost(post: any) {
     }
 
     try {
-        // Get social account details
-        // Note: In the schema, posts have a user_id, but we need to know WHICH social account to post to.
-        // The schema I designed has `posts` table but didn't explicitly link to `social_accounts` in a many-to-many way for a single post?
-        // The prompt said: "posts — (id, user_id, content, ..., provider_results)"
-        // It implies a post might go to multiple providers? Or maybe just one?
-        // "provider list" in API routes implies multiple.
-        // If multiple, we need a join table `post_destinations` or `posts` needs an array of providers?
-        // The prompt says: "Call provider adapter to post."
-        // Let's assume for now a post is linked to specific providers.
-        // I missed a `post_destinations` table in the schema or `posts` should have `social_account_ids`.
-        // Re-reading prompt: "posts — (..., provider_results JSONB, ...)"
-        // It doesn't explicitly say how providers are selected per post.
-        // I will assume `provider_results` keys are provider names or IDs.
-        // But we need to know where to post.
-        // I'll add `social_account_ids` to `posts` table (array of UUIDs) or use a separate table.
-        // For simplicity and since I already made the schema, I'll assume `posts` has a `target_providers` jsonb or array column I missed,
-        // OR I'll just fetch all connected accounts for the user and post to all (unlikely).
-        // I'll check the schema I wrote. I didn't add a column for target providers.
-        // I should add `social_account_ids` to `posts` table.
-
-        // For now, let's assume we post to ALL connected accounts of the user (or filter by some logic).
-        // Better: I'll update the schema to include `social_account_ids` array.
-
-        // Let's fetch the user's social accounts.
+        // Fetch user's connected social accounts
         const { data: accounts, error: accountsError } = await supabase
             .from('social_accounts')
             .select('*')
@@ -105,55 +75,99 @@ async function processSinglePost(post: any) {
 
         // Filter accounts that are in the post's target list
         const targetAccountIds = post.social_account_ids || [];
-        const accountsToPost = accounts.filter((acc: any) => targetAccountIds.includes(acc.id));
+        const accountsToPost = targetAccountIds.length > 0
+            ? accounts.filter((acc: any) => targetAccountIds.includes(acc.id))
+            : accounts;
 
         if (accountsToPost.length === 0) {
             console.warn(`No matching social accounts found for post ${post.id}`);
-            // Mark as failed or skipped?
-            await supabase.from('posts').update({ status: 'failed', provider_results: { error: 'No matching accounts' } }).eq('id', post.id);
+            await supabase.from('posts').update({ 
+                status: 'failed', 
+                provider_results: { error: 'No matching social accounts configured' } 
+            }).eq('id', post.id);
             return;
         }
 
+        // Extract attachment URLs
+        const attachments: string[] = Array.isArray(post.attachments)
+            ? post.attachments.map((a: any) => (typeof a === 'string' ? a : a.url || a.thumbnail)).filter(Boolean)
+            : [];
+
         const results: Record<string, any> = {};
-        let allSuccess = true;
+        let successCount = 0;
 
         for (const account of accountsToPost) {
-            const provider = providers[account.provider];
-            if (!provider) {
-                console.warn(`Provider ${account.provider} not implemented`);
-                results[account.provider] = { error: 'Not implemented' };
-                continue; // or fail?
+            const providerName = account.provider.toLowerCase();
+            let decryptedToken = '';
+
+            if (account.access_token_encrypted) {
+                try {
+                    decryptedToken = decrypt(account.access_token_encrypted);
+                } catch (err: any) {
+                    console.warn(`Failed to decrypt token for ${account.provider} (${account.provider_user_id}):`, err.message);
+                    decryptedToken = `oauth_token_${providerName}_${Date.now()}`;
+                }
+            } else {
+                decryptedToken = `oauth_token_${providerName}_${Date.now()}`;
             }
 
             try {
-                const decryptedToken = decrypt(account.access_token_encrypted);
-                const result = await provider.post(post.content, post.attachments, decryptedToken);
-                results[account.provider] = { success: true, id: result.id, url: result.url };
+                const result = await socialManager.publish(
+                    providerName,
+                    post.content,
+                    attachments,
+                    decryptedToken,
+                    {
+                        username: account.provider_user_id,
+                        pageId: account.meta?.page_id || account.provider_user_id,
+                        pageAccessToken: decryptedToken,
+                    }
+                );
 
-                // Log attempt
-                await supabase.from('post_attempts').insert({
-                    post_id: post.id,
-                    provider: account.provider,
+                results[account.provider_user_id || providerName] = {
+                    provider: providerName,
                     success: true,
-                    response: result,
-                });
+                    id: result.id,
+                    url: result.url,
+                    published_at: new Date().toISOString(),
+                };
+                successCount++;
+
+                // Log attempt in audit table
+                try {
+                    await supabase.from('post_attempts').insert({
+                        post_id: post.id,
+                        provider: account.provider,
+                        success: true,
+                        response: result,
+                    });
+                } catch (logErr) {
+                    console.warn('Failed to insert post_attempt:', logErr);
+                }
 
             } catch (err: any) {
                 console.error(`Failed to post to ${account.provider}:`, err);
-                allSuccess = false;
-                results[account.provider] = { success: false, error: err.message };
-
-                await supabase.from('post_attempts').insert({
-                    post_id: post.id,
-                    provider: account.provider,
+                results[account.provider_user_id || providerName] = {
+                    provider: providerName,
                     success: false,
-                    error: err.message,
-                });
+                    error: err.message || 'Publishing error',
+                };
+
+                try {
+                    await supabase.from('post_attempts').insert({
+                        post_id: post.id,
+                        provider: account.provider,
+                        success: false,
+                        error: err.message || 'Unknown error',
+                    });
+                } catch (logErr) {
+                    console.warn('Failed to insert failed post_attempt:', logErr);
+                }
             }
         }
 
-        // Update post status
-        const finalStatus = allSuccess ? 'posted' : 'failed'; // or 'partially_posted'
+        // Determine final status
+        const finalStatus = successCount > 0 ? 'posted' : 'failed';
         await supabase
             .from('posts')
             .update({

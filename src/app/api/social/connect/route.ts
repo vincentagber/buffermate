@@ -76,7 +76,39 @@ export async function POST(request: Request) {
       });
     }
 
-    // Generic fallback for other channels (Threads, WhatsApp, LinkedIn, YouTube)
+    // 5. LinkedIn OAuth 2.0 URL
+    if (provider.toLowerCase() === 'linkedin') {
+      const linkedinClientId = process.env.LINKEDIN_CLIENT_ID;
+      if (linkedinClientId) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const scope = encodeURIComponent('openid profile email w_member_social');
+        const state = encodeURIComponent('linkedin');
+        const url = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${linkedinClientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=li_auth_live&provider=linkedin&profile=${encodeURIComponent(cleanProfile || 'Buffermate Professional Growth')}`,
+        isPopup: true,
+      });
+    }
+
+    // 6. Threads API URL
+    if (provider.toLowerCase() === 'threads') {
+      const fbAppId = process.env.FACEBOOK_APP_ID;
+      if (fbAppId) {
+        const redirectUri = encodeURIComponent(`${origin}/api/social/callback`);
+        const scope = encodeURIComponent('threads_basic,threads_content_publish');
+        const state = encodeURIComponent('threads');
+        const url = `https://threads.net/oauth/authorize?client_id=${fbAppId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=code&state=${state}`;
+        return NextResponse.json({ url, isPopup: true });
+      }
+      return NextResponse.json({
+        url: `${origin}/api/social/callback?code=threads_auth_live&provider=threads&profile=${encodeURIComponent(cleanProfile || '@buffermate.threads')}`,
+        isPopup: true,
+      });
+    }
+
+    // Generic fallback for other channels (WhatsApp, YouTube)
     return NextResponse.json({
       url: `${origin}/api/social/callback?code=live_code&provider=${provider}&profile=${encodeURIComponent(cleanProfile || `${provider}_account`)}`,
       isPopup: true,
