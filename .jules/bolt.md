@@ -1,0 +1,3 @@
+## 2025-02-09 - Drag and Drop Rapid Re-rendering Without Memoization
+**Learning:** During drag-and-drop operations, updating coordinates or target zones (like `setDragOverDate` in `src/app/dashboard/calendar/page.tsx`) causes frequent, rapid re-renders. Without memoizing derived data (like filtering and grouping posts by date), the app performs expensive date calculations on every frame of the drag interaction, blocking the UI thread and causing severe jank.
+**Action:** Always memoize derived arrays/objects (using `useMemo`) that depend on large datasets or require date formatting, especially when they are rendered inside a component that receives frequent state updates (like drag-and-drop or typing).
