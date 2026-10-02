@@ -363,12 +363,14 @@ export function PostPreview({
                                     className={`p-1.5 rounded-full transition-colors group hover:text-sky-500 hover:bg-sky-50 ${
                                         isBookmarked ? 'text-sky-500' : ''
                                     }`}
+                                    aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
                                 >
                                     <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-sky-500' : ''}`} />
                                 </button>
                                 <button
                                     type="button"
                                     className="p-1.5 rounded-full hover:text-sky-500 hover:bg-sky-50 transition-colors"
+                                    aria-label="Share post"
                                 >
                                     <Share2 className="w-4 h-4" />
                                 </button>
@@ -407,6 +409,7 @@ export function PostPreview({
                                 <button
                                     type="button"
                                     className="hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition-colors"
+                                    aria-label="More options"
                                 >
                                     <MoreHorizontal className="w-4 h-4" />
                                 </button>
@@ -552,7 +555,7 @@ export function PostPreview({
                                     <p className="text-[10px] text-slate-500">Original audio</p>
                                 </div>
                             </div>
-                            <button type="button" className="text-slate-500 hover:text-slate-800">
+                            <button type="button" className="text-slate-500 hover:text-slate-800" aria-label="More options">
                                 <MoreHorizontal className="w-4 h-4" />
                             </button>
                         </div>
@@ -590,13 +593,14 @@ export function PostPreview({
                                         className={`transition-transform active:scale-125 ${
                                             isLiked ? 'text-rose-500' : ''
                                         }`}
+                                        aria-label={isLiked ? 'Unlike post' : 'Like post'}
                                     >
                                         <Heart className={`w-5 h-5 ${isLiked ? 'fill-rose-500' : ''}`} />
                                     </button>
-                                    <button type="button">
+                                    <button type="button" aria-label="Comment">
                                         <MessageCircle className="w-5 h-5" />
                                     </button>
-                                    <button type="button">
+                                    <button type="button" aria-label="Send">
                                         <Send className="w-5 h-5" />
                                     </button>
                                 </div>
@@ -604,6 +608,7 @@ export function PostPreview({
                                     type="button"
                                     onClick={() => setIsBookmarked(!isBookmarked)}
                                     className={isBookmarked ? 'text-slate-900' : 'text-slate-800'}
+                                    aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
                                 >
                                     <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-slate-900' : ''}`} />
                                 </button>
@@ -650,7 +655,7 @@ export function PostPreview({
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" className="text-slate-400 hover:text-slate-600">
+                            <button type="button" className="text-slate-400 hover:text-slate-600" aria-label="More options">
                                 <MoreHorizontal className="w-4 h-4" />
                             </button>
                         </div>
