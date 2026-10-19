@@ -260,6 +260,17 @@ export async function GET(request: Request) {
     });
   }
 
+  // Reject simulated or fake authorization codes
+  if (code.endsWith('_auth_live') || code === 'live_code' || code.startsWith('mock_')) {
+    return new Response(
+      renderErrorHtml(
+        providerKey,
+        'Invalid or simulated authorization code. Live OAuth authorization directly from the external social provider is required.'
+      ),
+      { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+    );
+  }
+
   // Extract user ID from state parameter if present (e.g. x:uuid)
   let stateUserId = '';
   if (stateParam.includes(':')) {
@@ -285,138 +296,303 @@ export async function GET(request: Request) {
   }
 
   try {
-    const handleMap: Record<string, string> = {
-      x: '@agber120',
-      twitter: '@agber120',
-      facebook: 'BufferMate Growth Page',
-      instagram: '@buffermate.official',
-      tiktok: '@buffermate_tok',
-      threads: '@buffermate.threads',
-      whatsapp: '+1 (555) 019-2834',
-      youtube: 'BufferMateChannel',
-      linkedin: 'Buffermate Professional Growth',
-    };
-
-    const customProfile = searchParams.get('profile');
-    let providerUserId = customProfile || handleMap[providerKey] || `${providerKey}_creator`;
-
-    let accessToken = `oauth_token_${providerKey}_${Date.now()}`;
-    let refreshToken = `oauth_refresh_${providerKey}_${Date.now()}`;
-    const expiresAt = new Date(Date.now() + 60 * 86400 * 1000); // 60 days
     const origin = process.env.NEXT_PUBLIC_APP_URL || new URL(request.url).origin;
     const redirectUri = `${origin}/api/social/callback`;
 
-    // Real X (Twitter) OAuth 2.0 Token Exchange Handshake
-    if ((providerKey === 'x' || providerKey === 'twitter') && !code.startsWith('x_auth_live')) {
-      if (process.env.TWITTER_CLIENT_ID) {
-        const basicAuth = Buffer.from(
-          `${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET || ''}`
-        ).toString('base64');
-        const pkceVerifier = 'buffermate_pkce_challenge_verifier_secure_token_1234567890';
+    let accessToken = '';
+    let refreshToken = '';
+    let providerUserId = '';
+    let expiresAt = new Date(Date.now() + 60 * 86400 * 1000); // 60 days default
 
-        const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': `Basic ${basicAuth}`,
-          },
-          body: new URLSearchParams({
-            code,
-            grant_type: 'authorization_code',
-            redirect_uri: redirectUri,
-            code_verifier: pkceVerifier,
-            client_id: process.env.TWITTER_CLIENT_ID,
-          }).toString(),
+    // 1. Real X (Twitter) OAuth 2.0 Token Exchange Handshake
+    if (providerKey === 'x' || providerKey === 'twitter') {
+      if (!process.env.TWITTER_CLIENT_ID) {
+        return new Response(renderErrorHtml('x', 'TWITTER_CLIENT_ID is not configured in environment.'), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
         });
-
-        const tokenData = await tokenRes.json();
-
-        if (tokenRes.ok && tokenData?.access_token) {
-          accessToken = tokenData.access_token;
-          if (tokenData.refresh_token) refreshToken = tokenData.refresh_token;
-
-          // Fetch verified Twitter username
-          try {
-            const meRes = await fetch('https://api.twitter.com/2/users/me', {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            });
-            if (meRes.ok) {
-              const meData = await meRes.json();
-              if (meData?.data?.username) {
-                providerUserId = `@${meData.data.username}`;
-              }
-            }
-          } catch (meErr) {
-            console.warn('[Twitter] Error fetching /users/me:', meErr);
-          }
-        } else {
-          const errMsg = tokenData?.error_description || tokenData?.error || 'X (Twitter) rejected the authorization code.';
-          console.error('[Twitter OAuth Exchange Failed]:', errMsg, tokenData);
-          return new Response(renderErrorHtml('x', errMsg), {
-            headers: { 'Content-Type': 'text/html; charset=utf-8' },
-          });
-        }
       }
-    } else if ((providerKey === 'x' || providerKey === 'twitter') && process.env.TWITTER_ACCESS_TOKEN) {
-      accessToken = process.env.TWITTER_ACCESS_TOKEN;
-      providerUserId = '@agber120';
+
+      const basicAuth = Buffer.from(
+        `${process.env.TWITTER_CLIENT_ID}:${process.env.TWITTER_CLIENT_SECRET || ''}`
+      ).toString('base64');
+      const pkceVerifier = 'buffermate_pkce_challenge_verifier_secure_token_1234567890';
+
+      const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${basicAuth}`,
+        },
+        body: new URLSearchParams({
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
+          code_verifier: pkceVerifier,
+          client_id: process.env.TWITTER_CLIENT_ID,
+        }).toString(),
+      });
+
+      const tokenData = await tokenRes.json().catch(() => null);
+
+      if (tokenRes.ok && tokenData?.access_token) {
+        accessToken = tokenData.access_token;
+        if (tokenData.refresh_token) refreshToken = tokenData.refresh_token;
+        if (tokenData.expires_in) {
+          expiresAt = new Date(Date.now() + tokenData.expires_in * 1000);
+        }
+
+        // Fetch verified Twitter username
+        try {
+          const meRes = await fetch('https://api.twitter.com/2/users/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          const meData = await meRes.json().catch(() => null);
+          if (meRes.ok && meData?.data?.username) {
+            providerUserId = `@${meData.data.username}`;
+          }
+        } catch (meErr) {
+          console.warn('[Twitter] Error fetching /users/me:', meErr);
+        }
+        if (!providerUserId) providerUserId = '@twitter_user';
+      } else {
+        const errMsg = tokenData?.error_description || tokenData?.error || `X OAuth token exchange failed (HTTP ${tokenRes.status})`;
+        return new Response(renderErrorHtml('x', errMsg), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
     }
 
-    // Real Meta (Facebook & Instagram) Token & Pages Extraction Handshake
-    if (providerKey === 'facebook' && process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET && !code.startsWith('fb_auth_live')) {
-      try {
-        const tokenRes = await fetch(
-          `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${process.env.FACEBOOK_APP_ID}&client_secret=${process.env.FACEBOOK_APP_SECRET}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`
-        );
-        if (tokenRes.ok) {
-          const tokenData = await tokenRes.json();
-          if (tokenData?.access_token) {
-            accessToken = tokenData.access_token;
-            // Fetch all managed Facebook Pages and linked Instagram accounts
-            const pagesRes = await fetch(
-              `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,access_token,category,instagram_business_account{id,username}&access_token=${accessToken}`
-            );
-            if (pagesRes.ok) {
-              const pagesData = await pagesRes.json();
-              if (pagesData?.data && pagesData.data.length > 0 && targetUserId) {
-                for (const page of pagesData.data) {
-                  // Upsert Facebook Page
-                  await admin.from('social_accounts').upsert({
-                    user_id: targetUserId,
-                    provider: 'facebook',
-                    provider_user_id: page.name || 'Facebook Page',
-                    access_token_encrypted: encrypt(page.access_token || accessToken),
-                    refresh_token_encrypted: encrypt(refreshToken),
-                    token_expires_at: expiresAt.toISOString(),
-                    meta: { page_id: page.id, category: page.category },
-                    updated_at: new Date().toISOString(),
-                  }, { onConflict: 'user_id, provider, provider_user_id' });
+    // 2. Real Meta (Facebook & Instagram) Token & Pages Extraction Handshake
+    else if (providerKey === 'facebook' || providerKey === 'instagram') {
+      const fbAppId = process.env.FACEBOOK_APP_ID;
+      const fbAppSecret = process.env.FACEBOOK_APP_SECRET;
 
-                  // Upsert linked Instagram Business Account if present
-                  if (page.instagram_business_account?.id) {
-                    const igHandle = page.instagram_business_account.username
-                      ? `@${page.instagram_business_account.username}`
-                      : `@${(page.name || 'brand').toLowerCase().replace(/\s+/g, '')}.ig`;
-                    await admin.from('social_accounts').upsert({
-                      user_id: targetUserId,
-                      provider: 'instagram',
-                      provider_user_id: igHandle,
-                      access_token_encrypted: encrypt(page.access_token || accessToken),
-                      refresh_token_encrypted: encrypt(refreshToken),
-                      token_expires_at: expiresAt.toISOString(),
-                      meta: { ig_user_id: page.instagram_business_account.id, page_id: page.id },
-                      updated_at: new Date().toISOString(),
-                    }, { onConflict: 'user_id, provider, provider_user_id' });
-                  }
-                }
-                providerUserId = pagesData.data[0].name;
+      if (!fbAppId || fbAppId === 'your_facebook_app_id' || !fbAppSecret || fbAppSecret === 'your_facebook_app_secret') {
+        return new Response(renderErrorHtml(providerKey, 'FACEBOOK_APP_ID and FACEBOOK_APP_SECRET are not configured in environment.'), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+
+      const tokenRes = await fetch(
+        `https://graph.facebook.com/v20.0/oauth/access_token?client_id=${fbAppId}&client_secret=${fbAppSecret}&redirect_uri=${encodeURIComponent(redirectUri)}&code=${code}`
+      );
+      const tokenData = await tokenRes.json().catch(() => null);
+
+      if (tokenRes.ok && tokenData?.access_token) {
+        accessToken = tokenData.access_token;
+
+        const pagesRes = await fetch(
+          `https://graph.facebook.com/v20.0/me/accounts?fields=id,name,access_token,category,instagram_business_account{id,username}&access_token=${accessToken}`
+        );
+        const pagesData = await pagesRes.json().catch(() => null);
+
+        if (pagesRes.ok && pagesData?.data && pagesData.data.length > 0 && targetUserId) {
+          for (const page of pagesData.data) {
+            if (providerKey === 'facebook') {
+              await admin.from('social_accounts').upsert({
+                user_id: targetUserId,
+                provider: 'facebook',
+                provider_user_id: page.name || 'Facebook Page',
+                access_token_encrypted: encrypt(page.access_token || accessToken),
+                refresh_token_encrypted: encrypt(refreshToken),
+                token_expires_at: expiresAt.toISOString(),
+                meta: { page_id: page.id, category: page.category },
+                updated_at: new Date().toISOString(),
+              }, { onConflict: 'user_id, provider, provider_user_id' });
+              providerUserId = page.name;
+            }
+
+            if (page.instagram_business_account?.id && (providerKey === 'instagram' || providerKey === 'facebook')) {
+              const igHandle = page.instagram_business_account.username
+                ? `@${page.instagram_business_account.username}`
+                : `@${(page.name || 'brand').toLowerCase().replace(/\s+/g, '')}.ig`;
+
+              await admin.from('social_accounts').upsert({
+                user_id: targetUserId,
+                provider: 'instagram',
+                provider_user_id: igHandle,
+                access_token_encrypted: encrypt(page.access_token || accessToken),
+                refresh_token_encrypted: encrypt(refreshToken),
+                token_expires_at: expiresAt.toISOString(),
+                meta: { ig_user_id: page.instagram_business_account.id, page_id: page.id },
+                updated_at: new Date().toISOString(),
+              }, { onConflict: 'user_id, provider, provider_user_id' });
+
+              if (providerKey === 'instagram') {
+                providerUserId = igHandle;
               }
             }
           }
+        } else {
+          providerUserId = 'Meta User';
         }
-      } catch (metaErr) {
-        console.warn('Meta token exchange fallback:', metaErr);
+      } else {
+        const errMsg = tokenData?.error?.message || `Meta OAuth token exchange failed (HTTP ${tokenRes.status})`;
+        return new Response(renderErrorHtml(providerKey, errMsg), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
       }
+    }
+
+    // 3. Real TikTok Token Handshake
+    else if (providerKey === 'tiktok') {
+      const clientKey = process.env.TIKTOK_CLIENT_KEY;
+      const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
+
+      if (!clientKey || !clientSecret) {
+        return new Response(renderErrorHtml('tiktok', 'TIKTOK_CLIENT_KEY and TIKTOK_CLIENT_SECRET are not configured in environment.'), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+
+      const tokenRes = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_key: clientKey,
+          client_secret: clientSecret,
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: redirectUri,
+        }).toString(),
+      });
+
+      const tokenData = await tokenRes.json().catch(() => null);
+
+      if (tokenRes.ok && tokenData?.data?.access_token) {
+        accessToken = tokenData.data.access_token;
+        refreshToken = tokenData.data.refresh_token || '';
+        if (tokenData.data.expires_in) {
+          expiresAt = new Date(Date.now() + tokenData.data.expires_in * 1000);
+        }
+
+        // Fetch real TikTok user profile — open_id alone is not a stable identifier
+        let tiktokOpenId = tokenData.data.open_id || '';
+        let tiktokUsername = '';
+        try {
+          const profileRes = await fetch(
+            'https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,display_name,username',
+            { headers: { Authorization: `Bearer ${accessToken}` } }
+          );
+          const profileData = await profileRes.json().catch(() => null);
+          if (profileRes.ok && profileData?.data?.user) {
+            const u = profileData.data.user;
+            tiktokOpenId = u.open_id || tiktokOpenId;
+            tiktokUsername = u.username || u.display_name || '';
+          }
+        } catch (profileErr) {
+          console.warn('[TikTok Callback] Error fetching user profile:', profileErr);
+        }
+
+        providerUserId = tiktokUsername ? `@${tiktokUsername}` : (tiktokOpenId ? `tt_${tiktokOpenId.slice(0, 12)}` : '@tiktok_user');
+
+        // Store open_id and username in meta for future API calls
+        if (targetUserId) {
+          await admin.from('social_accounts').upsert({
+            user_id: targetUserId,
+            provider: 'tiktok',
+            provider_user_id: providerUserId,
+            access_token_encrypted: encrypt(accessToken),
+            refresh_token_encrypted: encrypt(refreshToken),
+            token_expires_at: expiresAt.toISOString(),
+            meta: {
+              open_id: tiktokOpenId,
+              username: tiktokUsername,
+              auto_connected_at: new Date().toISOString(),
+            },
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id, provider, provider_user_id' });
+        }
+      } else {
+        const errMsg = tokenData?.error?.message || `TikTok token exchange failed (HTTP ${tokenRes.status})`;
+        return new Response(renderErrorHtml('tiktok', errMsg), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+    }
+
+    // 4. Real LinkedIn Token Handshake
+    else if (providerKey === 'linkedin') {
+      const clientId = process.env.LINKEDIN_CLIENT_ID;
+      const clientSecret = process.env.LINKEDIN_CLIENT_SECRET;
+
+      if (!clientId || clientId === 'your_linkedin_client_id' || !clientSecret || clientSecret === 'your_linkedin_client_secret') {
+        return new Response(renderErrorHtml('linkedin', 'LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET are not configured in environment.'), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+
+      const tokenRes = await fetch('https://www.linkedin.com/oauth/v2/accessToken', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+        }).toString(),
+      });
+
+      const tokenData = await tokenRes.json().catch(() => null);
+
+      if (tokenRes.ok && tokenData?.access_token) {
+        accessToken = tokenData.access_token;
+        refreshToken = tokenData.refresh_token || '';
+        if (tokenData.expires_in) {
+          expiresAt = new Date(Date.now() + tokenData.expires_in * 1000);
+        }
+
+        // Fetch real LinkedIn member profile and URN
+        let linkedinSub = '';
+        let linkedinName = '';
+        let memberUrn = '';
+        try {
+          const meRes = await fetch('https://api.linkedin.com/v2/userinfo', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          });
+          const meData = await meRes.json().catch(() => null);
+          if (meRes.ok && meData?.sub) {
+            linkedinSub = meData.sub;
+            linkedinName = meData.name || `${meData.given_name || ''} ${meData.family_name || ''}`.trim();
+            memberUrn = `urn:li:person:${meData.sub}`;
+            providerUserId = linkedinName || `linkedin:${linkedinSub}`;
+          } else {
+            providerUserId = 'LinkedIn Member';
+          }
+        } catch (meErr) {
+          console.warn('[LinkedIn Callback] Error fetching member profile:', meErr);
+          providerUserId = 'LinkedIn Member';
+        }
+
+        // Store LinkedIn member data with URN in meta for publisher
+        if (targetUserId) {
+          await admin.from('social_accounts').upsert({
+            user_id: targetUserId,
+            provider: 'linkedin',
+            provider_user_id: providerUserId,
+            access_token_encrypted: encrypt(accessToken),
+            refresh_token_encrypted: encrypt(refreshToken),
+            token_expires_at: expiresAt.toISOString(),
+            meta: {
+              linkedin_id: linkedinSub,
+              member_urn: memberUrn,
+              name: linkedinName,
+              auto_connected_at: new Date().toISOString(),
+            },
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id, provider, provider_user_id' });
+        }
+      } else {
+        const errMsg = tokenData?.error_description || tokenData?.error || `LinkedIn token exchange failed (HTTP ${tokenRes.status})`;
+        return new Response(renderErrorHtml('linkedin', errMsg), {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      }
+    } else {
+      return new Response(renderErrorHtml(providerKey, `OAuth callback for provider '${providerKey}' is not supported.`), {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
     }
 
     // Persist verified account to Supabase social_accounts table

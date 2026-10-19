@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000 -H 0.0.0.0",
+    "dev": "NODE_OPTIONS='--max-http-header-size=131072' next dev -p 3000 -H 0.0.0.0",
     "build": "next build",
     "start": "NODE_OPTIONS='--max-http-header-size=131072' BUN_OPTIONS='--max-http-header-size=131072' next start -p ${PORT:-3000}",
     "lint": "eslint src",
     "test:integrations": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_integrations.ts",
     "test:social": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_social_connections.ts",
+    "test:prd": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_prd_compliance.ts",
+    "test:autopilot": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_autopilot_worker.ts",
     "seed": "ts-node scripts/seed.ts",
     "worker": "ts-node -O '{\"module\":\"commonjs\"}' worker/index.ts"
   },
@@ -36,7 +38,8 @@
     "recharts": "^3.10.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "eslint": "^9",

@@ -148,49 +148,6 @@ const INITIAL_CHANNELS: ChannelIntegrationState[] = [
     lastSyncedAt: new Date().toISOString(),
     latencyMs: 38,
   },
-  {
-    id: 'int-wa',
-    provider: 'whatsapp',
-    name: 'WhatsApp Cloud API',
-    api: 'Meta Business Platform',
-    category: 'WhatsApp Cloud API v20.0',
-    status: 'connected',
-    activeProfile: '+1 (555) 019-2834',
-    features: [
-      'Instant Keyword Auto-Responses',
-      'Product Catalogs',
-      'Broadcast Campaigns',
-      'Auto Comment Reply',
-    ],
-    autoCommentReply: true,
-    leadCaptureFunnel: true,
-    webhookUrl: 'https://buffermate.ai/api/webhooks/whatsapp',
-    verifyToken: 'sf_wa_live_token_552918',
-    subscribedEvents: ['messages', 'message_deliveries', 'message_reads'],
-    lastSyncedAt: new Date().toISOString(),
-    latencyMs: 25,
-  },
-  {
-    id: 'int-x',
-    provider: 'x',
-    name: 'X (Twitter)',
-    api: 'X API v2 Pro',
-    category: 'Twitter Developer Platform',
-    status: 'disconnected',
-    activeProfile: '@buffermate_ai',
-    features: [
-      'Direct Message Automation',
-      'Tweet Scheduler',
-      'Mention Auto-Reply',
-    ],
-    autoCommentReply: false,
-    leadCaptureFunnel: false,
-    webhookUrl: 'https://buffermate.ai/api/webhooks/twitter',
-    verifyToken: 'sf_x_live_token_334182',
-    subscribedEvents: ['tweet_create_events', 'direct_message_events'],
-    lastSyncedAt: '',
-    latencyMs: 0,
-  },
 ];
 
 class IntegrationsManager extends EventEmitter {
@@ -337,7 +294,7 @@ class IntegrationsManager extends EventEmitter {
       connected,
       disconnected,
       activeProgressText: `${connected} of ${total} Channels Active`,
-      healthStatus: connected >= 5 ? 'HEALTHY' : 'DEGRADED',
+      healthStatus: connected >= Math.max(1, total - 1) ? 'HEALTHY' : 'DEGRADED',
     };
   }
 }

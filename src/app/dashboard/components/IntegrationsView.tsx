@@ -31,7 +31,7 @@ import { ChannelIntegrationState, ChannelProvider } from '@/lib/services/integra
 
 export default function IntegrationsView() {
   const [channels, setChannels] = useState<ChannelIntegrationState[]>([]);
-  const [activeProgressText, setActiveProgressText] = useState('5 of 6 Channels Active');
+  const [activeProgressText, setActiveProgressText] = useState('');
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const [connectionLatency, setConnectionLatency] = useState<number>(28);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -1081,13 +1081,6 @@ export default function IntegrationsView() {
                     desc: 'Feed, Reels, Story mentions & DM flows'
                   },
                   {
-                    provider: 'x' as ChannelProvider,
-                    name: 'X (Twitter)',
-                    subtitle: 'Twitter API v2',
-                    color: 'bg-neutral-900 text-white border-neutral-700',
-                    desc: 'Real-time tweets, mentions & instant DMs'
-                  },
-                  {
                     provider: 'tiktok' as ChannelProvider,
                     name: 'TikTok for Business',
                     subtitle: 'TikTok Open API v2',
@@ -1100,13 +1093,6 @@ export default function IntegrationsView() {
                     subtitle: 'Threads API v1.0',
                     color: 'bg-neutral-950 text-white border-neutral-800',
                     desc: 'Thread posts & keyword auto-replies'
-                  },
-                  {
-                    provider: 'whatsapp' as ChannelProvider,
-                    name: 'WhatsApp Cloud API',
-                    subtitle: 'Meta Cloud API',
-                    color: 'bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0]',
-                    desc: 'Catalog broadcasts & auto-responders'
                   },
                   {
                     provider: 'linkedin' as ChannelProvider,

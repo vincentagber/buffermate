@@ -17,19 +17,20 @@ async function runIntegrationsTestSuite() {
   // Test 1: Initial State Verification
   console.log('--- Test 1: Initial Channels State Verification ---');
   const initialChannels = integrationsManager.getAll();
-  assert(initialChannels.length === 6, 'Total channels should be 6');
+  assert(initialChannels.length === 4, 'Total channels should be 4');
 
   const initialConnected = initialChannels.filter((c) => c.status === 'connected');
-  assert(initialConnected.length === 5, '5 channels should initially be connected');
+  assert(initialConnected.length === 4, 'All 4 channels should initially be connected');
 
   const xChannel = initialChannels.find((c) => c.provider === 'x');
-  assert(xChannel !== undefined, 'X (Twitter) channel must exist');
-  assert(xChannel?.status === 'disconnected', 'X (Twitter) should initially be disconnected');
+  assert(xChannel === undefined, 'X (Twitter) channel must be removed');
+  const waChannel = initialChannels.find((c) => c.provider === 'whatsapp');
+  assert(waChannel === undefined, 'WhatsApp channel must be removed');
 
   const initialSummary = integrationsManager.getSummary();
   assert(
-    initialSummary.activeProgressText === '5 of 6 Channels Active',
-    'Progress text must be "5 of 6 Channels Active"'
+    initialSummary.activeProgressText === '4 of 4 Channels Active',
+    'Progress text must be "4 of 4 Channels Active"'
   );
 
   // Test 2: Event Listener Verification
@@ -40,18 +41,28 @@ async function runIntegrationsTestSuite() {
   };
   integrationsManager.on('channel_updated', listener);
 
-  // Test 3: Connect X (Twitter)
-  console.log('\n--- Test 3: Connecting X (Twitter) Channel ---');
-  const connectedX = integrationsManager.connectChannel('x', '@buffermate_ai');
-  assert(connectedX.status === 'connected', 'X (Twitter) status should now be connected');
-  assert(connectedX.activeProfile === '@buffermate_ai', 'Active profile should be @buffermate_ai');
-  assert(connectedX.autoCommentReply === true, 'Auto comment reply should be enabled on connect');
-  assert(connectedX.leadCaptureFunnel === true, 'Lead capture funnel should be enabled on connect');
+  // Test 3: Disconnect & Reconnect Channel (Threads)
+  console.log('\n--- Test 3: Disconnecting & Reconnecting Threads Channel ---');
+  const disconnectedTh = integrationsManager.disconnectChannel('threads');
+  assert(disconnectedTh.status === 'disconnected', 'Threads status should now be disconnected');
+  assert(lastBroadcastEvent?.type === 'channel_disconnected', 'Event type should be channel_disconnected');
+
+  const summaryAfterDisconnectTh = integrationsManager.getSummary();
+  assert(
+    summaryAfterDisconnectTh.activeProgressText === '3 of 4 Channels Active',
+    'Progress text should now be "3 of 4 Channels Active"'
+  );
+
+  const reconnectedTh = integrationsManager.connectChannel('threads', '@buffermate.threads');
+  assert(reconnectedTh.status === 'connected', 'Threads status should now be connected');
+  assert(reconnectedTh.activeProfile === '@buffermate.threads', 'Active profile should be @buffermate.threads');
+  assert(reconnectedTh.autoCommentReply === true, 'Auto comment reply should be enabled on connect');
+  assert(reconnectedTh.leadCaptureFunnel === true, 'Lead capture funnel should be enabled on connect');
 
   const summaryAfterConnect = integrationsManager.getSummary();
   assert(
-    summaryAfterConnect.activeProgressText === '6 of 6 Channels Active',
-    'Progress text should now be "6 of 6 Channels Active"'
+    summaryAfterConnect.activeProgressText === '4 of 4 Channels Active',
+    'Progress text should now be "4 of 4 Channels Active"'
   );
   assert(lastBroadcastEvent !== null, 'Real-time event must be emitted on channel connect');
   assert(lastBroadcastEvent?.type === 'channel_connected', 'Event type should be channel_connected');
@@ -90,18 +101,17 @@ async function runIntegrationsTestSuite() {
 
   const summaryAfterDisconnect = integrationsManager.getSummary();
   assert(
-    summaryAfterDisconnect.activeProgressText === '5 of 6 Channels Active',
-    'Progress text should be "5 of 6 Channels Active" after disconnecting Instagram'
+    summaryAfterDisconnect.activeProgressText === '3 of 4 Channels Active',
+    'Progress text should be "3 of 4 Channels Active" after disconnecting Instagram'
   );
 
   // Restore Instagram for clean default state
   integrationsManager.connectChannel('instagram', '@buffermate.official');
-  integrationsManager.disconnectChannel('x');
 
   const finalSummary = integrationsManager.getSummary();
   assert(
-    finalSummary.activeProgressText === '5 of 6 Channels Active',
-    'Final state should cleanly reset to "5 of 6 Channels Active"'
+    finalSummary.activeProgressText === '4 of 4 Channels Active',
+    'Final state should cleanly reset to "4 of 4 Channels Active"'
   );
 
   integrationsManager.off('channel_updated', listener);

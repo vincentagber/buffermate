@@ -111,6 +111,36 @@ export function LinkedInIcon({ className = 'w-4 h-4', size, ...props }: IconProp
   );
 }
 
+export function YouTubeIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
+
+export function GoogleAdsIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path d="M12.015 2.1c-.815 0-1.58.337-2.146.945L2.247 11.23a3.076 3.076 0 0 0 0 4.316l2.128 2.146a3.03 3.03 0 0 0 4.298 0l7.622-8.185a3.076 3.076 0 0 0 0-4.316L14.167 3.045a3.03 3.03 0 0 0-2.152-.945zm6.544 6.772a3.076 3.076 0 0 0-2.151.905l-5.69 6.113 2.148 2.164 5.693-6.114a3.076 3.076 0 0 0 0-4.316l-.001-.001c-.567-.607-1.332-.751-2.149-.751z" />
+    </svg>
+  );
+}
+
 export function SocialPlatformIcon({
   channel,
   className = 'w-4 h-4',
@@ -136,6 +166,12 @@ export function SocialPlatformIcon({
       return <TwitterIcon className={className} size={size} />;
     case 'linkedin':
       return <LinkedInIcon className={className} size={size} />;
+    case 'youtube':
+      return <YouTubeIcon className={className} size={size} />;
+    case 'google':
+    case 'googleads':
+    case 'google ads':
+      return <GoogleAdsIcon className={className} size={size} />;
     default:
       return <InstagramIcon className={className} size={size} />;
   }

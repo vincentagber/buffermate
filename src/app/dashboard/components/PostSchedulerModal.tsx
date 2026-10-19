@@ -17,6 +17,9 @@ import {
 import { Post, SocialChannel } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import AiVoiceFormModal from '@/components/ai/AiVoiceFormModal';
+import AiFormBanner from '@/components/ai/AiFormBanner';
+import { ExtractedFormData } from '@/lib/ai/form-schema';
 
 interface PostSchedulerModalProps {
   isOpen: boolean;
@@ -48,6 +51,22 @@ export default function PostSchedulerModal({
   const [activePreview, setActivePreview] = useState<SocialChannel>('instagram');
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
+
+  const handleApplyAiData = (data: ExtractedFormData) => {
+    if (data.content) setContent(data.content);
+    if (data.scheduledAt) setScheduledDate(data.scheduledAt);
+    if (data.platforms && data.platforms.length > 0) {
+      const validChannels: SocialChannel[] = [];
+      data.platforms.forEach((p) => {
+        const norm = (p === 'x' || p === 'twitter') ? 'x' : p.toLowerCase();
+        if (['instagram', 'tiktok', 'facebook', 'threads', 'whatsapp', 'x'].includes(norm)) {
+          validChannels.push(norm as SocialChannel);
+        }
+      });
+      if (validChannels.length > 0) setSelectedChannels(validChannels);
+    }
+  };
 
   const handleFileUpload = (file: File) => {
     if (!file.type.startsWith('image/')) {
@@ -220,6 +239,14 @@ export default function PostSchedulerModal({
               })}
             </div>
           </div>
+
+          {/* Kobble-Style AI Autofill Trigger Banner */}
+          <AiFormBanner
+            title="Generate post with AI"
+            description="Speak your idea out loud or paste a rough brief — AI will extract channels, schedule time, and fill the form."
+            buttonText="Generate with AI"
+            onOpenModal={() => setShowAiModal(true)}
+          />
 
           {/* Post Content */}
           <div>
@@ -471,6 +498,17 @@ export default function PostSchedulerModal({
           </p>
         </div>
       </div>
+
+      {/* AI Voice & Rough Draft Autofill Modal */}
+      {showAiModal && (
+        <AiVoiceFormModal
+          isOpen={showAiModal}
+          onClose={() => setShowAiModal(false)}
+          title="Generate task with AI"
+          subtitle="Just describe what you want to get done. AI will instantly draft a perfect title, write instructions, and fill the form for you!"
+          onApplyData={handleApplyAiData}
+        />
+      )}
     </div>
   );
 }

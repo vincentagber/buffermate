@@ -40,40 +40,60 @@ Format strictly as a valid JSON array of objects with keys: topic, hook, content
     }
 
     if (!Array.isArray(generatedSuggestions) || generatedSuggestions.length === 0) {
-      // Dynamic fallback based on topic and niche
+      const cleanTopic = topic && topic.trim() ? topic.trim() : 'Digital Marketing & Growth Automation';
+      
+      // Derive contextual keyword trigger from topic
+      let keyword = 'ACCESS';
+      const lower = cleanTopic.toLowerCase();
+      if (lower.includes('course') || lower.includes('coaching') || lower.includes('class')) keyword = 'COURSE';
+      else if (lower.includes('launch') || lower.includes('product') || lower.includes('shop')) keyword = 'LAUNCH';
+      else if (lower.includes('lead') || lower.includes('client') || lower.includes('scale')) keyword = 'LEADS';
+      else if (lower.includes('demo') || lower.includes('app') || lower.includes('software')) keyword = 'DEMO';
+      else if (lower.includes('price') || lower.includes('cost') || lower.includes('quote')) keyword = 'PRICE';
+
+      const hashtagsBase = cleanTopic
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]/g, '')
+        .split(' ')
+        .filter((w: string) => w.length > 3)
+        .slice(0, 2)
+        .map((w: string) => `#${w}`);
+
       generatedSuggestions = [
         {
           id: `sug-${Date.now()}-1`,
-          topic: `${topic} Blueprint`,
-          hook: `How we automated 100% of our customer DMs with AI in 3 simple steps 🚀`,
-          content: `Most businesses lose 70% of potential buyers because replies take hours.\n\nHere is how to set up instant keyword funnels:\n1. Hook followers with high value.\n2. Ask for a keyword comment (e.g. "ACCESS").\n3. Our AI engine instantly replies and DMs the link in 2 seconds!\n\nComment "ACCESS" below to get the full setup guide! 👇\n\n#buffermate #growthhacks #automation #marketingtools`,
-          hashtags: ['#buffermate', '#growthhacks', '#automation', '#marketingtools', '#scale'],
+          topic: `${cleanTopic} Blueprint`,
+          hook: cleanTopic.toLowerCase().includes('comment') || cleanTopic.toLowerCase().includes('digital marketing')
+            ? 'How one simple comment automation generated 1,200 leads in 48 hours without spending $1 on ads 🤯'
+            : `How one simple comment automation for "${cleanTopic}" generated 1,200 leads in 48 hours without spending $1 on ads 🤯`,
+          content: `Most creators lose 80% of their post engagement because they cannot reply to comments fast enough.\n\nHere is the exact 3-step flywheel we use for ${cleanTopic}:\n1. Hook followers with a high-value resource\n2. Ask for a specific keyword comment (e.g. "${keyword}")\n3. Our AI engine instantly replies and DMs the link!\n\nComment "${keyword}" below to test this live right now! 👇\n\n#socialautomation #marketinghacks #leadgeneration #contentcreator ${hashtagsBase.join(' ')}`,
+          hashtags: ['#socialautomation', '#marketinghacks', '#leadgeneration', '#contentcreator', ...hashtagsBase],
           recommended_time: 'Today at 6:30 PM (Peak Reach Window)',
-          target_channels: channels,
-          call_to_action: 'Comment "ACCESS" for instant link delivery.',
+          target_channels: channels.length >= 3 ? channels.slice(0, 3) : channels,
+          call_to_action: `Comment "${keyword}" to get the playbook DM'd instantly.`,
           estimated_engagement: '94% Viral Potential',
         },
         {
           id: `sug-${Date.now()}-2`,
           topic: `24/7 Conversion Funnel`,
-          hook: `Why smart brands never leave customer DMs unread in 2026 📈`,
-          content: `Speed to lead is everything. Replying in 2 minutes vs 2 hours makes a 391% difference in conversions.\n\nAutomate your responses across Instagram, TikTok, Facebook, and Threads without writing code.\n\nDrop "DEMO" below for a private walkthrough!`,
-          hashtags: ['#growthmindset', '#businesstips', '#marketingstrategy', '#entrepreneurship'],
-          recommended_time: 'Tomorrow at 9:00 AM (Morning Surge)',
-          target_channels: channels,
+          hook: 'Why smart brands never leave customer DMs unread in 2026 📈',
+          content: `Speed to lead is everything. If a follower asks for info on ${cleanTopic}, replying in 2 minutes vs 2 hours makes a 391% difference in conversion.\n\nAutomate your responses across ${channels.join(', ')} with zero code.\n\nDrop "DEMO" below for a private walkthrough!`,
+          hashtags: ['#growthmindset', '#businesstips', '#marketingstrategy', '#entrepreneurship', ...hashtagsBase],
+          recommended_time: 'Tomorrow at 9:00 AM (Morning Catch-up)',
+          target_channels: channels.length >= 3 ? [channels[0], channels[1] || channels[0], channels[2] || channels[0]] : channels,
           call_to_action: 'Drop "DEMO" to test the auto-responder.',
-          estimated_engagement: '89% High Conversion',
+          estimated_engagement: '88% High Conversion',
         },
         {
           id: `sug-${Date.now()}-3`,
           topic: `Multi-Platform Publishing`,
-          hook: `Stop posting manually across 5 different social networks 🛑`,
-          content: `Publishing everywhere doesn't mean working 10 hours a day.\n\nWrite once, optimize with AI per platform, and schedule in 30 seconds.\n\nCheck the link in our bio or drop "START" to try it today!`,
-          hashtags: ['#productivitytips', '#socialmediamarketing', '#digitalmarketing'],
-          recommended_time: 'Thursday at 1:15 PM (Lunchtime Rush)',
+          hook: 'Stop posting manually to 5 different social networks one by one 🛑',
+          content: `Publishing everywhere doesn't mean working 10 hours a day.\n\nWith BufferMate AI, write once, optimize with AI per platform for ${cleanTopic}, and schedule in 30 seconds.\n\nCheck the link in our bio to try it free today!`,
+          hashtags: ['#productivitytips', '#socialmediamarketing', '#buffersocial', '#digitalmarketing', ...hashtagsBase],
+          recommended_time: 'Thursday at 1:15 PM (Lunchtime Surge)',
           target_channels: channels,
-          call_to_action: 'Drop "START" for instant onboarding.',
-          estimated_engagement: '91% High Engagement',
+          call_to_action: 'Click link in bio or drop "START" for instant onboarding.',
+          estimated_engagement: '91% High Save Rate',
         },
       ];
     }

@@ -1,11 +1,21 @@
-import { SocialProvider, ProviderResult, TokenResponse } from './SocialProvider';
+import { 
+  SocialProvider, 
+  ProviderResult, 
+  TokenResponse, 
+  ProviderCapability, 
+  PostValidationResult, 
+  PublishStatusResult, 
+  ProviderConfigStatus,
+  ProviderNotConfiguredError,
+  validatePostForPlatform 
+} from './SocialProvider';
 
 export interface FacebookMetrics {
-  impressions: number;
-  engagedUsers: number;
-  reactions: number;
-  comments: number;
-  shares: number;
+  impressions?: number;
+  engagedUsers?: number;
+  reactions?: number;
+  comments?: number;
+  shares?: number;
 }
 
 export interface FacebookComment {
@@ -18,11 +28,90 @@ export interface FacebookComment {
 export class FacebookProvider implements SocialProvider {
   public name = 'facebook';
 
+  public getCapabilities(): ProviderCapability[] {
+    return [
+      'create_text',
+      'publish_image',
+      'publish_video',
+      'publish_carousel',
+      'schedule',
+      'comments_read',
+      'comments_reply',
+      'inbox_read',
+      'inbox_reply',
+      'insights_read',
+      'ads_manage',
+      'account_metrics',
+    ];
+  }
+
+  public hasCapability(capability: ProviderCapability): boolean {
+    return this.getCapabilities().includes(capability);
+  }
+
+  public isConfigured(): ProviderConfigStatus {
+    const appId = process.env.FACEBOOK_APP_ID;
+    const pageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const missing: string[] = [];
+
+    if (!appId || appId === 'your_facebook_app_id') {
+      missing.push('FACEBOOK_APP_ID');
+    }
+    if (!pageToken) {
+      missing.push('FACEBOOK_PAGE_ACCESS_TOKEN');
+    }
+
+    return {
+      configured: missing.length === 0,
+      missingCredentials: missing,
+      blockerDescription: missing.length > 0
+        ? 'Meta Developer App credentials are not configured in environment (FACEBOOK_APP_ID is placeholder or FACEBOOK_PAGE_ACCESS_TOKEN is missing)'
+        : undefined,
+      authMethod: 'oauth2',
+      liveEndpointAvailable: false,
+    };
+  }
+
+  public validatePost(content: string, attachments: string[] = []): PostValidationResult {
+    return validatePostForPlatform(this.name, content, attachments);
+  }
+
+  public async getPublishStatus(providerPostId: string, accessToken?: string): Promise<PublishStatusResult> {
+    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    if (!token) {
+      return { status: 'failed', errorCode: 'AUTH_REQUIRED', errorMessage: 'Page access token required' };
+    }
+
+    try {
+      const res = await fetch(`https://graph.facebook.com/v20.0/${providerPostId}?access_token=${token}`);
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.id) {
+        return {
+          status: 'published',
+          externalUrl: `https://facebook.com/${providerPostId}`,
+        };
+      }
+      return {
+        status: 'failed',
+        errorCode: data?.error?.code ? `FB_${data.error.code}` : 'NOT_FOUND',
+        errorMessage: data?.error?.message || 'Post not found',
+      };
+    } catch (e: any) {
+      return { status: 'failed', errorCode: 'NETWORK_ERROR', errorMessage: e.message };
+    }
+  }
+
+  public async reconcileTimeout(contentHash: string, accessToken?: string): Promise<{ published: boolean; providerPostId?: string; url?: string }> {
+    return { published: false };
+  }
+
   /**
-   * Verify Facebook Page connection via Graph API
+   * Verify Facebook Page connection via Meta Graph API v20.0
    */
-  public async verifyPage(pageAccessToken: string): Promise<{ valid: boolean; pageName: string; pageId: string; error?: string }> {
-    if (!pageAccessToken || pageAccessToken.trim().length === 0 || pageAccessToken === 'invalid_token') {
+  public async verifyPage(pageAccessToken?: string): Promise<{ valid: boolean; pageName: string; pageId: string; error?: string }> {
+    const token = pageAccessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+
+    if (!token || token.trim().length === 0 || token === 'invalid_token') {
       return {
         valid: false,
         pageName: '',
@@ -31,34 +120,45 @@ export class FacebookProvider implements SocialProvider {
       };
     }
 
-    try {
-      if (pageAccessToken.length > 30 && !pageAccessToken.startsWith('oauth_token_')) {
-        const res = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name,category&access_token=${pageAccessToken}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.id) {
-            return {
-              valid: true,
-              pageName: data.name || 'BufferMate Growth Page',
-              pageId: data.id,
-            };
-          }
-        }
-      }
-    } catch (e) {
-      console.warn('[FacebookProvider] Live verification warning:', e);
+    const config = this.isConfigured();
+    if (!config.configured && !pageAccessToken) {
+      return {
+        valid: false,
+        pageName: '',
+        pageId: '',
+        error: `PROVIDER_NOT_CONFIGURED: ${config.blockerDescription}`,
+      };
     }
 
-    return {
-      valid: true,
-      pageName: 'BufferMate Growth Page',
-      pageId: '104928194829',
-    };
+    try {
+      const res = await fetch(`https://graph.facebook.com/v20.0/me?fields=id,name,category&access_token=${token}`);
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.id) {
+        return {
+          valid: true,
+          pageName: data.name || 'Facebook Page',
+          pageId: data.id,
+        };
+      }
+      return {
+        valid: false,
+        pageName: '',
+        pageId: '',
+        error: data?.error?.message || `Facebook Graph API error (HTTP ${res.status})`,
+      };
+    } catch (e: any) {
+      return {
+        valid: false,
+        pageName: '',
+        pageId: '',
+        error: `Network error connecting to Meta Graph API: ${e.message}`,
+      };
+    }
   }
 
   /**
-   * Post to Facebook Page or Group via Meta Graph API v20.0
-   * API Endpoint: https://graph.facebook.com/v20.0/{page_id}/feed
+   * Post to Facebook Page via Meta Graph API v20.0
+   * Endpoint: POST https://graph.facebook.com/v20.0/{page_id}/feed
    */
   public async post(
     content: string,
@@ -66,132 +166,128 @@ export class FacebookProvider implements SocialProvider {
     accessToken: string = '',
     options?: { pageId?: string; pageAccessToken?: string }
   ): Promise<ProviderResult> {
-    if (!accessToken || accessToken === 'invalid_token') {
+    const token = options?.pageAccessToken || accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const pageId = options?.pageId || process.env.FACEBOOK_PAGE_ID || 'me';
+
+    if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid Facebook Page Access Token required.');
     }
 
-    const pageToken = options?.pageAccessToken || accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-    const pageId = options?.pageId || process.env.FACEBOOK_PAGE_ID || 'me';
-
-    if (pageToken && pageToken.length > 30 && !pageToken.startsWith('oauth_token_')) {
-      try {
-        const isPhoto = attachments.length > 0 && attachments[0].startsWith('http');
-        const endpoint = isPhoto
-          ? `https://graph.facebook.com/v20.0/${pageId}/photos`
-          : `https://graph.facebook.com/v20.0/${pageId}/feed`;
-
-        const bodyParams: Record<string, string> = {
-          access_token: pageToken,
-        };
-
-        if (isPhoto) {
-          bodyParams.url = attachments[0];
-          bodyParams.caption = content;
-        } else {
-          bodyParams.message = content;
-        }
-
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bodyParams),
-        });
-
-        const data = await res.json();
-
-        if (res.ok && (data?.id || data?.post_id)) {
-          const postId = data.post_id || data.id;
-          const liveUrl = `https://facebook.com/${postId}`;
-          return {
-            id: postId,
-            url: liveUrl,
-            raw: data,
-          };
-        } else {
-          throw new Error(data?.error?.message || 'Facebook Graph API rejected post');
-        }
-      } catch (err: any) {
-        throw err;
-      }
+    const config = this.isConfigured();
+    if (!config.configured && !options?.pageAccessToken && !accessToken) {
+      throw new ProviderNotConfiguredError('facebook', config.missingCredentials, config.blockerDescription!);
     }
 
-    // Direct Live Facebook Post Handshake
-    const generatedPostId = `${Math.floor(100000000000 + Math.random() * 900000000000)}_${Date.now()}`;
-    const livePostUrl = `https://facebook.com/permalink.php?story_fbid=${generatedPostId}&id=${pageId}`;
+    const isPhoto = attachments.length > 0 && attachments[0].startsWith('http');
+    const endpoint = isPhoto
+      ? `https://graph.facebook.com/v20.0/${pageId}/photos`
+      : `https://graph.facebook.com/v20.0/${pageId}/feed`;
 
-    return {
-      id: generatedPostId,
-      url: livePostUrl,
-      raw: {
-        id: generatedPostId,
-        message: content,
-        created_time: new Date().toISOString(),
-      },
+    const bodyParams: Record<string, string> = {
+      access_token: token,
     };
+
+    if (isPhoto) {
+      bodyParams.url = attachments[0];
+      bodyParams.caption = content;
+    } else {
+      bodyParams.message = content;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(bodyParams),
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (res.ok && (data?.id || data?.post_id)) {
+      const postId = data.post_id || data.id;
+      const liveUrl = `https://facebook.com/${postId}`;
+      return {
+        id: postId,
+        url: liveUrl,
+        raw: data,
+      };
+    }
+
+    throw new Error(data?.error?.message || `Facebook Graph API rejected post (HTTP ${res.status})`);
   }
 
   /**
    * Fetch real-time comments on a Facebook post
-   * Endpoint: GET https://graph.facebook.com/v20.0/{postId}/comments
    */
-  public async fetchComments(postId: string, accessToken: string): Promise<FacebookComment[]> {
-    if (!accessToken || accessToken === 'invalid_token') {
+  public async fetchComments(postId: string, accessToken?: string): Promise<FacebookComment[]> {
+    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid Page Token required to read comments.');
     }
 
-    return [
-      {
-        id: `fb_comm_${Date.now() - 50000}`,
-        from: 'Marcus Vance',
-        message: 'Sent a Messenger DM! Check inbox.',
-        created_time: new Date(Date.now() - 50000).toISOString(),
-      },
-      {
-        id: `fb_comm_${Date.now() - 18000}`,
-        from: 'Elena Rostova',
-        message: 'INFO',
-        created_time: new Date(Date.now() - 18000).toISOString(),
-      },
-    ];
+    const res = await fetch(`https://graph.facebook.com/v20.0/${postId}/comments?access_token=${token}`);
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      throw new Error(data?.error?.message || `Failed to fetch Facebook comments (HTTP ${res.status})`);
+    }
+
+    return (data?.data || []).map((c: any) => ({
+      id: c.id,
+      from: c.from?.name || 'User',
+      message: c.message,
+      created_time: c.created_time,
+    }));
   }
 
   /**
    * Fetch real-time post engagement & page insights
-   * Endpoint: GET https://graph.facebook.com/v20.0/{postId}/insights
    */
-  public async fetchMetrics(postId: string, accessToken: string): Promise<FacebookMetrics> {
-    if (!accessToken || accessToken === 'invalid_token') {
+  public async fetchMetrics(postId: string, accessToken?: string): Promise<FacebookMetrics> {
+    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid token required to fetch Facebook insights.');
     }
 
-    return {
-      impressions: 8920,
-      engagedUsers: 1420,
-      reactions: 395,
-      comments: 64,
-      shares: 41,
-    };
+    const res = await fetch(`https://graph.facebook.com/v20.0/${postId}/insights?access_token=${token}`);
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      throw new Error(data?.error?.message || `Failed to fetch Facebook insights (HTTP ${res.status})`);
+    }
+
+    return data || {};
   }
 
   /**
    * Exchange short-lived token for Long-Lived Page Access Token (60 days)
-   * Endpoint: GET https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token
    */
   public async refreshTokens(refreshToken: string): Promise<TokenResponse> {
     if (!refreshToken || refreshToken === 'invalid_refresh_token') {
       throw new Error('TOKEN_REFRESH_FAILED: Meta exchange token is expired or revoked.');
     }
 
-    const newAccessToken = `oauth_token_facebook_longlived_${Date.now()}`;
-    const newRefreshToken = `oauth_refresh_facebook_${Date.now()}`;
-    const expiresAt = new Date(Date.now() + 60 * 86400 * 1000); // 60 days
+    const appId = process.env.FACEBOOK_APP_ID;
+    const appSecret = process.env.FACEBOOK_APP_SECRET;
 
-    return {
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-      expiresAt,
-    };
+    if (!appId || appId === 'your_facebook_app_id' || !appSecret || appSecret === 'your_facebook_app_secret') {
+      throw new Error('TOKEN_REFRESH_FAILED: FACEBOOK_APP_ID and FACEBOOK_APP_SECRET must be configured.');
+    }
+
+    const res = await fetch(
+      `https://graph.facebook.com/v20.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${refreshToken}`
+    );
+
+    const data = await res.json().catch(() => null);
+    if (res.ok && data?.access_token) {
+      return {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token || refreshToken,
+        expiresAt: new Date(Date.now() + (data.expires_in || 5184000) * 1000),
+      };
+    }
+
+    throw new Error(`TOKEN_REFRESH_FAILED: ${data?.error?.message || `HTTP ${res.status}`}`);
   }
 }

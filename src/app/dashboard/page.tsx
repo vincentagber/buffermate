@@ -38,10 +38,19 @@ import {
   Play,
   CheckSquare,
   Square,
-  Check
+  Check,
+  Megaphone,
+  Target
 } from 'lucide-react';
 import Sidebar, { BufferMateLogo } from './components/Sidebar';
 import Header from './components/Header';
+import CommandCenterView from './components/CommandCenterView';
+import CampaignsView from './components/CampaignsView';
+import {
+  GoalsView,
+  TasksView,
+  InboxView,
+} from './components/SocialynViews';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
@@ -70,9 +79,9 @@ export default function DashboardPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  // Navigation & View state
-  const [currentTab, setCurrentTab] = useState('overview');
-  const [dashboardSubView, setDashboardSubView] = useState<'platform_overview' | 'metrics_dashboard'>('platform_overview');
+  // Navigation & View state - Defaulting to Command Center matching Socialyn OS
+  const [currentTab, setCurrentTab] = useState('command-center');
+  const [dashboardSubView, setDashboardSubView] = useState<'command_center' | 'platform_overview' | 'metrics_dashboard'>('command_center');
   const [activityFilter, setActivityFilter] = useState<'all' | 'automations' | 'leads' | 'posts'>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -392,7 +401,7 @@ export default function DashboardPage() {
   const leadsCapturedToday = realtimeStats.leadsCapturedToday;
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] font-sans antialiased text-[#1E293B] overflow-x-hidden">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-[#0F172A] overflow-x-hidden">
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-4 sm:right-6 z-50 bg-[#1E293B] text-white px-4 sm:px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-2.5 text-xs font-bold animate-fade-in border border-neutral-700 max-w-[90vw]">
@@ -404,7 +413,12 @@ export default function DashboardPage() {
       {/* Sidebar Component with mobile drawer and desktop collapse support */}
       <Sidebar
         currentTab={currentTab}
-        onSelectTab={(tab) => setCurrentTab(tab)}
+        onSelectTab={(tab) => {
+          setCurrentTab(tab);
+          if (tab === 'command-center' || tab === 'overview') {
+            setDashboardSubView('command_center');
+          }
+        }}
         onOpenCreateModal={() => {
           setEditingAutomation(null);
           setIsCreateAutomationOpen(true);
@@ -431,33 +445,61 @@ export default function DashboardPage() {
         setIsMobileMenuOpen={setIsMobileMenuOpen}
         isSidebarCollapsed={isSidebarCollapsed}
         onToggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-        onSelectTab={(tab) => setCurrentTab(tab)}
+        onSelectTab={(tab) => {
+          setCurrentTab(tab);
+          if (tab === 'command-center' || tab === 'overview') {
+            setDashboardSubView('command_center');
+          }
+        }}
+        onOpenSearch={() => {
+          const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true });
+          window.dispatchEvent(event);
+        }}
       />
 
       {/* Main Content Area */}
       <main className={`pt-16 min-h-screen pb-16 transition-all duration-300 ${isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
           
-          {/* Sub Navigation / View Switcher when in 'overview' */}
-          {currentTab === 'overview' && (
+          {/* Sub Navigation / View Switcher when in 'command-center' or 'overview' */}
+          {(currentTab === 'command-center' || currentTab === 'overview') && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
-              <div className="inline-flex bg-[#F1E9DF] p-1 rounded-2xl border border-[#E8DFC9] self-start w-full sm:w-auto">
+              <div className="inline-flex bg-white p-1 rounded-2xl border-2 border-dashed border-[#CBD5E1] shadow-2xs self-start w-full sm:w-auto">
                 <button
-                  onClick={() => setDashboardSubView('platform_overview')}
+                  onClick={() => {
+                    setCurrentTab('command-center');
+                    setDashboardSubView('command_center');
+                  }}
+                  className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
+                    dashboardSubView === 'command_center'
+                      ? 'bg-[#0F172A] text-white shadow-xs'
+                      : 'text-[#64748B] hover:text-[#0F172A]'
+                  }`}
+                >
+                  Command Center
+                </button>
+                <button
+                  onClick={() => {
+                    setCurrentTab('command-center');
+                    setDashboardSubView('platform_overview');
+                  }}
                   className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
                     dashboardSubView === 'platform_overview'
-                      ? 'bg-white text-[#E05A2B] shadow-xs'
-                      : 'text-[#64748B] hover:text-[#1E293B]'
+                      ? 'bg-[#0F172A] text-white shadow-xs'
+                      : 'text-[#64748B] hover:text-[#0F172A]'
                   }`}
                 >
                   Platform & Channels
                 </button>
                 <button
-                  onClick={() => setDashboardSubView('metrics_dashboard')}
+                  onClick={() => {
+                    setCurrentTab('command-center');
+                    setDashboardSubView('metrics_dashboard');
+                  }}
                   className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
                     dashboardSubView === 'metrics_dashboard'
-                      ? 'bg-white text-[#E05A2B] shadow-xs'
-                      : 'text-[#64748B] hover:text-[#1E293B]'
+                      ? 'bg-[#0F172A] text-white shadow-xs'
+                      : 'text-[#64748B] hover:text-[#0F172A]'
                   }`}
                 >
                   KPI Dashboard
@@ -467,15 +509,15 @@ export default function DashboardPage() {
               {/* Quick Jump Buttons */}
               <div className="flex items-center space-x-2 self-end sm:self-auto">
                 <button
-                  onClick={() => setCurrentTab('post-manager')}
-                  className="px-3 py-1.5 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-xl text-xs font-bold text-[#475569] transition-colors flex items-center space-x-1.5"
+                  onClick={() => setCurrentTab('campaigns')}
+                  className="px-3 py-1.5 bg-white border-2 border-dashed border-[#CBD5E1] hover:bg-[#F8FAFC] rounded-xl text-xs font-bold text-[#0F172A] transition-colors flex items-center space-x-1.5 shadow-2xs"
                 >
-                  <Calendar className="w-3.5 h-3.5 text-[#64748B]" />
-                  <span>Posts Queue</span>
+                  <Megaphone className="w-3.5 h-3.5 text-[#6366F1]" />
+                  <span>Campaigns</span>
                 </button>
                 <button
-                  onClick={() => setCurrentTab('ai-autopilot')}
-                  className="px-3 py-1.5 bg-[#FFF0E6] border border-[#FED7AA] hover:bg-[#FFE4D6] rounded-xl text-xs font-bold text-[#E05A2B] transition-colors flex items-center space-x-1.5"
+                  onClick={() => setCurrentTab('content-studio')}
+                  className="px-3 py-1.5 bg-[#EEF2FF] border border-[#C7D2FE] hover:bg-[#E0E7FF] rounded-xl text-xs font-bold text-[#6366F1] transition-colors flex items-center space-x-1.5 shadow-2xs"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>AI Studio</span>
@@ -485,9 +527,52 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 1: PLATFORM OVERVIEW & CHANNELS (SCREENSHOT 1)
+              VIEW 0: SOCIALYN COMMAND CENTER (SCREENSHOT 2)
              ========================================================= */}
-          {currentTab === 'overview' && dashboardSubView === 'platform_overview' && (
+          {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'command_center' && (
+            <CommandCenterView
+              onNavigateTab={(tab) => setCurrentTab(tab)}
+              onOpenCreateFlow={() => {
+                setEditingAutomation(null);
+                setIsCreateAutomationOpen(true);
+              }}
+              userName={userName}
+            />
+          )}
+
+          {/* =========================================================
+              VIEW: CAMPAIGNS (SCREENSHOT 1)
+             ========================================================= */}
+          {currentTab === 'campaigns' && (
+            <CampaignsView />
+          )}
+
+          {/* =========================================================
+              VIEW: GOALS
+             ========================================================= */}
+          {currentTab === 'goals' && (
+            <GoalsView />
+          )}
+
+          {/* =========================================================
+              VIEW: TASKS
+             ========================================================= */}
+          {currentTab === 'tasks' && (
+            <TasksView />
+          )}
+
+          {/* =========================================================
+              VIEW: INBOX
+             ========================================================= */}
+          {currentTab === 'inbox' && (
+            <InboxView />
+          )}
+
+
+          {/* =========================================================
+              VIEW 1: PLATFORM OVERVIEW & CHANNELS
+             ========================================================= */}
+          {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'platform_overview' && (
             <div className="space-y-4 sm:space-y-6 animate-fade-in">
               {/* Header Title Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
@@ -958,7 +1043,7 @@ export default function DashboardPage() {
           {/* =========================================================
               VIEW 2: METRICS & KPI DASHBOARD (SCREENSHOT 2)
              ========================================================= */}
-          {currentTab === 'overview' && dashboardSubView === 'metrics_dashboard' && (
+          {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'metrics_dashboard' && (
             <div className="space-y-4 sm:space-y-6 animate-fade-in">
               {/* Header Title Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
@@ -1246,7 +1331,7 @@ export default function DashboardPage() {
           {/* =========================================================
               VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER
              ========================================================= */}
-          {currentTab === 'post-manager' && (
+          {(currentTab === 'post-manager' || currentTab === 'calendar') && (
             <div className="space-y-4 sm:space-y-6 animate-fade-in relative pb-16">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
@@ -1418,9 +1503,18 @@ export default function DashboardPage() {
           {/* =========================================================
               VIEW 4: AI CONTENT STUDIO & AUTOMATION
              ========================================================= */}
-          {currentTab === 'ai-autopilot' && (
+          {(currentTab === 'ai-autopilot' || currentTab === 'content-studio') && (
             <div className="animate-fade-in">
               <AiContentStudio onSchedulePost={handleSavePost} />
+            </div>
+          )}
+
+          {/* =========================================================
+              VIEW: CREATIVE STUDIO
+             ========================================================= */}
+          {currentTab === 'creative-studio' && (
+            <div className="animate-fade-in">
+              <AiAutoPostStudio onSchedulePost={handleSavePost} />
             </div>
           )}
 
@@ -1927,6 +2021,153 @@ export default function DashboardPage() {
               </div>
             );
           })()}
+
+          {/* =========================================================
+              VIEW: COMPETITORS
+             ========================================================= */}
+          {currentTab === 'competitors' && (
+            <div className="space-y-6 animate-fade-in font-sans">
+              <div>
+                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Competitor Radar</h1>
+                <p className="text-xs sm:text-sm text-[#64748B]">Benchmark brand engagement, follower growth velocity, and top posting times.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm text-[#0F172A]">Northstar (You)</span>
+                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Leader</span>
+                  </div>
+                  <div className="text-2xl font-black text-[#0F172A]">4.8% Eng. Rate</div>
+                  <p className="text-xs text-[#64748B]">24.2K total reach this week</p>
+                </div>
+
+                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm text-[#0F172A]">Acme Agency</span>
+                    <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Peer</span>
+                  </div>
+                  <div className="text-2xl font-black text-[#64748B]">3.1% Eng. Rate</div>
+                  <p className="text-xs text-[#64748B]">18.5K total reach this week</p>
+                </div>
+
+                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm text-[#0F172A]">Vanguard Media</span>
+                    <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Peer</span>
+                  </div>
+                  <div className="text-2xl font-black text-[#64748B]">2.7% Eng. Rate</div>
+                  <p className="text-xs text-[#64748B]">12.1K total reach this week</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              VIEW: EXPERIMENTS
+             ========================================================= */}
+          {currentTab === 'experiments' && (
+            <div className="space-y-6 animate-fade-in font-sans">
+              <div>
+                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Social Experiments</h1>
+                <p className="text-xs sm:text-sm text-[#64748B]">A/B hook split-testing, CTA variations, and algorithmic velocity testing.</p>
+              </div>
+
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
+                <div className="flex items-center justify-between border-b border-[#F1F5F9] pb-3">
+                  <span className="font-bold text-sm text-[#0F172A]">Experiment #04 · Question vs Statement Hooks</span>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Significant Result (95% Conf.)</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                    <span className="font-bold text-emerald-600">Variant A (Question Hook) · Winner</span>
+                    <p className="text-[#0F172A] font-semibold">"Are you still manually sending DMs in 2026?"</p>
+                    <p className="text-[#64748B]">CTR: 5.4% · 142 Leads generated</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
+                    <span className="font-bold text-[#64748B]">Variant B (Statement Hook)</span>
+                    <p className="text-[#0F172A] font-semibold">"How top social agencies automate outbound DMs."</p>
+                    <p className="text-[#64748B]">CTR: 3.1% · 76 Leads generated</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              VIEW: ROI & REVENUE
+             ========================================================= */}
+          {currentTab === 'roi-revenue' && (
+            <div className="space-y-6 animate-fade-in font-sans">
+              <div>
+                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">ROI & Revenue Attribution</h1>
+                <p className="text-xs sm:text-sm text-[#64748B]">Track multi-touch closed revenue sourced directly from organic and paid social channels.</p>
+              </div>
+
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">CLOSED WON REVENUE</span>
+                    <div className="text-3xl font-extrabold text-[#0F172A]">$118,400</div>
+                    <span className="text-xs text-emerald-600 font-semibold">+44% vs previous quarter</span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">PIPELINE CONTRIBUTION</span>
+                    <div className="text-3xl font-extrabold text-[#6366F1]">68.4%</div>
+                    <span className="text-xs text-[#64748B]">Direct from social touchpoints</span>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">AVERAGE DEAL SIZE</span>
+                    <div className="text-3xl font-extrabold text-[#0F172A]">$8,450</div>
+                    <span className="text-xs text-[#64748B]">From qualified social leads</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =========================================================
+              VIEW: LISTENING & CRISIS
+             ========================================================= */}
+          {currentTab === 'listening' && (
+            <div className="space-y-6 animate-fade-in font-sans">
+              <div>
+                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">ENGAGE</div>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Listening & Crisis Radar</h1>
+                <p className="text-xs sm:text-sm text-[#64748B]">Live social listening across mentions, keywords, brand sentiment, and threat protection.</p>
+              </div>
+
+              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-sm text-[#0F172A]">Real-Time Mention Stream</h3>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    All Systems Normal
+                  </span>
+                </div>
+                <div className="space-y-2 text-xs">
+                  <div className="p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] flex items-center justify-between">
+                    <div className="flex items-center space-x-2.5">
+                      <SocialPlatformIcon channel="x" className="w-4 h-4" />
+                      <span className="font-bold text-[#0F172A]">@tech_insider:</span>
+                      <span className="text-[#64748B]">"BufferMate's new Socialyn OS upgrade is unbelievably slick."</span>
+                    </div>
+                    <span className="text-emerald-600 font-bold">+98 Positive</span>
+                  </div>
+                  <div className="p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] flex items-center justify-between">
+                    <div className="flex items-center space-x-2.5">
+                      <SocialPlatformIcon channel="linkedin" className="w-4 h-4" />
+                      <span className="font-bold text-[#0F172A]">Sarah Jenkins:</span>
+                      <span className="text-[#64748B]">"Our agency automated 800 client comments this morning without a hitch."</span>
+                    </div>
+                    <span className="text-emerald-600 font-bold">+95 Positive</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* =========================================================
               VIEW 6: PROFILE & ACCOUNT SETTINGS

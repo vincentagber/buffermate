@@ -15,7 +15,7 @@ export default function DashboardLayout({
   const router = useRouter();
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] flex flex-col font-sans text-[#1E293B] antialiased">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-[#0F172A] antialiased">
       {children}
 
       {/* Global Command Palette (Cmd + K) */}

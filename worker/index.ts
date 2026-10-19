@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { SocialManager } from '../src/lib/services/social/SocialManager';
-
+import { publishingEngine } from '../src/lib/services/publishing-engine';
 import { decrypt } from '../src/lib/services/encryption';
+import { autopilotWorkerService } from '../src/lib/services/autopilot-worker';
 
 dotenv.config({ path: '.env.local' });
 
@@ -22,7 +23,28 @@ const MAX_CONCURRENT = parseInt(process.env.SCHEDULER_MAX_CONCURRENT || '10');
 const socialManager = SocialManager.getInstance();
 
 async function processPosts() {
-    console.log('Checking for scheduled posts...');
+    const cycleStart = Date.now();
+    console.log(`[Worker] Cycle started at ${new Date().toISOString()}`);
+
+    // 0. Run Autonomous AI Auto-Pilot generation cycle
+    try {
+        const autopilotSummary = await autopilotWorkerService.executeAutopilotCycle();
+        if (autopilotSummary.generated > 0 || autopilotSummary.errors.length > 0) {
+            console.log(`[AutopilotWorker] Cycle result: Generated ${autopilotSummary.generated}, Checked ${autopilotSummary.configsChecked}, Errors: ${autopilotSummary.errors.length}`);
+        }
+    } catch (apErr) {
+        console.error('[AutopilotWorker] Generation error in cycle:', apErr);
+    }
+
+    // 1. Process durable PRD publishing engine jobs
+    try {
+        const engineReports = await publishingEngine.executeDueJobs();
+        if (engineReports.length > 0) {
+            console.log(`[PublishingEngine] Executed ${engineReports.length} post jobs.`);
+        }
+    } catch (engineErr) {
+        console.warn('[PublishingEngine] Error executing due jobs:', engineErr);
+    }
 
     // 1. Find posts due for publishing
     const { data: posts, error } = await supabase
@@ -108,10 +130,12 @@ async function processSinglePost(post: any) {
                     decryptedToken = decrypt(account.access_token_encrypted);
                 } catch (err: any) {
                     console.warn(`Failed to decrypt token for ${account.provider} (${account.provider_user_id}):`, err.message);
-                    decryptedToken = `oauth_token_${providerName}_${Date.now()}`;
+                    throw new Error(`Failed to decrypt access token for ${account.provider} (${account.provider_user_id}). Re-authorization required.`);
                 }
+            } else if (providerName === 'x' && process.env.TWITTER_ACCESS_TOKEN) {
+                decryptedToken = process.env.TWITTER_ACCESS_TOKEN;
             } else {
-                decryptedToken = `oauth_token_${providerName}_${Date.now()}`;
+                throw new Error(`No encrypted access token found for ${account.provider} account (${account.provider_user_id}).`);
             }
 
             try {
@@ -124,6 +148,11 @@ async function processSinglePost(post: any) {
                         username: account.provider_user_id,
                         pageId: account.meta?.page_id || account.provider_user_id,
                         pageAccessToken: decryptedToken,
+                        // Instagram: numeric IG user ID stored in meta during OAuth callback
+                        igUserId: account.meta?.ig_user_id,
+                        // LinkedIn: member URN required by UGC Post API
+                        authorUrn: account.meta?.member_urn ||
+                            (account.meta?.linkedin_id ? `urn:li:person:${account.meta.linkedin_id}` : undefined),
                     }
                 );
 
@@ -200,10 +229,51 @@ async function processSinglePost(post: any) {
     }
 }
 
-function startWorker() {
-    console.log('Worker started.');
-    setInterval(processPosts, POLL_INTERVAL);
-    processPosts(); // Run immediately
+let isProcessing = false;
+
+async function runWorkerCycle() {
+    if (isProcessing) {
+        console.log('[Worker] Previous cycle still running, skipping this tick.');
+        return;
+    }
+    isProcessing = true;
+    const start = Date.now();
+    try {
+        await processPosts();
+    } catch (e: any) {
+        console.error('[Worker] Fatal error during cycle:', e.message);
+    } finally {
+        isProcessing = false;
+        console.log(`[Worker] Cycle finished in ${Date.now() - start}ms.`);
+    }
 }
 
+function startWorker() {
+    console.log('[Worker] BufferMate Production Background Worker initialized.');
+    console.log(`[Worker] Polling interval: ${POLL_INTERVAL}ms. Max concurrent: ${MAX_CONCURRENT}.`);
+
+    setInterval(runWorkerCycle, POLL_INTERVAL);
+    runWorkerCycle(); // Run immediately on boot
+}
+
+// Graceful process shutdown and exception shielding
+process.on('SIGTERM', () => {
+    console.log('[Worker] SIGTERM received. Gracefully terminating worker process...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('[Worker] SIGINT received. Gracefully terminating worker process...');
+    process.exit(0);
+});
+
+process.on('unhandledRejection', (reason) => {
+    console.error('[Worker] Unhandled Promise Rejection shielded:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+    console.error('[Worker] Uncaught Exception shielded:', err);
+});
+
 startWorker();
+

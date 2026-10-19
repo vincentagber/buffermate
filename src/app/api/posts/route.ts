@@ -43,6 +43,7 @@ export async function GET(request: Request) {
 
     const formattedData = (data || []).map((post: any) => ({
         ...post,
+        channels: post.channels || post.provider_results?.channels || (post.social_account_ids?.length ? ['instagram'] : ['instagram']),
         status: post.provider_results?.is_draft ? 'draft' : post.status,
     })).filter((post: any) => {
         if (!status) return true;
@@ -72,7 +73,45 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { id, content, scheduled_at, social_account_ids, attachments, status } = body;
+
+        // 1. Support batch post insertion (e.g., from Bulk Campaign scheduler)
+        if (body.posts && Array.isArray(body.posts)) {
+            const batchInserts = body.posts.map((p: any) => {
+                const cleanAccIds = (p.social_account_ids || []).filter(
+                    (accId: string) => typeof accId === 'string' && UUID_REGEX.test(accId)
+                );
+                return {
+                    user_id: targetUserId,
+                    content: p.content || '',
+                    scheduled_at: p.scheduled_at || new Date().toISOString(),
+                    social_account_ids: cleanAccIds,
+                    attachments: p.attachments || [],
+                    status: p.status || 'scheduled',
+                    provider_results: { channels: p.channels || ['facebook', 'instagram', 'linkedin', 'x'] },
+                    updated_at: new Date().toISOString(),
+                };
+            });
+
+            const { data: batchData, error: batchError } = await admin
+                .from('posts')
+                .insert(batchInserts)
+                .select();
+
+            if (batchError) {
+                return NextResponse.json({ error: batchError.message }, { status: 500 });
+            }
+
+            return NextResponse.json({
+                success: true,
+                count: batchData?.length || 0,
+                posts: (batchData || []).map((b: any) => ({
+                    ...b,
+                    channels: b.provider_results?.channels || ['facebook', 'instagram'],
+                })),
+            });
+        }
+
+        const { id, content, scheduled_at, social_account_ids, channels, attachments, status } = body;
 
         const postStatus = status || 'scheduled';
         const isDraft = postStatus === 'draft';
@@ -87,6 +126,25 @@ export async function POST(request: Request) {
             (accId: string) => typeof accId === 'string' && UUID_REGEX.test(accId)
         );
 
+        // If channels provided without account IDs, link available user accounts
+        if (cleanSocialAccountIds.length === 0 && channels && Array.isArray(channels) && channels.length > 0) {
+            try {
+                const { data: userAccounts } = await admin
+                    .from('social_accounts')
+                    .select('id, provider')
+                    .eq('user_id', targetUserId);
+                if (userAccounts && userAccounts.length > 0) {
+                    const normalizedChannels = channels.map((c: string) => c.toLowerCase() === 'twitter' ? 'x' : c.toLowerCase());
+                    const matched = userAccounts
+                        .filter((acc: any) => normalizedChannels.includes(acc.provider?.toLowerCase()))
+                        .map((acc: any) => acc.id);
+                    cleanSocialAccountIds.push(...matched);
+                }
+            } catch (accErr) {
+                console.warn('Account lookup notice:', accErr);
+            }
+        }
+
         // If an existing draft ID was provided, update that post
         if (id && UUID_REGEX.test(id)) {
             const { data: existingPost } = await admin
@@ -99,8 +157,11 @@ export async function POST(request: Request) {
             if (existingPost) {
                 const currentResults = existingPost.provider_results || {};
                 const updatedResults = isDraft
-                    ? { ...currentResults, is_draft: true }
-                    : Object.fromEntries(Object.entries(currentResults).filter(([k]) => k !== 'is_draft'));
+                    ? { ...currentResults, is_draft: true, channels: channels || currentResults.channels }
+                    : {
+                        ...Object.fromEntries(Object.entries(currentResults).filter(([k]) => k !== 'is_draft')),
+                        channels: channels || currentResults.channels,
+                      };
 
                 const { data, error } = await admin
                     .from('posts')
@@ -120,11 +181,17 @@ export async function POST(request: Request) {
                 if (error) {
                     return NextResponse.json({ error: error.message }, { status: 500 });
                 }
-                return NextResponse.json({ ...data, status: isDraft ? 'draft' : data.status });
+                return NextResponse.json({
+                    ...data,
+                    channels: channels || data.provider_results?.channels || [],
+                    status: isDraft ? 'draft' : data.status,
+                });
             }
         }
 
-        const newProviderResults: Record<string, any> = isDraft ? { is_draft: true } : {};
+        const newProviderResults: Record<string, any> = isDraft
+            ? { is_draft: true, channels: channels || [] }
+            : { channels: channels || [] };
 
         const { data, error } = await admin
             .from('posts')
@@ -145,7 +212,11 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        return NextResponse.json({ ...data, status: isDraft ? 'draft' : data.status });
+        return NextResponse.json({
+            ...data,
+            channels: channels || data.provider_results?.channels || [],
+            status: isDraft ? 'draft' : data.status,
+        });
     } catch (err: any) {
         return NextResponse.json({ error: err.message }, { status: 500 });
     }

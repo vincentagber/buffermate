@@ -1,0 +1,558 @@
+SOCIAL MEDIA MANAGEMENT& MARKETING AUTOMATION
+Product Requirements Document + Technical Specification
+Build-ready blueprint • Web SaaS • Multi-workspace • API-first
+Document purpose
+This document translates the supplied Socially-style Command Center screenshots and React component into a complete product blueprint for a social media management SaaS. It covers product scope, UX, workflows, integration constraints, architecture, data model, automation, security, delivery phases, and acceptance criteria.
+Working product name: Socially (placeholder; validate naming, trademark, and domain before launch).
+Product promise: Plan, create, publish, engage, measure, and improve social media activity across multiple brands and social networks from one reliable workspace.
+Important implementation principle: social platforms expose different APIs and permissions. “Connect every social network” is a product ambition, not a promise that every network supports every action. Each integration must declare its supported capabilities and limitations. Never simulate a successful publish when the provider has not confirmed it.
+1. Product vision and outcomes
+Build a dependable operating system for social media teams, agencies, creators, and businesses. Users should be able to manage multiple brands and connected profiles, collaborate on content, schedule posts, run campaign workflows, respond to conversations where APIs permit, and report outcomes in one place.
+Primary outcomes
+Reduce the time required to plan and publish content across multiple channels.
+Provide a single calendar, content library, inbox, campaign workspace, and analytics view.
+Make publishing reliable through queues, retries, status visibility, and clear recovery actions.
+Automate repetitive, low-risk work while retaining human approval for sensitive actions.
+Support agencies managing multiple client workspaces with strict tenant isolation.
+Show meaningful business outcomes without presenting estimates as verified attribution.
+Success metrics
+Area
+Metric
+Initial target to validate
+Activation
+Workspace connects at least one social profile and publishes first post
+Within first session or onboarding
+Reliability
+Scheduled publish jobs that reach a terminal state
+≥ 98% excluding provider outages and unsupported media
+Content
+Scheduled posts published without manual intervention
+Track by channel and failure reason
+Engagement
+Median time to first response for inbox conversations
+Baseline first; set segment-specific target
+Retention
+Weekly active workspaces / 30-day retained workspaces
+Instrument before setting target
+Quality
+Duplicate publishes and silent failures
+Zero known silent failures; idempotency enforced
+Business
+Qualified leads or revenue attributed to social
+Only report where data sources and attribution method are explicit
+2. Users, roles, and workspace model
+Role
+Core permissions
+Platform Super Admin
+Platform operations, plans, feature flags, abuse review, integration health; no routine access to private client content unless explicitly authorized and audited.
+Workspace Owner
+Billing, workspace settings, integrations, team roles, data export/deletion, all workspace content.
+Workspace Admin
+Manage profiles, members, publishing settings, approvals, campaigns, and reports; billing access configurable.
+Strategist / Manager
+Plan campaigns, manage calendar, draft/edit content, view analytics, coordinate approvals.
+Creator / Editor
+Create drafts, upload media, edit assigned content, submit for review; cannot publish if approval policy forbids it.
+Community Manager
+Access inbox, reply to permitted conversations, assign, tag, and resolve threads.
+Analyst / Client Viewer
+Read-only access to approved content, campaign reports, and analytics.
+Approver
+Approve/reject content and leave feedback; publishing permission separate from approval permission.
+A user can belong to multiple workspaces with a different role in each. Every tenant-owned record must carry workspace_id and be checked server-side. Do not rely on hidden navigation or client-side checks for authorization.
+3. Information architecture and navigation
+Navigation group
+Modules
+Purpose
+Workspace
+Workspace switcher, brand/profile selector, settings
+Move between clients and brands without mixing data.
+Plan
+Command Center, Goals, Campaigns, Calendar, Tasks
+Manage priorities, content operations, and delivery.
+Create
+Content Studio, Creative Studio, Media Library
+Draft copy, adapt content per network, prepare assets.
+Engage
+Unified Inbox, Listening & Crisis
+Triage conversations, mentions, and risks where API access exists.
+Advertise
+Ads Manager, Launch Ads, Audiences
+Campaign planning and supported ad-account workflows.
+Grow
+Analytics, Competitors, Experiments, ROI & Revenue
+Understand performance, compare results, and optimize.
+Automation
+Autopilot, AI Answer Share, Advocacy & Creators
+Configure rules, approvals, and safe repetitive actions.
+Administration
+Connections, Team, Roles, Billing, Audit Log, Integrations
+Manage access, subscriptions, platform health, and compliance.
+4. Command Center dashboard
+The supplied React component is a strong visual starting point: large headline, two headline metrics, goals in flight, forecast callout, Autopilot summary, and Risk Radar. Keep the visual hierarchy but replace hard-coded demo values with typed API data, loading states, timestamps, and source labels.
+Dashboard modules
+Header: local weekday/date, workspace name, concise summary, and actionable attention count. Use time-aware greeting only when appropriate; do not always display “Good morning.”
+Pipeline from Social: attributed pipeline value, comparison period, trend chart, currency, attribution window, and data freshness.
+Qualified Leads: count, comparison period, trend, qualification definition, and source.
+Goals in Flight: goal name, current/target, progress, owner, due date, status, and open-goal action.
+Forecast: projection, assumptions, confidence method, last updated time, and link to the underlying goal. Avoid unsupported “80% confidence” claims unless calculated.
+Autopilot: running/paused state, actions attempted, escalations, guardrail blocks, failures/rollbacks, and recent activity.
+Risk Radar: mention volume, sentiment sample size, flagged items, platform coverage, and direct link to review queue.
+Attention queue: failed posts, disconnected accounts, expiring tokens, pending approvals, unanswered messages, and campaigns needing review.
+Implementation corrections to the supplied component
+Remove unused imports and state (for example selectedGoal if not used) and wire all metrics to server responses.
+Use one shared date/timezone utility and workspace timezone; guard against hydration mismatch if rendering the current day in Next.js.
+Replace the static demo metrics and progress values with data from API endpoints; show skeletons and empty/error states.
+Use accessible button labels, modal focus management, Escape-to-close, and keyboard navigation.
+Make the Autopilot toggle call a server action/API and display pending, success, and failure feedback; client-only state is not real automation.
+Ensure charts include accessible labels or text summaries and respect reduced-motion preferences.
+Use a chart library only if it adds value; inline SVG is acceptable for compact sparklines, but IDs must be unique per component instance.
+Make risk and sentiment claims transparent about data coverage and provider restrictions.
+Replace confetti-only “Review Pace” behavior with a real goal/forecast detail view; celebration can be secondary feedback.
+5. Functional requirements
+5.1 Social account connections
+OAuth connection flow for each supported provider, with state/CSRF protection, least-privilege scopes, callback validation, and clear permission explanations.
+Support multiple accounts and pages per workspace where the provider permits it; identify profile type (personal, page, business, channel, ad account).
+Store access/refresh tokens encrypted server-side; never expose provider tokens to browser JavaScript or logs.
+Track connected, needs_reauth, permission_missing, rate_limited, restricted, and disconnected states.
+Display token expiry/health, last successful sync, supported actions, and a reconnect flow.
+Allow admins to revoke/disconnect a profile and document what happens to queued posts and stored analytics.
+Provider capability registry must define create_text, publish_image, publish_video, publish_carousel, schedule, comments_read, comments_reply, inbox_read, inbox_reply, insights_read, ads_manage, and account_metrics individually.
+5.2 Content Studio and post composer
+Compose a post once, then customize per selected destination. Each destination has its own text, media, link, alt text, tags, and platform-specific settings.
+Support drafts, autosave, version history, internal notes, content labels, campaign association, and reusable templates.
+Preview each destination using platform-aware mock previews clearly labelled as previews.
+Validate caption length, aspect ratio, media type/size/duration, required fields, link format, and provider-specific restrictions before scheduling.
+Support images, video, multi-image/carousel assets, thumbnails, alt text, first-comment fields where supported, and link previews where supported.
+Provide AI assistance for caption variations, tone, hooks, summaries, hashtags, translation, accessibility alt text, and repurposing. AI output remains a draft until user review.
+Include duplicate-content warnings, spelling checks, required disclosure prompts, and brand voice guidance.
+Allow upload progress, resumable/chunked upload when available, asset processing status, and retry after upload failure.
+5.3 Calendar and scheduler
+Views: month, week, day, list/queue, and per-profile calendar; filter by workspace, brand, campaign, network, status, owner, and tag.
+Schedule in the workspace/profile timezone, store timestamps in UTC, and display timezone explicitly when it differs.
+Support drag-and-drop rescheduling with confirmation and server-side validation; show unscheduled drafts and recommended slots separately.
+Support queue windows, recurring reminders or recurring content templates, holidays, blackout dates, and bulk scheduling.
+Statuses: draft, in_review, changes_requested, approved, scheduled, queued, publishing, published, partially_published, failed, canceled, and archived.
+Prevent duplicate scheduling using idempotency keys and unique job references. A retry must not blindly create a second live post.
+Provide pause/resume of a queue, pause all scheduled publishing for a workspace, and a clear recovery view for failed jobs.
+5.4 Publishing engine
+Use a durable background job queue; never depend on an open browser tab or client timer to publish scheduled content.
+At due time, re-check account connection, permissions, approval state, media readiness, provider constraints, and campaign status.
+Create a provider-specific publish attempt record before making external calls; capture provider response IDs and sanitized error codes.
+Use idempotency keys where supported. For providers without idempotent publishing, reconcile ambiguous timeouts before retrying.
+Implement bounded exponential backoff with jitter for transient failures, and stop/re-authenticate on permanent permission or token errors.
+Distinguish accepted, processing, published, rejected, and unknown outcomes; poll provider status when required.
+Support partial success when a cross-post contains several destinations. Retry only failed destinations.
+Send in-app/email notifications for failed posts, expiring credentials, and posts requiring user action; avoid alert storms.
+5.5 Unified inbox and engagement
+Aggregate permitted comments, mentions, direct messages, and reviews into a normalized inbox where provider APIs permit it.
+Conversation list: profile, channel, author, message preview, timestamp, unread state, sentiment/priority hint, assignment, and SLA.
+Thread view: messages, media/link preview, profile context, tags, internal notes, assignment history, and reply composer.
+Actions: reply, hide/delete where authorized, like/react where supported, assign, mark unread, resolve, tag, and escalate.
+Provide saved replies, macros, routing rules, collision prevention when two agents reply, and response-time reporting.
+AI may summarize threads and draft replies; require human approval by default for public replies and sensitive/private messages.
+Respect provider windows, rate limits, permissions, and message policies. Clearly show when an action is unavailable through the API.
+5.6 Campaign management
+Campaign record: name, objective, owner, dates, audience, budget/currency, channels, target metrics, brief, status, and approval policy.
+Campaign workspace includes brief, content plan, assets, post schedule, tasks, approvals, spend, results, and retrospective.
+Support campaign templates for launches, product promotions, events, lead generation, recruitment, and evergreen content.
+Map each scheduled post and ad to one or more campaigns while preserving per-network content variants.
+Track planned vs actual spend and outcomes. Separate organic performance from paid advertising performance.
+Allow campaign states draft, planned, active, paused, completed, and archived with explicit start/end behavior.
+Bulk actions must preview affected posts/accounts and require confirmation for destructive or externally visible actions.
+5.7 Analytics and reporting
+Core metrics where supported: reach, impressions, engagements, engagement rate, clicks, video views/watch time, follower growth, leads, conversions, spend, and cost per result.
+Normalize metrics carefully; document each provider's definition, attribution window, time basis, and availability.
+Date range, compare period, profile/network/campaign filters, time-series charts, top posts, format breakdown, and exportable reports.
+Support scheduled reports (PDF/CSV/email) and shareable read-only report links with expiration and revocation.
+Use connector sync jobs and store metric snapshots so historical charts remain stable when provider data changes.
+Do not fabricate missing metrics or treat estimated pipeline as realized revenue. Display “unavailable” and data freshness when needed.
+5.8 Goals, tasks, approvals, and collaboration
+Goals have owner, metric, target, baseline, due date, current value, calculation method, and status.
+Tasks can be linked to posts, campaigns, assets, goals, or inbox items; support assignee, due date, priority, comments, and activity history.
+Approval workflows can be one-step or multi-step; support reviewer assignment, rejection reason, requested changes, and resubmission.
+Separate approval authority from publishing authority. Record who approved which version and when.
+Internal comments and notes must never be sent to social platforms.
+Activity feed and audit log capture account connection changes, publishing actions, permission changes, exports, and automation decisions.
+5.9 AI and automation / Autopilot
+Rule builder: trigger, conditions, action, scope, schedule, rate limit, approval requirement, and failure behavior.
+Triggers may include scheduled time, new approved draft, failed publish, mention received, keyword match, campaign state, or analytics threshold.
+Actions may include assign task, notify user, label item, draft caption/reply, queue approved post, pause queue, or escalate to human.
+Low-risk actions can run automatically only when workspace admins explicitly enable them; high-risk external actions require approval.
+Guardrails include per-channel rate limits, quiet hours, restricted terms, sentiment escalation, duplicate detection, spend caps, daily action limits, and kill switch.
+Every automation execution records input reference, rule version, decision explanation, action, result, retry count, and actor/system identity.
+Add dry-run mode, test event, simulation preview, versioning, rollback, and per-rule enable/disable controls.
+Never let an LLM directly bypass permission checks or execute arbitrary tools. Validate proposed actions against typed schemas and policy rules.
+5.10 Listening, crisis, and risk
+Collect mentions/keywords only where provider access and terms permit; disclose gaps in coverage.
+Keyword/brand monitoring, sentiment suggestions, spike detection, escalation rules, and incident timeline.
+Sentiment is probabilistic; show confidence or “needs review,” and allow human correction.
+High-risk terms, legal complaints, threats, personal data, or sustained negative spikes should create review tasks, not auto-post replies.
+Risk panel must show time window, sources, volume, sample size, and links to source conversations.
+5.11 Ads and audiences
+Treat paid ads as a separate integration and permission surface from organic posting.
+Connect supported ad accounts and retrieve campaigns, spend, delivery, and results where API approval allows.
+Creating or modifying ads requires explicit confirmation, permission checks, budget caps, and an audit trail.
+Audiences and targeting options vary by provider and jurisdiction; expose only approved fields returned by the API.
+Provide a clear boundary between campaign planning and actual ad deployment; never imply an ad launched until the provider confirms it.
+5.12 Media library and creative studio
+Central asset library with folders, tags, search, usage rights, creator/source, campaign links, dimensions, duration, file size, and processing state.
+Store original and derived variants; use object storage and signed URLs instead of serving large files from the app server.
+Support crop/resize, safe-area preview, thumbnail selection, subtitles/captions metadata, and alt text.
+Scan uploads for file type, size, malware where infrastructure supports it, and unsafe file names.
+Record licensing/expiry notes and warn before using assets whose rights may have expired.
+5.13 Competitors, experiments, advocacy
+Competitor monitoring is limited to public data and provider-approved APIs; do not promise private metrics.
+Experiments compare a declared hypothesis, variable, audience/time window, success metric, and outcome.
+Advocacy/creator workflows track participants, consent, content briefs, deliverables, usage rights, and disclosures.
+AI answer-share or search visibility features must define the measurement methodology and should not present estimates as exact platform truth.
+5.14 Billing and platform administration
+Subscription plans, trials, usage limits, invoices, payment status, seats, connected-profile limits, AI credits, and storage quotas.
+Enforce entitlements server-side and explain plan-limit failures before a user loses work.
+Platform admin dashboard for workspace status, queue health, provider error rates, webhook failures, usage, abuse flags, and support tooling.
+Support data export, account deletion, retention policies, consent records, and workspace ownership transfer.
+6. Social network integration strategy
+Build an adapter-based integration layer rather than scattering provider-specific logic across UI components. Use official APIs and approved OAuth flows. Access, publishing, messaging, analytics, and advertising are separate capabilities; approval and availability can differ by app, account type, region, and provider policy.
+Provider family
+Planning notes / capability caveats
+Meta: Facebook Pages + Instagram professional accounts
+Commonly central to MVP. Requires Meta app setup, correct permissions/app review, eligible Page/professional account linkage, and token lifecycle handling. Personal-profile publishing and some inbox/insights operations are restricted.
+LinkedIn
+Organization/page publishing and analytics depend on product access, member/org permissions, and approved scopes. Do not assume personal and organization capabilities are identical.
+X
+API access tier, cost, rate limits, and write/read access can change. Verify current developer access and policies before committing to product promises.
+TikTok
+Posting and account capabilities depend on API products, authorization, app review, and publishing restrictions; some flows may require user interaction.
+YouTube
+Video upload and channel analytics have distinct quota and processing behavior. Account/channel OAuth and upload status polling are important.
+Pinterest
+Pins, boards, and analytics depend on approved scopes and account eligibility.
+Threads
+Capabilities depend on the current official API and app permissions; validate publishing, replies, and insights individually.
+Google Business Profile
+Useful for local business profiles and supported posts/reviews; not a generic social network and API eligibility is specific.
+Other networks
+Add only through the adapter contract after confirming official API access, terms, and the required use case.
+Integration adapter contract
+Each provider adapter should expose typed methods such as validateConnection(), refreshCredentials(), getCapabilities(), validatePost(), uploadMedia(), publishPost(), getPublishStatus(), fetchMetrics(), listConversations(), replyToConversation(), and disconnect(). Unsupported methods must return a structured unsupported-capability response, not silently do nothing.
+Provider API documentation, current rate limits, app-review requirements, pricing, and allowed data retention must be re-verified during implementation. This document deliberately avoids claiming that any provider will approve all requested capabilities.
+7. Recommended technical architecture
+Recommended stack aligned to a JavaScript/TypeScript product: Next.js App Router + React + TypeScript + Tailwind CSS for the web application; Node.js services or Next.js server routes for application APIs; PostgreSQL with Supabase for database/auth if desired; Redis-backed durable queue (for example BullMQ) and separate worker process; S3-compatible object storage; and a provider-adapter package.
+Layer
+Recommended approach
+Responsibilities
+Web app
+Next.js + TypeScript + Tailwind
+Workspace UI, composer, calendar, inbox, reports, admin.
+Application API
+Node.js/TypeScript; REST or typed RPC
+Authz, validation, business rules, integration orchestration.
+Database
+PostgreSQL / Supabase
+Tenant data, posts, jobs, metrics, audit log, permissions.
+Queue + workers
+Redis + BullMQ or equivalent durable queue
+Scheduled publishing, retries, sync, report generation, automation.
+Media
+S3-compatible object storage + CDN
+Original files, derivatives, thumbnails, signed upload/download.
+Secrets
+Managed secrets/KMS; encrypted token fields
+OAuth tokens, webhook secrets, provider credentials.
+Observability
+Structured logs, metrics, tracing, error reporting
+Queue lag, API latency, provider failures, job outcomes.
+Notifications
+Email + in-app; optional push
+Approvals, publishing failures, token expiry, reports.
+AI layer
+Provider-agnostic LLM gateway with policy checks
+Drafting, summarization, classification; never owns authorization.
+Core architectural rules
+Separate web requests from long-running jobs. The scheduler enqueues work; workers publish and reconcile results.
+Use database transactions plus an outbox pattern for reliable events between writes and queue dispatch.
+Use UTC for storage and workspace timezone for scheduling/display.
+Use tenant-scoped queries and PostgreSQL row-level security where appropriate; still enforce server-side authorization.
+Store provider tokens encrypted, restrict decryption to server-side integration services, rotate encryption keys, and redact secrets from logs.
+Use webhook signature verification, replay protection, and idempotent event handlers.
+Keep provider-specific payloads in adapter boundaries; expose normalized domain objects to the product UI.
+Design for provider outages and rate limits; a social provider is an external dependency, not a guaranteed service.
+8. Core data model
+The following is the minimum logical model. Add indexes, foreign keys, unique constraints, soft-delete/retention behavior, and row-level access policies during implementation.
+Entity
+Important fields / relationships
+users
+id, email, display_name, auth_provider, created_at, last_seen_at
+workspaces
+id, name, slug, timezone, default_locale, plan_id, owner_user_id, settings_json
+workspace_members
+workspace_id, user_id, role_id, status, invited_by, joined_at
+roles / permissions
+role_id, workspace_id/global flag, permission_key, allowed
+brands
+id, workspace_id, name, brand_voice, visual_guidelines, default_links
+social_accounts
+id, workspace_id, provider, provider_account_id, display_name, account_type, status, capability_json, token_reference, expires_at, last_sync_at
+oauth_states
+state_hash, workspace_id, user_id, provider, expires_at, consumed_at
+media_assets
+id, workspace_id, storage_key, mime_type, size_bytes, width, height, duration, checksum, metadata_json, rights_expiry
+posts
+id, workspace_id, campaign_id, created_by, title, status, approval_state, scheduled_at_utc, timezone, content_group_id
+post_variants
+id, post_id, social_account_id, text, link_url, alt_text, platform_options_json, validation_state
+post_media
+post_variant_id, media_asset_id, position, role
+publish_jobs
+id, post_variant_id, scheduled_at_utc, status, attempts, next_attempt_at, idempotency_key, lock_version
+publish_attempts
+id, publish_job_id, started_at, finished_at, provider_request_id, provider_post_id, outcome, error_code, sanitized_details
+published_posts
+id, post_variant_id, provider_post_id, published_at, canonical_url, confirmed_status
+campaigns
+id, workspace_id, name, objective, owner_id, status, start_at, end_at, budget_amount, currency, target_metrics_json
+goals
+id, workspace_id, campaign_id, name, metric_key, baseline, target, current_value, due_at, calculation_method
+tasks
+id, workspace_id, assignee_id, created_by, title, status, priority, due_at, related_type, related_id
+approvals
+id, post_id/version, reviewer_id, decision, feedback, decided_at
+conversations
+id, workspace_id, social_account_id, provider_thread_id, status, assignee_id, priority, last_message_at
+messages
+id, conversation_id, provider_message_id, direction, body, media_json, created_at, delivery_status
+automation_rules
+id, workspace_id, name, enabled, trigger_json, conditions_json, action_json, guardrails_json, version
+automation_runs
+id, rule_id/version, trigger_ref, status, decision_json, action_result_json, started_at, finished_at
+metric_snapshots
+id, workspace_id, social_account_id, campaign_id, published_post_id, metric_key, metric_value, captured_at, definition_version
+webhook_events
+id, provider, provider_event_id, received_at, verified, processed_at, status, payload_reference
+audit_logs
+id, workspace_id, actor_id, action, resource_type, resource_id, metadata_redacted, created_at
+subscriptions / usage_events
+workspace_id, plan_id, status, period_start, period_end; usage key, quantity, timestamp
+9. Publishing lifecycle and failure handling
+User composes a post and selects one or more destination accounts.
+Server validates permissions, destination capability, media metadata, required fields, and workspace policy.
+Post is saved as draft; autosave and version history preserve edits.
+If approvals are required, the post enters in_review and cannot be published until the current version is approved.
+Scheduling creates one publish job per destination variant with a unique idempotency key.
+Worker claims due jobs with a lock/lease and verifies that the job is not already complete.
+Worker re-checks credentials, account health, content validation, approval version, and provider rate limits.
+Adapter uploads media if necessary and submits the publish request.
+Worker stores the provider response and polls for completion when the provider uses asynchronous processing.
+Success stores the provider post ID and URL, updates status, emits an audit event, and schedules analytics sync.
+Transient failures retry with bounded backoff; permanent failures request user action; ambiguous timeouts enter reconciliation before any repeat publish.
+User sees destination-specific outcomes, exact failure reason where safe, and actions such as reconnect, edit, retry, or cancel.
+Status semantics
+Status
+Meaning
+scheduled
+Future publish time is stored and eligible, but not yet claimed.
+publishing
+A worker has claimed the job and an attempt is in progress.
+processing
+Provider accepted the request but has not confirmed final publication.
+published
+Provider confirmed success or returned a durable published object.
+failed
+A terminal failure occurred; user action or manual retry is required.
+unknown / reconciling
+Request outcome is ambiguous; check provider state before retrying.
+partially_published
+Some destinations succeeded while one or more failed.
+canceled
+The job was canceled before confirmed publication.
+10. Security, privacy, and compliance
+OAuth state validation, PKCE where supported, strict redirect URI allowlists, token scope minimization, and safe callback handling.
+Encrypt provider tokens at rest using managed key services; never include tokens in URLs, client payloads, analytics, or logs.
+Use secure, HTTP-only, SameSite cookies for sessions; apply CSRF protection where relevant, rate limiting, brute-force controls, and MFA for privileged roles where possible.
+Validate file MIME types and actual content; set upload limits; scan for malware where feasible; use short-lived signed URLs.
+Enforce workspace-level authorization on every query and mutation. Test for cross-tenant data leakage.
+Verify webhook signatures and timestamps; deduplicate provider event IDs and defend against replay.
+Record security-sensitive actions in an append-only audit trail; redact message contents and personal data from operational logs by default.
+Define retention periods for messages, metrics, media, logs, and AI prompts; provide export and deletion workflows.
+Use data-processing agreements and provider terms; respect regional privacy laws, platform policies, consent, and user rights.
+AI outputs are untrusted suggestions. Prevent prompt injection from comments/messages from changing system policy or authorizing actions.
+Never auto-publish legal, medical, financial, crisis, or other high-risk statements without explicit approval policy.
+11. UX and visual design system
+Visual direction: premium, calm, data-dense but readable; white/light gray surfaces, deep navy typography, restrained indigo/purple accents, teal success, amber caution, red destructive/failure.
+Use a persistent left sidebar on desktop with grouped navigation and a compact/collapsible mode; mobile navigation becomes a drawer or bottom navigation for key actions.
+Use consistent spacing, 12–16 px body text, clear labels, restrained borders, and rounded cards. Avoid excessive dashed borders; reserve them for empty states or special containers.
+Every module must have loading, empty, error, permission-denied, disconnected-account, and stale-data states.
+Every external action should show pending state, disable duplicate submissions, and provide success/failure feedback.
+Use semantic HTML, visible focus rings, keyboard support, color contrast, accessible chart summaries, and reduced-motion support.
+Use responsive layouts: dashboard cards stack on mobile; tables become compact lists; composer previews remain usable at narrow widths.
+Show dates, timezone, currency, metric definitions, source network, and last-sync time wherever ambiguity could affect decisions.
+12. API surface proposal
+Area
+Example endpoints
+Workspace
+GET/POST /api/workspaces; GET/PATCH /api/workspaces/:id; POST /members/invite; PATCH /members/:id/role
+Connections
+GET /api/connections; POST /api/connections/:provider/start; GET /api/oauth/:provider/callback; POST /api/connections/:id/refresh; DELETE /api/connections/:id
+Posts
+GET/POST /api/posts; GET/PATCH/DELETE /api/posts/:id; POST /api/posts/:id/validate; POST /api/posts/:id/submit-for-approval
+Scheduling
+POST /api/posts/:id/schedule; POST /api/posts/:id/cancel; POST /api/publish-jobs/:id/retry; GET /api/publish-jobs
+Calendar
+GET /api/calendar?from=&to=&account_id=&status=
+Media
+POST /api/media/upload-url; POST /api/media/complete; GET /api/media; DELETE /api/media/:id
+Campaigns
+GET/POST /api/campaigns; GET/PATCH /api/campaigns/:id; GET /api/campaigns/:id/report
+Inbox
+GET /api/conversations; GET /api/conversations/:id; POST /api/conversations/:id/reply; POST /api/conversations/:id/assign; POST /api/conversations/:id/resolve
+Analytics
+GET /api/analytics/overview; GET /api/analytics/posts; GET /api/analytics/campaigns; POST /api/reports
+Automation
+GET/POST /api/automation-rules; POST /api/automation-rules/:id/test; POST /api/automation-rules/:id/toggle; GET /api/automation-runs
+Webhooks
+POST /api/webhooks/:provider — verify signature, persist event, return quickly, process asynchronously
+Billing
+GET /api/billing/usage; POST /api/billing/checkout; POST /api/webhooks/billing
+Use consistent pagination, request validation, typed error codes, correlation IDs, idempotency headers for mutations, and OpenAPI documentation. Avoid exposing raw provider error payloads directly to end users.
+13. Background jobs and event flows
+Job family
+Responsibilities
+Operational controls
+Publish scheduler
+Find due jobs and enqueue/claim them
+No duplicate claims; lag monitoring; pause switch
+Publish worker
+Validate, upload, publish, reconcile
+Bounded retries; per-provider concurrency; idempotency
+Token health
+Refresh tokens and flag expiring/revoked connections
+Provider-specific refresh policy; alerts
+Analytics sync
+Fetch metrics and save snapshots
+Rate-limit-aware; cursor checkpointing; backfill limits
+Inbox sync/webhooks
+Normalize events/messages and update threads
+Signature verification; deduplication; dead-letter queue
+Automation runner
+Evaluate triggers, policy and action schemas
+Dry-run, action budgets, approval gates, audit log
+Report generator
+Build exports and scheduled reports
+Async delivery; expiring download links
+Media processor
+Generate thumbnails/variants and inspect metadata
+Retryable jobs; storage cleanup; processing status
+Define a dead-letter queue and admin replay tool. Replays must be safe, audited, and aware of whether an external action may already have happened.
+14. Delivery plan and priorities
+Phase
+Scope
+Exit criteria
+Phase 0 — Discovery & API feasibility
+Confirm product audience, providers, use cases, official API access, permissions, app reviews, costs, and legal requirements.
+Provider capability matrix and realistic launch promise approved.
+Phase 1 — Foundation
+Auth, workspaces, roles, tenant isolation, settings, design system, audit events, feature flags.
+Automated authorization and tenant-isolation tests pass.
+Phase 2 — Connections + content
+OAuth for first provider set, account health, media library, composer, validation, drafts.
+Users can connect eligible accounts and save platform-specific drafts.
+Phase 3 — Scheduling + publishing
+Calendar, queue, worker, retries, job status, notifications, publish reconciliation.
+End-to-end scheduled publishing is observable and duplicate-safe for supported flows.
+Phase 4 — Campaigns + approvals
+Campaigns, goals, tasks, review workflow, command center wired to real data.
+Team can plan, approve, schedule, and report on a campaign.
+Phase 5 — Analytics + reports
+Metric snapshots, dashboards, post-level performance, exports.
+Metric definitions and data freshness are visible.
+Phase 6 — Inbox + AI assistance
+Supported conversations, assignments, saved replies, AI drafting/summaries.
+Human approval and permission rules enforced.
+Phase 7 — Guarded automation + ads
+Rules engine, dry-run, guardrails, ad-account capabilities, billing/usage limits.
+Automation actions audited; external ad actions confirmed by provider.
+Recommended MVP: one high-value provider cluster first (often Meta Pages/eligible Instagram professional accounts, subject to API approval), plus one additional network only after validating the required scopes. Deliver reliable draft → approval → schedule → publish → status/report flow before promising every network, full inbox, competitor intelligence, or autonomous campaign optimization.
+15. Testing and acceptance criteria
+OAuth: invalid state, expired state, revoked consent, missing scope, token refresh failure, and reconnect all produce correct states.
+Authorization: users cannot read, mutate, export, or schedule content from another workspace by changing IDs or request payloads.
+Composer: platform-specific validation blocks invalid content and identifies exactly which destination needs changes.
+Scheduler: timezone, daylight-saving changes, reschedule, cancellation, simultaneous workers, and duplicate queue events are tested.
+Publishing: successful publish, asynchronous processing, rate limit, transient outage, permanent rejection, ambiguous timeout, partial multi-channel success, and safe retry are tested.
+Approvals: changes after approval invalidate approval when policy requires; only authorized roles can approve/publish.
+Inbox: webhook duplicates, out-of-order events, reply permissions, assignment collision, and provider rate limits are handled.
+Automation: dry-run creates no external side effects; disabled rules do not execute; action limits and kill switch work; all runs are auditable.
+Analytics: totals reconcile with provider responses for sampled accounts; unavailable metrics are not fabricated; sync timestamps are visible.
+Security: token leakage scans, webhook signature tests, upload validation, rate limiting, XSS/CSRF controls, and tenant-isolation tests are included.
+Accessibility/responsiveness: keyboard-only operation, focus states, contrast, screen reader labels, and mobile layout are checked.
+Operations: queue lag, failed jobs, webhook backlog, provider error spikes, storage usage, and token-expiry alerts are observable.
+16. Risks and decisions to resolve before implementation
+Risk / decision
+Required action
+API permissions and app review
+Validate each provider capability in a proof-of-concept before promising it in pricing or marketing.
+Provider API cost and quotas
+Estimate cost per connected account, post, metric sync, message, and AI operation.
+Ambiguous publish timeouts
+Implement reconciliation to avoid duplicate live posts.
+Data privacy and retention
+Define what content/messages/metrics are stored, for how long, and how users delete/export it.
+AI autonomy
+Set explicit default approval rules, risk tiers, rate limits, and a global kill switch.
+Attribution accuracy
+Define how social leads/revenue are measured; separate platform-reported conversions from CRM-attributed pipeline.
+Multi-tenant agency complexity
+Design workspace membership and client access before building every feature.
+Product breadth
+Protect the MVP from scope creep; prioritize reliable core publishing over advanced analytics/competitor/ads features.
+17. Suggested initial repository structure
+apps/web/                 Next.js web application
+apps/worker/              Background worker process
+packages/domain/          Shared types, statuses, validation schemas
+packages/db/              Schema, migrations, query helpers
+packages/integrations/    Provider adapters and OAuth clients
+packages/queue/           Queue definitions, retry policies, outbox
+packages/ai/              Prompt templates, structured outputs, policy checks
+packages/ui/              Shared design system and accessible components
+packages/config/          Lint, TypeScript, environment validation
+docs/                     API capability matrix, runbooks, ADRs
+tests/                    Unit, integration, contract, and end-to-end tests
+18. Environment variables and operational setup
+Database URL and service-role credentials stored only in server/worker environments.
+Session/auth configuration and callback URLs per environment.
+Provider client IDs/secrets, redirect URIs, webhook secrets, and API version configuration.
+Redis/queue connection and worker concurrency settings.
+Object storage bucket, region, endpoint, access keys, and CDN configuration.
+Encryption key reference/KMS configuration for tokens and sensitive fields.
+Email provider credentials, application base URL, and notification preferences.
+AI provider keys, model routing, usage limits, and prompt/version configuration.
+Billing provider keys and webhook secret, if subscriptions are enabled.
+Observability DSN, structured logging level, alert destinations, and retention policy.
+Validate all environment variables at startup and fail safely when required secrets are missing. Never commit .env files or use production credentials in local development.
+19. Command Center data contract example
+The dashboard API should return structured values with timestamps and definitions rather than hard-coded display strings. Example conceptual response:
+{  "workspace": { "id": "ws_123", "name": "Northstar", "timezone": "Africa/Lagos" },  "asOf": "2026-10-16T20:00:00Z",  "pipeline": {    "value": 184200, "currency": "USD", "changePercent": 31,    "periodDays": 30, "attributionMethod": "crm_campaign_match",    "dataStatus": "available"  },  "qualifiedLeads": {    "value": 412, "changePercent": 22, "periodDays": 30,    "definition": "workspace-defined MQL criteria"  },  "goals": [    { "id": "goal_1", "name": "Generate 100 qualified leads",      "current": 78, "target": 100, "unit": "leads", "status": "on_track" }  ],  "autopilot": {    "enabled": true, "actionsToday": 146, "escalated": 3,    "blocked": 6, "rolledBack": 0, "lastRunAt": "2026-10-16T19:58:00Z"  },  "attention": [    { "type": "approval_pending", "count": 2 },    { "type": "connection_needs_reauth", "count": 1 }  ]}
+20. Definition of done
+Every visible dashboard metric comes from a documented source and has a freshness timestamp.
+Every supported external action has a clear capability check, authorization check, pending state, and result state.
+Scheduled jobs survive web server restarts and are observable from creation through terminal status.
+Failures are actionable and do not disappear silently; retries cannot blindly duplicate external actions.
+All workspace data is tenant-isolated and authorization is tested server-side.
+Tokens and secrets are encrypted, never exposed to the client, and redacted from logs.
+Users can understand which networks/actions are supported before connecting accounts.
+AI-generated content and automation actions obey workspace policies and approval rules.
+Core flows work on desktop and mobile and meet accessibility expectations.
+Operational runbooks exist for provider outage, token revocation, queue backlog, webhook failure, and incident response.
+Appendix A — Build order checklist
+Confirm product name, audience, pricing hypothesis, first provider(s), and API feasibility.
+Create the capability matrix and test OAuth/publish proof-of-concepts.
+Set up repo, environments, database migrations, auth, workspace/role model, and audit log.
+Build design system, sidebar, workspace switcher, empty/loading/error states, and Command Center shell.
+Implement connections and account-health screen.
+Implement media upload and Content Studio with platform-specific variants.
+Implement approvals, calendar, durable queue, worker, publish status, retries, and notifications.
+Wire dashboard metrics and campaign/goal modules to real data.
+Add analytics sync and reporting.
+Add inbox and engagement for supported providers.
+Add guarded automation, dry-run, risk escalation, and kill switch.
+Complete security, accessibility, load, provider-contract, and end-to-end tests.
+Run a controlled beta with a small number of real accounts before broad launch.

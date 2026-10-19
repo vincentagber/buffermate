@@ -97,3 +97,13 @@ services:
           envVarKey: ENCRYPTION_KEY
       - key: SCHEDULER_MAX_CONCURRENT
         value: "25"
+      - key: GEMINI_API_KEY
+        fromService:
+          type: web
+          name: buffermate-web
+          envVarKey: GEMINI_API_KEY
+      - key: GEMINI_TEXT_MODEL
+        fromService:
+          type: web
+          name: buffermate-web
+          envVarKey: GEMINI_TEXT_MODEL

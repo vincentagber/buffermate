@@ -35,6 +35,10 @@ import { useRouter } from 'next/navigation';
 import { PostPreview, PlatformType } from '@/components/dashboard/PostPreview';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import { parseLocalToUtcIso } from '@/lib/utils/timezone';
+import AiVoiceFormModal from '@/components/ai/AiVoiceFormModal';
+import AiFormBanner from '@/components/ai/AiFormBanner';
+import { ExtractedFormData } from '@/lib/ai/form-schema';
 
 const QUICK_EMOJIS = ['🚀', '✨', '🔥', '💡', '📈', '👏', '🎯', '👇', '🎉', '❤️', '💼', '🧵'];
 
@@ -82,6 +86,7 @@ export default function ComposerPage() {
     const [showAiModal, setShowAiModal] = useState(false);
     const [aiTone, setAiTone] = useState('professional');
     const [professionalMode, setProfessionalMode] = useState(true);
+    const [aiFormFilledNotice, setAiFormFilledNotice] = useState(false);
 
     // Live preview and media state
     const [previewPlatform, setPreviewPlatform] = useState<PlatformType>('x');
@@ -638,7 +643,7 @@ export default function ComposerPage() {
                 body: JSON.stringify({
                     id: draftPostId || undefined,
                     content: postContent,
-                    scheduled_at: scheduledAt ? new Date(scheduledAt).toISOString() : new Date().toISOString(),
+                    scheduled_at: scheduledAt ? parseLocalToUtcIso(scheduledAt, 'Africa/Lagos') : new Date().toISOString(),
                     social_account_ids: selectedAccounts,
                     attachments,
                     status: isImmediate ? 'posting' : 'scheduled',
@@ -776,6 +781,49 @@ export default function ComposerPage() {
         }
     };
 
+    const handleApplyAiData = (data: ExtractedFormData) => {
+        if (data.content) {
+            setContent(data.content);
+        }
+        if (data.mode) {
+            setMode(data.mode);
+        }
+        if (data.videoTopic) {
+            setVideoTopic(data.videoTopic);
+        }
+        if (data.tone) {
+            setAiTone(data.tone);
+        }
+        if (data.scheduledAt) {
+            setScheduledAt(data.scheduledAt);
+        }
+        if (data.platforms && data.platforms.length > 0 && accounts.length > 0) {
+            const matched: string[] = [];
+            accounts.forEach((acc) => {
+                const prov = (acc.provider || '').toLowerCase();
+                const matches = data.platforms.some((p) => {
+                    const norm = p.toLowerCase();
+                    if (norm === 'twitter' || norm === 'x') return prov.includes('twitter') || prov.includes('x');
+                    return prov.includes(norm);
+                });
+                if (matches) matched.push(acc.id);
+            });
+            if (matched.length > 0) {
+                setSelectedAccounts(matched);
+            }
+        }
+        if (data.platforms && data.platforms.length > 0) {
+            const first = data.platforms[0].toLowerCase();
+            if (first === 'twitter' || first === 'x') setPreviewPlatform('x');
+            else if (first === 'linkedin') setPreviewPlatform('linkedin');
+            else if (first === 'facebook') setPreviewPlatform('facebook');
+            else if (first === 'instagram' || first === 'tiktok' || first === 'threads') setPreviewPlatform('instagram');
+        }
+        setAiFormFilledNotice(true);
+        setTimeout(() => setAiFormFilledNotice(false), 6000);
+        setShowAiModal(false);
+    };
+
     const handleGenerateScript = async () => {
         if (!videoTopic) return;
         setGenerating(true);
@@ -909,6 +957,33 @@ export default function ComposerPage() {
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 min-h-0">
                 {/* Left Column (Editor & Setup) */}
                 <div className={`lg:col-span-2 flex flex-col gap-4 min-h-0 ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex'}`}>
+                    {/* Kobble-Style AI Autofill Trigger Banner */}
+                    <AiFormBanner
+                        title="Generate post with AI"
+                        description="Describe your post out loud or paste a rough brief — AI will extract platforms, schedule time, and complete the form for you."
+                        buttonText="Generate with AI"
+                        onOpenModal={() => setShowAiModal(true)}
+                    />
+
+                    {/* AI Form Filled Notification Toast */}
+                    {aiFormFilledNotice && (
+                        <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl p-3 flex items-center justify-between gap-3 text-xs shadow-2xs animate-[fade-in_0.2s_ease-out] shrink-0">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
+                                <span>
+                                    <strong>AI Auto-Fill Applied:</strong> Post caption, channels, and schedule date populated from voice/text extraction!
+                                </span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setAiFormFilledNotice(false)}
+                                className="text-emerald-700 hover:text-emerald-900 font-bold p-1 cursor-pointer"
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+                    )}
+
                     {/* Restored Draft Banner */}
                     {restoredBanner?.show && (
                         <div className="bg-blue-50/95 border border-blue-200/90 rounded-lg p-3 flex items-center justify-between gap-3 text-xs text-blue-900 shadow-xs animate-[fade-in_0.2s_ease-out] shrink-0">
@@ -1440,87 +1515,15 @@ export default function ComposerPage() {
                     />
                 </div>
             </div>
-            {/* AI Modal (single) */}
+            {/* AI Voice & Rough Draft Autofill Modal (Kobble Style) */}
             {showAiModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 animate-[fade-in_0.2s_ease-out] border border-slate-200">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="font-heading text-xl font-bold flex items-center text-slate-900"><Sparkles className="w-5 h-5 text-primary mr-2" /> AI Assistant</h3>
-                            <button onClick={() => setShowAiModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors"><X className="w-5 h-5" /></button>
-                        </div>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">What should this post be about?</label>
-                                <textarea value={aiPrompt} onChange={(e) => setAiPrompt(e.target.value)} placeholder="e.g., Announcing our new product launch..." className="w-full h-32 p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary focus:outline-none resize-none text-sm" />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-medium text-slate-700 mb-1">Tone</label>
-                                    <select value={aiTone} onChange={(e) => setAiTone(e.target.value)} className="w-full p-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20">
-                                        <option value="professional">Professional</option>
-                                        <option value="witty">Witty</option>
-                                        <option value="urgent">Urgent</option>
-                                        <option value="empathetic">Empathetic</option>
-                                        <option value="neutral">Neutral</option>
-                                    </select>
-                                </div>
-                                <div className="flex items-end">
-                                    <div className={`w-full flex items-center justify-between p-2 border border-slate-200 rounded-md bg-slate-50`}>
-                                        <span className="text-xs font-medium text-slate-600 flex items-center"><Briefcase className="w-3 h-3 mr-1.5" /> Pro Mode</span>
-                                        <div className={`w-8 h-4 rounded-full p-0.5 cursor-pointer transition-colors ${professionalMode ? 'bg-primary' : 'bg-slate-300'}`} onClick={() => setProfessionalMode(!professionalMode)}>
-                                            <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${professionalMode ? 'translate-x-4' : 'translate-x-0'}`} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="flex justify-end space-x-3 mt-8">
-                                <button onClick={() => setShowAiModal(false)} className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-md transition-colors">Cancel</button>
-                                <button onClick={handleGenerateAI} disabled={generating || !aiPrompt} className="btn-primary flex items-center">
-                                    {generating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Wand2 className="w-4 h-4 mr-2" />}
-                                    {generating ? 'Generating...' : 'Generate Content'}
-                                </button>
-                            </div>
-                            {/* Trending Ideas Section */}
-                            <div className="mt-6">
-                                <button onClick={async () => {
-                                    if (!aiPrompt) { alert('Enter a topic first'); return; }
-                                    setGenerating(true);
-                                    try {
-                                        const res = await fetch('/api/ai/trends', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic: aiPrompt }) });
-                                        const data = await res.json();
-                                        if (data.trends) setTrends(data.trends);
-                                        else alert('No trends returned');
-                                    } catch (e) { alert('Failed to fetch trends'); }
-                                    setGenerating(false);
-                                }} className="btn-primary w-full mb-2">Fetch Trending Ideas</button>
-                                {trends.length > 0 && (
-                                    <ul className="list-disc pl-5 space-y-1 text-sm text-slate-800">
-                                        {trends.map((t, i) => (<li key={i}><strong>{t.topic}</strong>: {t.description} (Relevance: {t.relevance})</li>))}
-                                    </ul>
-                                )}
-                            </div>
-                            {/* Best Times Section */}
-                            <div className="mt-6">
-                                <button onClick={async () => {
-                                    if (!aiPrompt) { alert('Enter a topic first'); return; }
-                                    setGenerating(true);
-                                    try {
-                                        const res = await fetch('/api/ai/best-times', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic: aiPrompt }) });
-                                        const data = await res.json();
-                                        if (data.times) setBestTimes(data.times);
-                                        else alert('No times returned');
-                                    } catch (e) { alert('Failed to fetch best times'); }
-                                    setGenerating(false);
-                                }} className="btn-primary w-full mb-2">Fetch Best Posting Times</button>
-                                {bestTimes.length > 0 && (
-                                    <ul className="list-disc pl-5 space-y-1 text-sm text-slate-800">
-                                        {bestTimes.map((t, i) => (<li key={i}>{t.day} at {t.time} – {t.reason}</li>))}
-                                    </ul>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <AiVoiceFormModal
+                    isOpen={showAiModal}
+                    onClose={() => setShowAiModal(false)}
+                    title="Generate task with AI"
+                    subtitle="Just describe what you want to get done. AI will instantly draft a perfect title, write instructions, and fill the form for you!"
+                    onApplyData={handleApplyAiData}
+                />
             )}
 
             {/* Real-Time Publishing / Scheduling Confirmation Modal */}
