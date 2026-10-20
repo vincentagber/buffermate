@@ -50,7 +50,12 @@ import {
   GoalsView,
   TasksView,
   InboxView,
+  RoiRevenueView,
+  ExperimentsView,
 } from './components/SocialynViews';
+import ReportsView from './components/ReportsView';
+import MembershipsRetentionView from './components/MembershipsRetentionView';
+import FlowAssistModal from './components/FlowAssistModal';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
@@ -102,7 +107,7 @@ export default function DashboardPage() {
     connectedChannels: ['instagram', 'tiktok', 'facebook', 'threads', 'whatsapp', 'x'],
   });
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(true);
-  const [userName, setUserName] = useState<string>('Vincent Agber');
+  const [userName, setUserName] = useState<string>('Alex Morgan');
 
   // Real Database State
   const [automations, setAutomations] = useState<SocialAutomation[]>(INITIAL_AUTOMATIONS);
@@ -117,6 +122,7 @@ export default function DashboardPage() {
   const [editingAutomation, setEditingAutomation] = useState<SocialAutomation | null>(null);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false);
+  const [isFlowAssistOpen, setIsFlowAssistOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleToggleSelectPost = (postId: string) => {
@@ -262,16 +268,59 @@ export default function DashboardPage() {
     } catch (err) {}
 
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user?.email) {
-        setUserName(user.user_metadata?.full_name || user.email.split('@')[0]);
-      }
+      try {
+        const cached = localStorage.getItem('buffermate_user_profile');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.fullName) {
+            setUserName(parsed.fullName);
+            return;
+          }
+        }
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserName(user.user_metadata?.name || user.user_metadata?.full_name || 'Alex Morgan');
+        }
+      } catch (e) {}
     };
     fetchUser();
+
+    const handleProfileUpdate = (e: any) => {
+      if (e.detail?.fullName) {
+        setUserName(e.detail.fullName);
+      }
+    };
+    window.addEventListener('user-profile-updated', handleProfileUpdate);
+
+    const handleSwitchTab = (e: any) => {
+      if (e.detail?.tab === 'analytics') {
+        router.push('/dashboard/analytics');
+      } else if (e.detail?.tab) {
+        setCurrentTab(e.detail.tab);
+      }
+    };
+    window.addEventListener('switch-dashboard-tab', handleSwitchTab);
+
+    // Sync initial tab and subview from URL search params if present
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tabParam = searchParams.get('tab');
+      if (tabParam === 'analytics') {
+        router.push('/dashboard/analytics');
+      } else if (tabParam) {
+        setCurrentTab(tabParam);
+      }
+      const subviewParam = searchParams.get('subview');
+      if (subviewParam === 'platform_overview' || subviewParam === 'metrics_dashboard' || subviewParam === 'command_center') {
+        setDashboardSubView(subviewParam);
+      }
+    } catch (e) {}
 
     return () => {
       supabase.removeChannel(realtimeChannel);
       if (es) es.close();
+      window.removeEventListener('user-profile-updated', handleProfileUpdate);
+      window.removeEventListener('switch-dashboard-tab', handleSwitchTab);
     };
   }, []);
 
@@ -414,6 +463,10 @@ export default function DashboardPage() {
       <Sidebar
         currentTab={currentTab}
         onSelectTab={(tab) => {
+          if (tab === 'analytics') {
+            router.push('/dashboard/analytics');
+            return;
+          }
           setCurrentTab(tab);
           if (tab === 'command-center' || tab === 'overview') {
             setDashboardSubView('command_center');
@@ -424,6 +477,7 @@ export default function DashboardPage() {
           setIsCreateAutomationOpen(true);
         }}
         onOpenSimulatorModal={() => setIsSimulatorOpen(true)}
+        onOpenFlowAssist={() => setIsFlowAssistOpen(true)}
         onSignOut={handleSignOut}
         isMobileOpen={isMobileMenuOpen}
         onCloseMobile={() => setIsMobileMenuOpen(false)}
@@ -446,6 +500,10 @@ export default function DashboardPage() {
         isSidebarCollapsed={isSidebarCollapsed}
         onToggleSidebarCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         onSelectTab={(tab) => {
+          if (tab === 'analytics') {
+            router.push('/dashboard/analytics');
+            return;
+          }
           setCurrentTab(tab);
           if (tab === 'command-center' || tab === 'overview') {
             setDashboardSubView('command_center');
@@ -464,16 +522,16 @@ export default function DashboardPage() {
           {/* Sub Navigation / View Switcher when in 'command-center' or 'overview' */}
           {(currentTab === 'command-center' || currentTab === 'overview') && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
-              <div className="inline-flex bg-white p-1 rounded-2xl border-2 border-dashed border-[#CBD5E1] shadow-2xs self-start w-full sm:w-auto">
+              <div className="inline-flex bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs self-start w-full sm:w-auto overflow-x-auto">
                 <button
                   onClick={() => {
                     setCurrentTab('command-center');
                     setDashboardSubView('command_center');
                   }}
-                  className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
+                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
                     dashboardSubView === 'command_center'
-                      ? 'bg-[#0F172A] text-white shadow-xs'
-                      : 'text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#161616] text-white shadow-2xs'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
                   }`}
                 >
                   Command Center
@@ -483,10 +541,10 @@ export default function DashboardPage() {
                     setCurrentTab('command-center');
                     setDashboardSubView('platform_overview');
                   }}
-                  className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
+                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
                     dashboardSubView === 'platform_overview'
-                      ? 'bg-[#0F172A] text-white shadow-xs'
-                      : 'text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#161616] text-white shadow-2xs'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
                   }`}
                 >
                   Platform & Channels
@@ -496,10 +554,10 @@ export default function DashboardPage() {
                     setCurrentTab('command-center');
                     setDashboardSubView('metrics_dashboard');
                   }}
-                  className={`flex-1 sm:flex-initial px-3 sm:px-4 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-all text-center ${
+                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
                     dashboardSubView === 'metrics_dashboard'
-                      ? 'bg-[#0F172A] text-white shadow-xs'
-                      : 'text-[#64748B] hover:text-[#0F172A]'
+                      ? 'bg-[#161616] text-white shadow-2xs'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
                   }`}
                 >
                   KPI Dashboard
@@ -510,16 +568,16 @@ export default function DashboardPage() {
               <div className="flex items-center space-x-2 self-end sm:self-auto">
                 <button
                   onClick={() => setCurrentTab('campaigns')}
-                  className="px-3 py-1.5 bg-white border-2 border-dashed border-[#CBD5E1] hover:bg-[#F8FAFC] rounded-xl text-xs font-bold text-[#0F172A] transition-colors flex items-center space-x-1.5 shadow-2xs"
+                  className="px-3.5 py-1.5 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-medium text-slate-700 transition-colors flex items-center space-x-1.5 shadow-2xs"
                 >
-                  <Megaphone className="w-3.5 h-3.5 text-[#6366F1]" />
+                  <Megaphone className="w-3.5 h-3.5 text-purple-600" />
                   <span>Campaigns</span>
                 </button>
                 <button
                   onClick={() => setCurrentTab('content-studio')}
-                  className="px-3 py-1.5 bg-[#EEF2FF] border border-[#C7D2FE] hover:bg-[#E0E7FF] rounded-xl text-xs font-bold text-[#6366F1] transition-colors flex items-center space-x-1.5 shadow-2xs"
+                  className="px-3.5 py-1.5 bg-[#EDE9FE] border border-[#DDD6FE] hover:bg-[#DDD6FE] rounded-full text-xs font-bold text-purple-900 transition-colors flex items-center space-x-1.5 shadow-2xs"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3.5 h-3.5 text-purple-700" />
                   <span>AI Studio</span>
                 </button>
               </div>
@@ -568,43 +626,62 @@ export default function DashboardPage() {
             <InboxView />
           )}
 
+          {/* =========================================================
+              VIEW: REPORTS & CLINIC ANALYTICS (SCREENSHOT 1)
+             ========================================================= */}
+          {(currentTab === 'reports' || currentTab === 'analytics') && (
+            <ReportsView onOpenFlowAssist={() => setIsFlowAssistOpen(true)} />
+          )}
 
           {/* =========================================================
-              VIEW 1: PLATFORM OVERVIEW & CHANNELS
+              VIEW: MEMBERSHIPS & RETENTION (SCREENSHOT 2)
+             ========================================================= */}
+          {(currentTab === 'memberships' || currentTab === 'retention') && (
+            <MembershipsRetentionView
+              onOpenNewCampaign={() => {
+                setEditingAutomation(null);
+                setIsCreateAutomationOpen(true);
+              }}
+            />
+          )}
+
+
+          {/* =========================================================
+              VIEW 1: PLATFORM OVERVIEW & CHANNELS (SOHO LUXURY CLINIC DESIGN)
              ========================================================= */}
           {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'platform_overview' && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <div className="space-y-5 sm:space-y-6 animate-fade-in">
               {/* Header Title Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                       Platform Overview & Channels
                     </h2>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#E05A2B] mr-1.5 animate-pulse"></span>
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
                       Live Channels
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
                     Monitor real-time automations, incoming social activity, and conversions across all connected channels.
                   </p>
                 </div>
 
-                <div className="flex items-center space-x-2 sm:space-x-2.5">
+                <div className="flex items-center space-x-2">
                   <button
                     onClick={() => {
                       setEditingAutomation(null);
                       setIsCreateAutomationOpen(true);
                     }}
-                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#1E293B] shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                    className="flex-1 sm:flex-initial px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-800 shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
-                    <Bot className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <Bot className="w-3.5 h-3.5 text-slate-600" />
                     <span>Create Flow</span>
                   </button>
                   <button
-                    onClick={() => setDashboardSubView('metrics_dashboard')}
-                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 bg-[#1E293B] hover:bg-black text-white rounded-2xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                    onClick={() => router.push('/dashboard/analytics')}
+                    className="flex-1 sm:flex-initial px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <TrendingUp className="w-3.5 h-3.5" />
                     <span>Analytics</span>
@@ -613,47 +690,47 @@ export default function DashboardPage() {
               </div>
 
               {/* 5 Channel Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
                 {/* 1. Instagram */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#FFF0F5] to-[#FFE4E6] text-[#E1306C] border border-[#FECDD3] flex items-center justify-center font-bold">
+                        <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 flex items-center justify-center font-bold">
                           <SocialPlatformIcon channel="instagram" className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-bold text-[#1E293B]">Instagram</h3>
-                          <p className="text-[10px] text-[#94A3B8]">4 active flows</p>
+                          <h3 className="text-xs font-bold text-slate-900">Instagram</h3>
+                          <p className="text-[10px] text-slate-400">4 active flows</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Active
                       </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs py-2 border-t border-[#F5EFE8]">
-                      <div className="flex justify-between text-[#64748B]">
+                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
+                      <div className="flex justify-between text-slate-500">
                         <span>Active Flows</span>
-                        <span className="font-bold text-[#1E293B]">3</span>
+                        <span className="font-semibold text-slate-900">3</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>DMs Triggered</span>
-                        <span className="font-bold text-[#1E293B]">241</span>
+                        <span className="font-semibold text-slate-900">241</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Comment Conv.</span>
-                        <span className="font-bold text-[#1E293B]">40.7%</span>
+                        <span className="font-semibold text-slate-900">40.7%</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] font-semibold text-[#E05A2B]">
-                    <button onClick={() => setCurrentTab('instagram')} className="hover:underline flex items-center space-x-1">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <button onClick={() => setCurrentTab('instagram')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
                       <Bot className="w-3 h-3" />
                       <span>Automations</span>
                     </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1">
+                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
                       <MessageCircle className="w-3 h-3" />
                       <span>Inbox</span>
                     </button>
@@ -661,45 +738,45 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 2. TikTok */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2.5">
                         <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center font-bold">
                           <SocialPlatformIcon channel="tiktok" className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-bold text-[#1E293B]">TikTok</h3>
-                          <p className="text-[10px] text-[#94A3B8]">2 active flows</p>
+                          <h3 className="text-xs font-bold text-slate-900">TikTok</h3>
+                          <p className="text-[10px] text-slate-400">2 active flows</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Active
                       </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs py-2 border-t border-[#F5EFE8]">
-                      <div className="flex justify-between text-[#64748B]">
+                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
+                      <div className="flex justify-between text-slate-500">
                         <span>Active Bots</span>
-                        <span className="font-bold text-[#1E293B]">2</span>
+                        <span className="font-semibold text-slate-900">2</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Comments Replied</span>
-                        <span className="font-bold text-[#1E293B]">1,204</span>
+                        <span className="font-semibold text-slate-900">1,204</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Leads Captured</span>
-                        <span className="font-bold text-[#1E293B]">456</span>
+                        <span className="font-semibold text-slate-900">456</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] font-semibold text-[#E05A2B]">
-                    <button onClick={() => setCurrentTab('tiktok')} className="hover:underline flex items-center space-x-1">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <button onClick={() => setCurrentTab('tiktok')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
                       <Bot className="w-3 h-3" />
                       <span>Automations</span>
                     </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1">
+                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
                       <MessageCircle className="w-3 h-3" />
                       <span>Inbox</span>
                     </button>
@@ -707,45 +784,45 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 3. Facebook */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-[#EFF6FF] text-[#1877F2] border border-[#BFDBFE] flex items-center justify-center font-bold">
+                        <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1877F2] border border-blue-100 flex items-center justify-center font-bold">
                           <SocialPlatformIcon channel="facebook" className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-bold text-[#1E293B]">Facebook</h3>
-                          <p className="text-[10px] text-[#94A3B8]">2 active flows</p>
+                          <h3 className="text-xs font-bold text-slate-900">Facebook</h3>
+                          <p className="text-[10px] text-slate-400">2 active flows</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Active
                       </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs py-2 border-t border-[#F5EFE8]">
-                      <div className="flex justify-between text-[#64748B]">
+                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
+                      <div className="flex justify-between text-slate-500">
                         <span>Active Flows</span>
-                        <span className="font-bold text-[#1E293B]">2</span>
+                        <span className="font-semibold text-slate-900">2</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Messenger Chats</span>
-                        <span className="font-bold text-[#1E293B]">89</span>
+                        <span className="font-semibold text-slate-900">89</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Ad Leads</span>
-                        <span className="font-bold text-[#1E293B]">34</span>
+                        <span className="font-semibold text-slate-900">34</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] font-semibold text-[#E05A2B]">
-                    <button onClick={() => setCurrentTab('facebook')} className="hover:underline flex items-center space-x-1">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <button onClick={() => setCurrentTab('facebook')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
                       <Bot className="w-3 h-3" />
                       <span>Automations</span>
                     </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1">
+                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
                       <MessageCircle className="w-3 h-3" />
                       <span>Inbox</span>
                     </button>
@@ -753,45 +830,45 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 4. Threads */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2.5">
                         <div className="w-8 h-8 rounded-xl bg-neutral-950 text-white flex items-center justify-center font-bold">
                           <SocialPlatformIcon channel="threads" className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-bold text-[#1E293B]">Threads</h3>
-                          <p className="text-[10px] text-[#94A3B8]">1 active flow</p>
+                          <h3 className="text-xs font-bold text-slate-900">Threads</h3>
+                          <p className="text-[10px] text-slate-400">1 active flow</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-600 border border-teal-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
                         Ready
                       </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs py-2 border-t border-[#F5EFE8]">
-                      <div className="flex justify-between text-[#64748B]">
+                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
+                      <div className="flex justify-between text-slate-500">
                         <span>Active Flows</span>
-                        <span className="font-bold text-[#1E293B]">1</span>
+                        <span className="font-semibold text-slate-900">1</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Post Replies</span>
-                        <span className="font-bold text-[#1E293B]">42</span>
+                        <span className="font-semibold text-slate-900">42</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Keyword Hits</span>
-                        <span className="font-bold text-[#1E293B]">18</span>
+                        <span className="font-semibold text-slate-900">18</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] font-semibold text-[#E05A2B]">
-                    <button onClick={() => setCurrentTab('threads')} className="hover:underline flex items-center space-x-1">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <button onClick={() => setCurrentTab('threads')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
                       <Bot className="w-3 h-3" />
                       <span>Automations</span>
                     </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1">
+                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
                       <MessageCircle className="w-3 h-3" />
                       <span>Inbox</span>
                     </button>
@@ -799,45 +876,45 @@ export default function DashboardPage() {
                 </div>
 
                 {/* 5. WhatsApp */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#FED7AA] transition-all flex flex-col justify-between">
+                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] flex items-center justify-center font-bold">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
                           <SocialPlatformIcon channel="whatsapp" className="w-4 h-4" />
                         </div>
                         <div>
-                          <h3 className="text-xs font-bold text-[#1E293B]">WhatsApp</h3>
-                          <p className="text-[10px] text-[#94A3B8]">0 active flows</p>
+                          <h3 className="text-xs font-bold text-slate-900">WhatsApp</h3>
+                          <p className="text-[10px] text-slate-400">0 active flows</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 text-teal-600 border border-teal-200">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
                         Ready
                       </span>
                     </div>
 
-                    <div className="space-y-1.5 text-xs py-2 border-t border-[#F5EFE8]">
-                      <div className="flex justify-between text-[#64748B]">
+                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
+                      <div className="flex justify-between text-slate-500">
                         <span>Auto-Responses</span>
-                        <span className="font-bold text-[#1E293B]">0</span>
+                        <span className="font-semibold text-slate-900">0</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Contacts</span>
-                        <span className="font-bold text-[#1E293B]">0</span>
+                        <span className="font-semibold text-slate-900">0</span>
                       </div>
-                      <div className="flex justify-between text-[#64748B]">
+                      <div className="flex justify-between text-slate-500">
                         <span>Messages Today</span>
-                        <span className="font-bold text-[#1E293B]">0</span>
+                        <span className="font-semibold text-slate-900">0</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[11px] font-semibold text-[#E05A2B]">
-                    <button onClick={() => setCurrentTab('whatsapp')} className="hover:underline flex items-center space-x-1">
+                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
+                    <button onClick={() => setCurrentTab('whatsapp')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
                       <Bot className="w-3 h-3" />
                       <span>Automations</span>
                     </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1">
+                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
                       <MessageCircle className="w-3 h-3" />
                       <span>Inbox</span>
                     </button>
@@ -846,22 +923,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Two Column Layout: Active Automations + Live Activity Stream */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
                 
                 {/* Left Column: Active Multi-Channel Automations List */}
-                <div className="lg:col-span-8 bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-[#F5EFE8]">
+                <div className="lg:col-span-8 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
                     <div>
                       <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-[#E05A2B]" />
-                        <h3 className="text-sm sm:text-base font-bold text-[#1E293B]">
+                        <Bot className="w-4 h-4 text-slate-700" />
+                        <h3 className="text-sm sm:text-base font-bold text-slate-900">
                           Active Multi-Channel Automations
                         </h3>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-[#FAF6F0] text-[#78350F] border border-[#F0E8DF]">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
                           {automations.length} Live Flows
                         </span>
                       </div>
-                      <p className="text-xs text-[#64748B] mt-0.5">
+                      <p className="text-xs text-slate-500 mt-0.5">
                         Live database flows with real keyword detection.
                       </p>
                     </div>
@@ -871,7 +948,7 @@ export default function DashboardPage() {
                         setEditingAutomation(null);
                         setIsCreateAutomationOpen(true);
                       }}
-                      className="px-3.5 py-2 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center space-x-1.5 self-start sm:self-auto"
+                      className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 self-start sm:self-auto cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>New Automation</span>
@@ -879,32 +956,32 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Flow List Items */}
-                  <div className="divide-y divide-[#F5EFE8]">
+                  <div className="divide-y divide-slate-100">
                     {automations.map((flow) => (
                       <div
                         key={flow.id}
-                        className="py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF8F5] p-2 rounded-2xl transition-colors"
+                        className="py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 p-2.5 rounded-2xl transition-colors"
                       >
                         <div className="flex items-start space-x-2.5 sm:space-x-3">
-                          <span className="px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] shrink-0 mt-0.5">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60 shrink-0 mt-0.5">
                             {flow.channel}
                           </span>
                           <div className="space-y-0.5">
                             <div className="flex items-center space-x-2">
-                              <h4 className="text-xs font-bold text-[#1E293B]">{flow.name}</h4>
+                              <h4 className="text-xs font-bold text-slate-900">{flow.name}</h4>
                               <span
                                 className={`w-2 h-2 rounded-full ${
-                                  flow.status === 'active' ? 'bg-emerald-500' : 'bg-neutral-300'
+                                  flow.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'
                                 }`}
                               ></span>
-                              <span className="text-[10px] font-semibold text-emerald-600">
+                              <span className="text-[10px] font-medium text-emerald-700">
                                 {flow.status === 'active' ? 'Active' : 'Paused'}
                               </span>
                             </div>
 
-                            <p className="text-[11px] sm:text-xs text-[#64748B]">
+                            <p className="text-[11px] sm:text-xs text-slate-500">
                               Trigger:{' '}
-                              <span className="text-[#334155] font-medium">
+                              <span className="text-slate-800 font-medium">
                                 {flow.trigger_type === 'comment_keyword'
                                   ? `Keyword [${flow.keywords.join(', ')}]`
                                   : flow.trigger_type === 'dm_received'
@@ -917,12 +994,12 @@ export default function DashboardPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#F5EFE8] sm:self-auto shrink-0">
+                        <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 sm:self-auto shrink-0">
                           <div className="text-left sm:text-right">
-                            <p className="text-xs font-bold text-[#1E293B]">
+                            <p className="text-xs font-bold text-slate-900">
                               {flow.runs_today} runs today
                             </p>
-                            <p className="text-[10px] text-[#94A3B8]">
+                            <p className="text-[10px] text-slate-400">
                               {flow.runs_total?.toLocaleString() || 0} total
                             </p>
                           </div>
@@ -933,26 +1010,26 @@ export default function DashboardPage() {
                                 setEditingAutomation(flow);
                                 setIsCreateAutomationOpen(true);
                               }}
-                              className="px-2.5 py-1.5 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-xl text-xs font-bold text-[#475569] transition-colors"
+                              className="px-3 py-1 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer"
                             >
                               Edit
                             </button>
 
                             <button
                               onClick={() => handleToggleAutomationStatus(flow.id)}
-                              className="p-1.5 text-[#94A3B8] hover:text-[#1E293B]"
+                              className="p-1.5 text-slate-400 hover:text-slate-800 cursor-pointer"
                               title={flow.status === 'active' ? 'Pause Flow' : 'Resume Flow'}
                             >
                               {flow.status === 'active' ? (
                                 <ToggleRight className="w-5 h-5 text-emerald-600" />
                               ) : (
-                                <ToggleLeft className="w-5 h-5 text-neutral-400" />
+                                <ToggleLeft className="w-5 h-5 text-slate-400" />
                               )}
                             </button>
 
                             <button
                               onClick={() => handleDeleteAutomation(flow.id)}
-                              className="p-1.5 text-neutral-400 hover:text-red-600"
+                              className="p-1.5 text-slate-400 hover:text-red-600 cursor-pointer"
                               title="Delete Flow"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -965,17 +1042,17 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Right Column: Live Activity Stream */}
-                <div className="lg:col-span-4 bg-white rounded-3xl p-4 sm:p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4 flex flex-col justify-between">
+                <div className="lg:col-span-4 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-4 flex flex-col justify-between">
                   <div>
-                    <div className="pb-3 border-b border-[#F5EFE8]">
+                    <div className="pb-3 border-b border-slate-100">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                          <Activity className="w-4 h-4 text-[#E05A2B]" />
-                          <h3 className="text-sm font-bold text-[#1E293B]">Live Activity Stream</h3>
+                          <Activity className="w-4 h-4 text-slate-700" />
+                          <h3 className="text-sm font-bold text-slate-900">Live Activity Stream</h3>
                         </div>
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                       </div>
-                      <p className="text-[11px] text-[#64748B] mt-0.5">
+                      <p className="text-[11px] text-slate-500 mt-0.5">
                         Real-time Supabase event logs.
                       </p>
                     </div>
@@ -986,10 +1063,10 @@ export default function DashboardPage() {
                         <button
                           key={filterKey}
                           onClick={() => setActivityFilter(filterKey)}
-                          className={`px-3 py-1 rounded-xl text-xs font-bold capitalize transition-colors shrink-0 ${
+                          className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition-all shrink-0 cursor-pointer ${
                             activityFilter === filterKey
-                              ? 'bg-[#E05A2B] text-white'
-                              : 'bg-[#FAF6F0] text-[#64748B] hover:bg-[#F3EBE1]'
+                              ? 'bg-[#141416] text-white shadow-2xs'
+                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                           }`}
                         >
                           {filterKey}
@@ -998,14 +1075,14 @@ export default function DashboardPage() {
                     </div>
 
                     {/* Event Items */}
-                    <div className="space-y-2.5 mt-1 max-h-[340px] overflow-y-auto pr-1">
+                    <div className="space-y-2 mt-1 max-h-[340px] overflow-y-auto pr-1">
                       {filteredActivities.map((act) => (
                         <div
                           key={act.id}
-                          className="p-3 bg-[#FAF8F5] rounded-2xl border border-[#F0E8DF] space-y-1 text-xs hover:border-[#FED7AA] transition-colors"
+                          className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-1 text-xs hover:border-slate-200 transition-colors"
                         >
                           <div className="flex items-center justify-between">
-                            <span className="font-bold text-[#E05A2B] text-[11px]">
+                            <span className="font-semibold text-slate-900 text-[11px]">
                               {act.event_type === 'auto_dm'
                                 ? '⚡️ Auto DM'
                                 : act.event_type === 'lead_captured'
@@ -1014,10 +1091,10 @@ export default function DashboardPage() {
                                 ? '💬 Comment Replied'
                                 : '🚀 Auto-Posted'}
                             </span>
-                            <span className="text-[10px] text-[#94A3B8]">{act.time_ago || 'just now'}</span>
+                            <span className="text-[10px] text-slate-400">{act.time_ago || 'just now'}</span>
                           </div>
-                          <p className="font-bold text-[#1E293B] text-xs">{act.title}</p>
-                          <p className="text-[11px] text-[#64748B] leading-snug">
+                          <p className="font-semibold text-slate-900 text-xs">{act.title}</p>
+                          <p className="text-[11px] text-slate-500 leading-snug">
                             {act.description}
                           </p>
                         </div>
@@ -1026,10 +1103,10 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Simulator Trigger in bottom of stream */}
-                  <div className="pt-3 border-t border-[#F5EFE8]">
+                  <div className="pt-3 border-t border-slate-100">
                     <button
                       onClick={() => setIsSimulatorOpen(true)}
-                      className="w-full py-2 bg-[#FFF0E6] hover:bg-[#FFE4D6] text-[#E05A2B] border border-[#FED7AA] rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5"
+                      className="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/80 rounded-full text-xs font-semibold transition-all flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
                     >
                       <Play className="w-3 h-3 fill-current" />
                       <span>Simulate Incoming Comment</span>
@@ -1041,18 +1118,18 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 2: METRICS & KPI DASHBOARD (SCREENSHOT 2)
+              VIEW 2: METRICS & KPI DASHBOARD (SOHO LUXURY CLINIC DESIGN)
              ========================================================= */}
           {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'metrics_dashboard' && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <div className="space-y-5 sm:space-y-6 animate-fade-in">
               {/* Header Title Bar */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                     Dashboard
                   </h2>
-                  <p className="text-xs sm:text-sm text-[#64748B] mt-1">
-                    Welcome back, <span className="font-bold text-[#1E293B]">{userName}</span>! Here's your overview.
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                    Welcome back, <span className="font-semibold text-slate-900">{userName}</span>! Here's your overview.
                   </p>
                 </div>
 
@@ -1062,14 +1139,14 @@ export default function DashboardPage() {
                       setEditingAutomation(null);
                       setIsCreateAutomationOpen(true);
                     }}
-                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#1E293B] shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                    className="flex-1 sm:flex-initial px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-800 shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
-                    <Bot className="w-3.5 h-3.5 text-[#E05A2B]" />
+                    <Bot className="w-3.5 h-3.5 text-slate-600" />
                     <span>New Automation</span>
                   </button>
                   <button
                     onClick={() => setIsPostComposerOpen(true)}
-                    className="flex-1 sm:flex-initial px-3 sm:px-4 py-2 sm:py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-1.5"
+                    className="flex-1 sm:flex-initial px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>New Post</span>
@@ -1078,21 +1155,21 @@ export default function DashboardPage() {
               </div>
 
               {/* Sub-tabs bar */}
-              <div className="flex space-x-4 sm:space-x-6 border-b border-[#F0E8DF] text-xs font-bold overflow-x-auto">
-                <button className="pb-2.5 sm:pb-3 border-b-2 border-[#E05A2B] text-[#E05A2B] flex items-center space-x-1.5 shrink-0">
+              <div className="flex items-center space-x-1 p-1 bg-slate-100/80 rounded-full border border-slate-200/60 text-xs font-medium w-fit">
+                <button className="px-3.5 py-1.5 rounded-full bg-[#141416] text-white shadow-2xs font-semibold flex items-center space-x-1.5">
                   <Layers className="w-3.5 h-3.5" />
                   <span>Overview</span>
                 </button>
                 <button
                   onClick={() => setDashboardSubView('platform_overview')}
-                  className="pb-2.5 sm:pb-3 border-b-2 border-transparent text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1.5 shrink-0"
+                  className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 transition-colors flex items-center space-x-1.5 cursor-pointer"
                 >
                   <Activity className="w-3.5 h-3.5" />
                   <span>Activity</span>
                 </button>
                 <button
-                  onClick={() => setCurrentTab('social-crm')}
-                  className="pb-2.5 sm:pb-3 border-b-2 border-transparent text-[#64748B] hover:text-[#1E293B] flex items-center space-x-1.5 shrink-0"
+                  onClick={() => router.push('/dashboard/analytics')}
+                  className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 transition-colors flex items-center space-x-1.5 cursor-pointer"
                 >
                   <TrendingUp className="w-3.5 h-3.5" />
                   <span>Analytics</span>
@@ -1100,22 +1177,22 @@ export default function DashboardPage() {
               </div>
 
               {/* Real-time Streaming Status Bar */}
-              <div className="flex items-center justify-between px-4 py-2.5 bg-white/70 backdrop-blur-xs rounded-2xl border border-[#CBD5E1]/60 shadow-xs text-xs">
-                <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between px-4 py-2.5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs text-xs">
+                <div className="flex items-center space-x-2.5">
                   <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
-                  <span className="font-bold text-[#1E293B]">Live Realtime Streaming</span>
-                  <span className="text-[#94A3B8] hidden sm:inline">•</span>
-                  <span className="text-[#64748B] text-[11px] hidden sm:inline">
+                  <span className="font-semibold text-slate-900">Live Realtime Streaming</span>
+                  <span className="text-slate-300 hidden sm:inline">•</span>
+                  <span className="text-slate-500 text-[11px] hidden sm:inline">
                     Supabase Postgres WebSockets & Multi-Channel Event Stream Active
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => fetchRealtimeStats()}
-                    className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-[#FFF0E6] hover:bg-[#FFE4D6] text-[#E05A2B] font-bold text-[11px] transition-colors"
+                    className="flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-[11px] transition-colors cursor-pointer"
                     title="Force sync live database metrics"
                   >
                     <RefreshCw className="w-3 h-3 animate-spin-hover" />
@@ -1125,201 +1202,201 @@ export default function DashboardPage() {
               </div>
 
               {/* 8 Stat KPI Cards (All Real-Time) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* 1. Total Contacts */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         TOTAL CONTACTS
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <Users className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                    <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                       {realtimeStats.totalContacts.toLocaleString()}
                     </p>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">In your Supabase CRM</p>
+                    <p className="text-xs text-slate-400 mt-0.5">In your Supabase CRM</p>
                   </div>
                 </div>
 
                 {/* 2. Messages Sent Today */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         MESSAGES SENT TODAY
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <MessageCircle className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-baseline space-x-2">
-                      <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                      <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                         {realtimeStats.messagesToday}
                       </p>
-                      <span className="text-xs font-bold text-emerald-600">↑ 12%</span>
+                      <span className="text-xs font-semibold text-emerald-600">↑ 12%</span>
                     </div>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {realtimeStats.messagesThisWeek} this week
                     </p>
                   </div>
                 </div>
 
                 {/* 3. Active Automations */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         ACTIVE AUTOMATIONS
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <Bot className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                    <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                       {realtimeStats.activeAutomationsCount}
                     </p>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">Live database rules</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Live database rules</p>
                   </div>
                 </div>
 
                 {/* 4. Response Rate */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         RESPONSE RATE
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <TrendingUp className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-baseline space-x-2">
-                      <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                      <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                         {realtimeStats.responseRate}
                       </p>
-                      <span className="text-xs font-bold text-emerald-600">↑ 3%</span>
+                      <span className="text-xs font-semibold text-emerald-600">↑ 3%</span>
                     </div>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">Based on last 100 messages</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Based on last 100 messages</p>
                   </div>
                 </div>
 
                 {/* 5. Leads Captured Today */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         LEADS CAPTURED TODAY
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <PhoneCall className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-baseline space-x-2">
-                      <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                      <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                         {realtimeStats.leadsCapturedToday}
                       </p>
-                      <span className="text-xs font-bold text-emerald-600">↑ 8%</span>
+                      <span className="text-xs font-semibold text-emerald-600">↑ 8%</span>
                     </div>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">
+                    <p className="text-xs text-slate-400 mt-0.5">
                       {realtimeStats.leadsThisWeek} this week
                     </p>
                   </div>
                 </div>
 
                 {/* 6. Lead Pages */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         LEAD PAGES
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <FileText className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                    <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                       {realtimeStats.leadPagesCount}
                     </p>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">Total lead pages created</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Total lead pages created</p>
                   </div>
                 </div>
 
                 {/* 7. Workflows */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         WORKFLOWS
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <Zap className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                    <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                       {realtimeStats.totalWorkflowsCount}
                     </p>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5">Total workflows created</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Total workflows created</p>
                   </div>
                 </div>
 
                 {/* 8. Social Channels */}
-                <div className="bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-2.5 hover:border-[#FED7AA] transition-colors">
+                <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-3 hover:shadow-xs transition-all">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1.5">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-[#64748B] uppercase tracking-wider">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                         SOCIAL CHANNELS
                       </span>
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                         Live
                       </span>
                     </div>
-                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                       <Share2 className="w-4 h-4" />
                     </div>
                   </div>
                   <div>
-                    <p className="text-xl sm:text-2xl font-black text-[#1E293B]">
+                    <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                       {realtimeStats.socialChannelsCount}
                     </p>
-                    <p className="text-[11px] sm:text-xs text-[#94A3B8] mt-0.5 font-medium truncate" title={realtimeStats.socialChannelsText}>
+                    <p className="text-xs text-slate-400 mt-0.5 font-medium truncate" title={realtimeStats.socialChannelsText}>
                       {realtimeStats.socialChannelsText}
                     </p>
                   </div>
@@ -1329,16 +1406,16 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER
+              VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER (SOHO LUXURY CLINIC DESIGN)
              ========================================================= */}
           {(currentTab === 'post-manager' || currentTab === 'calendar') && (
-            <div className="space-y-4 sm:space-y-6 animate-fade-in relative pb-16">
+            <div className="space-y-5 sm:space-y-6 animate-fade-in relative pb-16">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                     Posts & Social Scheduler
                   </h2>
-                  <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
                     Manage, select multiple posts, queue, and auto-publish content across all connected channels.
                   </p>
                 </div>
@@ -1347,11 +1424,11 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={handleSelectAllPosts}
-                    className="px-3.5 py-2 bg-white border border-[#E2D9CF] hover:bg-[#FAF8F5] text-[#475569] rounded-2xl text-xs font-bold transition-colors flex items-center space-x-1.5 shadow-2xs"
+                    className="px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-2xs cursor-pointer"
                   >
                     {selectedPostIds.length === posts.length && posts.length > 0 ? (
                       <>
-                        <CheckSquare className="w-4 h-4 text-[#E05A2B]" />
+                        <CheckSquare className="w-4 h-4 text-slate-900" />
                         <span>Deselect All</span>
                       </>
                     ) : (
@@ -1364,7 +1441,7 @@ export default function DashboardPage() {
 
                   <button
                     onClick={() => setIsPostComposerOpen(true)}
-                    className="w-full sm:w-auto px-4 sm:px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-1.5"
+                    className="w-full sm:w-auto px-4 sm:px-5 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Create & Schedule Post</span>
@@ -1374,16 +1451,16 @@ export default function DashboardPage() {
 
               {/* Floating Mass Action Toolbar when posts are selected */}
               {selectedPostIds.length > 0 && (
-                <div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#1E293B] text-white px-4 sm:px-6 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 sm:space-x-4 border border-neutral-700 animate-slide-up">
-                  <div className="flex items-center space-x-2 pr-2 border-r border-neutral-700 text-xs font-bold">
-                    <CheckSquare className="w-4 h-4 text-[#E05A2B]" />
+                <div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#141416] text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center space-x-3 sm:space-x-4 border border-slate-800 animate-slide-up">
+                  <div className="flex items-center space-x-2 pr-2 border-r border-slate-800 text-xs font-semibold">
+                    <CheckSquare className="w-4 h-4 text-purple-400" />
                     <span>{selectedPostIds.length} Selected</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleBulkStatusChange('posted')}
-                    className="px-3.5 py-1.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold transition-all shadow-xs flex items-center space-x-1.5"
+                    className="px-3.5 py-1.5 bg-white text-slate-900 hover:bg-slate-100 rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Publish Now</span>
@@ -1392,16 +1469,16 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => handleBulkStatusChange('scheduled')}
-                    className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5"
+                    className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 cursor-pointer"
                   >
-                    <Clock className="w-3.5 h-3.5 text-orange-300" />
+                    <Clock className="w-3.5 h-3.5 text-purple-300" />
                     <span>Schedule</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleBulkDeletePosts}
-                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded-xl transition-all"
+                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded-full transition-all cursor-pointer"
                     title="Delete selected posts"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -1410,14 +1487,14 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedPostIds([])}
-                    className="text-xs text-neutral-400 hover:text-white"
+                    className="text-xs text-slate-400 hover:text-white cursor-pointer ml-1"
                   >
                     ✕
                   </button>
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                 {posts.map((post) => {
                   const isSelected = selectedPostIds.includes(post.id);
 
@@ -1425,20 +1502,20 @@ export default function DashboardPage() {
                     <div
                       key={post.id}
                       onClick={() => handleToggleSelectPost(post.id)}
-                      className={`bg-white rounded-3xl p-4 sm:p-5 border-2 border-dashed transition-all flex flex-col justify-between space-y-3.5 cursor-pointer shadow-xs ${
+                      className={`bg-white rounded-3xl p-5 sm:p-6 border transition-all flex flex-col justify-between space-y-4 cursor-pointer shadow-2xs ${
                         isSelected
-                          ? 'border-[#E05A2B] bg-[#FFF8F5] ring-2 ring-orange-500/20'
-                          : 'border-[#CBD5E1] hover:border-[#FED7AA]'
+                          ? 'border-slate-900 bg-purple-50/20 ring-2 ring-slate-900/10 shadow-sm'
+                          : 'border-slate-200/80 hover:border-slate-300 hover:shadow-xs'
                       }`}
                     >
-                      <div className="space-y-2.5">
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <div
                               className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${
                                 isSelected
-                                  ? 'bg-[#E05A2B] border-[#E05A2B] text-white'
-                                  : 'bg-white border-[#CBD5E1]'
+                                  ? 'bg-[#141416] border-[#141416] text-white'
+                                  : 'bg-white border-slate-300'
                               }`}
                             >
                               {isSelected && <Check className="w-3.5 h-3.5" />}
@@ -1446,7 +1523,7 @@ export default function DashboardPage() {
 
                             <div className="flex flex-wrap gap-1">
                               {post.channels?.map((ch) => (
-                                <span key={ch} className="px-2 py-0.5 rounded-md text-[9px] sm:text-[10px] font-bold uppercase bg-[#FFF0E6] text-[#E05A2B]">
+                                <span key={ch} className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60">
                                   {ch}
                                 </span>
                               ))}
@@ -1454,10 +1531,10 @@ export default function DashboardPage() {
                           </div>
 
                           <span
-                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${
                               post.status === 'posted'
-                                ? 'bg-emerald-50 text-emerald-600'
-                                : 'bg-amber-50 text-amber-600'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60'
+                                : 'bg-purple-50 text-purple-700 border-purple-200/60'
                             }`}
                           >
                             {post.status === 'posted' ? 'Published' : 'Scheduled'}
@@ -1465,7 +1542,7 @@ export default function DashboardPage() {
                         </div>
 
                         {post.attachments?.[0]?.url && (
-                          <div className="rounded-2xl overflow-hidden aspect-video bg-[#F1E9DF]">
+                          <div className="rounded-2xl overflow-hidden aspect-video bg-slate-100 border border-slate-100">
                             <img
                               src={post.attachments[0].url}
                               alt="attachment"
@@ -1474,14 +1551,14 @@ export default function DashboardPage() {
                           </div>
                         )}
 
-                        <p className="text-xs text-[#334155] whitespace-pre-line line-clamp-4 leading-relaxed">
+                        <p className="text-xs text-slate-700 whitespace-pre-line line-clamp-4 leading-relaxed font-normal">
                           {post.content}
                         </p>
                       </div>
 
-                      <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-[10px] sm:text-[11px] text-[#64748B]">
-                        <div className="flex items-center space-x-1">
-                          <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                        <div className="flex items-center space-x-1.5">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
                           <span>
                             {new Date(post.scheduled_at).toLocaleDateString(undefined, {
                               month: 'short',
@@ -1491,7 +1568,7 @@ export default function DashboardPage() {
                             })}
                           </span>
                         </div>
-                        <span className="font-bold text-[#1E293B]">Live Queue</span>
+                        <span className="font-semibold text-slate-900">Live Queue</span>
                       </div>
                     </div>
                   );
@@ -1499,7 +1576,6 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
-
           {/* =========================================================
               VIEW 4: AI CONTENT STUDIO & AUTOMATION
              ========================================================= */}
@@ -1534,17 +1610,17 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <span className="px-3 py-1 bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] rounded-xl text-xs font-bold">
+                  <span className="px-3 py-1 bg-purple-50 text-purple-700 border border-purple-200/60 rounded-full text-xs font-semibold">
                     {leads.length} Leads In Funnel
                   </span>
                 </div>
               </div>
 
               {/* Table of Leads with responsive horizontal scrolling */}
-              <div className="bg-white rounded-3xl border-2 border-dashed border-[#CBD5E1] shadow-xs overflow-hidden">
+              <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs min-w-[640px]">
-                    <thead className="bg-[#FAF7F2] text-[#64748B] font-bold uppercase tracking-wider border-b border-[#F0E8DF]">
+                    <thead className="bg-slate-50/70 text-slate-500 font-semibold uppercase tracking-wider border-b border-slate-100">
                       <tr>
                         <th className="py-3 px-4">Contact / Handle</th>
                         <th className="py-3 px-4">Platform</th>
@@ -1574,7 +1650,7 @@ export default function DashboardPage() {
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200/60">
                               "{lead.keyword_triggered}"
                             </span>
                           </td>
@@ -1709,23 +1785,23 @@ export default function DashboardPage() {
             return (
               <div className="space-y-5 sm:space-y-6 animate-fade-in">
                 {/* Channel Header Banner */}
-                <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs">
+                <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-xs">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div className="flex items-start sm:items-center space-x-3.5">
-                      <div className="w-12 h-12 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center shrink-0 shadow-xs">
+                      <div className="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-200/60 flex items-center justify-center shrink-0 shadow-xs text-purple-700">
                         <SocialPlatformIcon channel={activeChannel} className="w-6 h-6" />
                       </div>
                       <div>
                         <div className="flex items-center space-x-2.5">
-                          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+                          <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                             {info.name} Automation Hub
                           </h2>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
                             Live Engine Active
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+                        <p className="text-xs sm:text-sm text-slate-500 mt-1">
                           {info.desc}
                         </p>
                       </div>
@@ -1735,9 +1811,9 @@ export default function DashboardPage() {
                     <div className="flex items-center space-x-2.5 sm:self-auto self-stretch">
                       <button
                         onClick={() => setIsSimulatorOpen(true)}
-                        className="flex-1 sm:flex-initial px-3.5 py-2.5 bg-[#FAF6F0] hover:bg-[#F3ECE4] text-[#78350F] border border-[#E2D9CF] rounded-2xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5"
+                        className="flex-1 sm:flex-initial px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 rounded-full text-xs font-semibold transition-all flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
                       >
-                        <Bot className="w-3.5 h-3.5 text-[#E05A2B]" />
+                        <Bot className="w-3.5 h-3.5 text-slate-600" />
                         <span>Test in Simulator</span>
                       </button>
                       <button
@@ -1745,7 +1821,7 @@ export default function DashboardPage() {
                           setEditingAutomation(null);
                           setIsCreateAutomationOpen(true);
                         }}
-                        className="flex-1 sm:flex-initial px-4 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                        className="flex-1 sm:flex-initial px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                       >
                         <Plus className="w-4 h-4" />
                         <span>+ Add {info.name} Flow</span>
@@ -1754,21 +1830,21 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Channel Summary Metrics */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-5 border-t border-[#F5EFE8]">
-                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Configured Flows</span>
-                      <span className="text-lg font-bold text-[#1E293B] mt-0.5 block">{channelAutomations.length}</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-5 mt-5 border-t border-slate-100">
+                    <div className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Configured Flows</span>
+                      <span className="text-lg font-bold text-slate-900 mt-0.5 block">{channelAutomations.length}</span>
                     </div>
-                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Dispatched Today</span>
-                      <span className="text-lg font-bold text-[#E05A2B] mt-0.5 block">{channelAutomations.reduce((acc, a) => acc + (a.runs_today || 0), 0)}</span>
+                    <div className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Dispatched Today</span>
+                      <span className="text-lg font-bold text-slate-900 mt-0.5 block">{channelAutomations.reduce((acc, a) => acc + (a.runs_today || 0), 0)}</span>
                     </div>
-                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Total Triggered</span>
-                      <span className="text-lg font-bold text-[#1E293B] mt-0.5 block">{totalRuns}</span>
+                    <div className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Triggered</span>
+                      <span className="text-lg font-bold text-slate-900 mt-0.5 block">{totalRuns}</span>
                     </div>
-                    <div className="p-3 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF]">
-                      <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">Leads Captured</span>
+                    <div className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Leads Captured</span>
                       <span className="text-lg font-bold text-emerald-600 mt-0.5 block">{totalLeads}</span>
                     </div>
                   </div>
@@ -1802,10 +1878,10 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Flows List Section */}
-                <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
+                <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/80 shadow-2xs space-y-4">
                   <div className="flex items-center justify-between pb-3 border-b border-[#F5EFE8]">
                     <div className="flex items-center space-x-2">
-                      <Zap className="w-4 h-4 text-[#E05A2B]" />
+                      <Zap className="w-4 h-4 text-slate-700" />
                       <h3 className="text-sm font-bold text-[#1E293B]">
                         Active Triggers & Rules
                       </h3>
@@ -1820,11 +1896,11 @@ export default function DashboardPage() {
                     {filteredAutomations.map((flow) => (
                       <div
                         key={flow.id}
-                        className="p-4 sm:p-5 rounded-2xl border border-[#F0E8DF] bg-[#FCFAF7] hover:border-[#E05A2B]/40 hover:bg-white transition-all space-y-3 shadow-2xs"
+                        className="p-4 sm:p-5 rounded-2xl border border-slate-100 bg-slate-50/60 hover:border-slate-300 hover:bg-white transition-all space-y-3 shadow-2xs"
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                           <div className="flex items-center space-x-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-white border border-[#E2D9CF] flex items-center justify-center text-[#E05A2B] shrink-0">
+                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-700 shrink-0">
                               <Bot className="w-4 h-4" />
                             </div>
                             <div>
@@ -1874,7 +1950,7 @@ export default function DashboardPage() {
                             flow.keywords.map((kw, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] rounded-md text-[11px] font-bold"
+                                className="px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200/60 rounded-md text-[11px] font-semibold"
                               >
                                 "{kw}"
                               </span>
@@ -1902,7 +1978,7 @@ export default function DashboardPage() {
                               "{flow.dm_message}"
                             </p>
                             {flow.link_url && (
-                              <span className="text-[11px] text-[#E05A2B] font-bold mt-1 inline-block">
+                              <span className="text-[11px] text-slate-700 font-semibold mt-1 inline-block">
                                 Destination: {flow.link_url}
                               </span>
                             )}
@@ -1914,7 +1990,7 @@ export default function DashboardPage() {
                     {/* Empty State with Template Starters */}
                     {filteredAutomations.length === 0 && (
                       <div className="py-10 px-4 text-center space-y-4">
-                        <div className="w-14 h-14 rounded-3xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B] mx-auto shadow-xs">
+                        <div className="w-14 h-14 rounded-3xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-700 mx-auto shadow-2xs">
                           <Bot className="w-7 h-7" />
                         </div>
                         <div className="max-w-md mx-auto">
@@ -1946,9 +2022,9 @@ export default function DashboardPage() {
                               });
                               setIsCreateAutomationOpen(true);
                             }}
-                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                            className="p-3 bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl text-left transition-all group shadow-2xs"
                           >
-                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-slate-900 block">
                               💰 "Price" Bot
                             </span>
                             <span className="text-[11px] text-[#64748B] mt-0.5 block">
@@ -1975,9 +2051,9 @@ export default function DashboardPage() {
                               });
                               setIsCreateAutomationOpen(true);
                             }}
-                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                            className="p-3 bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl text-left transition-all group shadow-2xs"
                           >
-                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-slate-900 block">
                               🎁 "Link" Magnet
                             </span>
                             <span className="text-[11px] text-[#64748B] mt-0.5 block">
@@ -2004,9 +2080,9 @@ export default function DashboardPage() {
                               });
                               setIsCreateAutomationOpen(true);
                             }}
-                            className="p-3 bg-[#FCFAF7] hover:bg-[#FFF0E6] border border-[#E2D9CF] hover:border-[#FED7AA] rounded-2xl text-left transition-all group"
+                            className="p-3 bg-slate-50/70 hover:bg-white border border-slate-200/80 hover:border-slate-300 rounded-2xl text-left transition-all group shadow-2xs"
                           >
-                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] block">
+                            <span className="text-xs font-bold text-[#1E293B] group-hover:text-slate-900 block">
                               📅 "Book" Call
                             </span>
                             <span className="text-[11px] text-[#64748B] mt-0.5 block">
@@ -2023,151 +2099,14 @@ export default function DashboardPage() {
           })()}
 
           {/* =========================================================
-              VIEW: COMPETITORS
-             ========================================================= */}
-          {currentTab === 'competitors' && (
-            <div className="space-y-6 animate-fade-in font-sans">
-              <div>
-                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Competitor Radar</h1>
-                <p className="text-xs sm:text-sm text-[#64748B]">Benchmark brand engagement, follower growth velocity, and top posting times.</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-[#0F172A]">Northstar (You)</span>
-                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">Leader</span>
-                  </div>
-                  <div className="text-2xl font-black text-[#0F172A]">4.8% Eng. Rate</div>
-                  <p className="text-xs text-[#64748B]">24.2K total reach this week</p>
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-[#0F172A]">Acme Agency</span>
-                    <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Peer</span>
-                  </div>
-                  <div className="text-2xl font-black text-[#64748B]">3.1% Eng. Rate</div>
-                  <p className="text-xs text-[#64748B]">18.5K total reach this week</p>
-                </div>
-
-                <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-sm text-[#0F172A]">Vanguard Media</span>
-                    <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">Peer</span>
-                  </div>
-                  <div className="text-2xl font-black text-[#64748B]">2.7% Eng. Rate</div>
-                  <p className="text-xs text-[#64748B]">12.1K total reach this week</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* =========================================================
               VIEW: EXPERIMENTS
              ========================================================= */}
-          {currentTab === 'experiments' && (
-            <div className="space-y-6 animate-fade-in font-sans">
-              <div>
-                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Social Experiments</h1>
-                <p className="text-xs sm:text-sm text-[#64748B]">A/B hook split-testing, CTA variations, and algorithmic velocity testing.</p>
-              </div>
-
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-[#F1F5F9] pb-3">
-                  <span className="font-bold text-sm text-[#0F172A]">Experiment #04 · Question vs Statement Hooks</span>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Significant Result (95% Conf.)</span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                    <span className="font-bold text-emerald-600">Variant A (Question Hook) · Winner</span>
-                    <p className="text-[#0F172A] font-semibold">"Are you still manually sending DMs in 2026?"</p>
-                    <p className="text-[#64748B]">CTR: 5.4% · 142 Leads generated</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-1">
-                    <span className="font-bold text-[#64748B]">Variant B (Statement Hook)</span>
-                    <p className="text-[#0F172A] font-semibold">"How top social agencies automate outbound DMs."</p>
-                    <p className="text-[#64748B]">CTR: 3.1% · 76 Leads generated</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {currentTab === 'experiments' && <ExperimentsView />}
 
           {/* =========================================================
               VIEW: ROI & REVENUE
              ========================================================= */}
-          {currentTab === 'roi-revenue' && (
-            <div className="space-y-6 animate-fade-in font-sans">
-              <div>
-                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">GROW</div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">ROI & Revenue Attribution</h1>
-                <p className="text-xs sm:text-sm text-[#64748B]">Track multi-touch closed revenue sourced directly from organic and paid social channels.</p>
-              </div>
-
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">CLOSED WON REVENUE</span>
-                    <div className="text-3xl font-extrabold text-[#0F172A]">$118,400</div>
-                    <span className="text-xs text-emerald-600 font-semibold">+44% vs previous quarter</span>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">PIPELINE CONTRIBUTION</span>
-                    <div className="text-3xl font-extrabold text-[#6366F1]">68.4%</div>
-                    <span className="text-xs text-[#64748B]">Direct from social touchpoints</span>
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold uppercase text-[#94A3B8]">AVERAGE DEAL SIZE</span>
-                    <div className="text-3xl font-extrabold text-[#0F172A]">$8,450</div>
-                    <span className="text-xs text-[#64748B]">From qualified social leads</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* =========================================================
-              VIEW: LISTENING & CRISIS
-             ========================================================= */}
-          {currentTab === 'listening' && (
-            <div className="space-y-6 animate-fade-in font-sans">
-              <div>
-                <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">ENGAGE</div>
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">Listening & Crisis Radar</h1>
-                <p className="text-xs sm:text-sm text-[#64748B]">Live social listening across mentions, keywords, brand sentiment, and threat protection.</p>
-              </div>
-
-              <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-[#0F172A]">Real-Time Mention Stream</h3>
-                  <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    All Systems Normal
-                  </span>
-                </div>
-                <div className="space-y-2 text-xs">
-                  <div className="p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5">
-                      <SocialPlatformIcon channel="x" className="w-4 h-4" />
-                      <span className="font-bold text-[#0F172A]">@tech_insider:</span>
-                      <span className="text-[#64748B]">"BufferMate's new Socialyn OS upgrade is unbelievably slick."</span>
-                    </div>
-                    <span className="text-emerald-600 font-bold">+98 Positive</span>
-                  </div>
-                  <div className="p-3 bg-[#F8FAFC] rounded-2xl border border-[#E2E8F0] flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5">
-                      <SocialPlatformIcon channel="linkedin" className="w-4 h-4" />
-                      <span className="font-bold text-[#0F172A]">Sarah Jenkins:</span>
-                      <span className="text-[#64748B]">"Our agency automated 800 client comments this morning without a hitch."</span>
-                    </div>
-                    <span className="text-emerald-600 font-bold">+95 Positive</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {currentTab === 'roi-revenue' && <RoiRevenueView />}
 
           {/* =========================================================
               VIEW 6: PROFILE & ACCOUNT SETTINGS
@@ -2198,6 +2137,15 @@ export default function DashboardPage() {
         isOpen={isPostComposerOpen}
         onClose={() => setIsPostComposerOpen(false)}
         onSavePost={handleSavePost}
+      />
+
+      <FlowAssistModal
+        isOpen={isFlowAssistOpen}
+        onClose={() => setIsFlowAssistOpen(false)}
+        onRemindersSent={(count) => {
+          setToastMessage(`Sent ${count} personalized rebooking reminders!`);
+          setTimeout(() => setToastMessage(null), 3500);
+        }}
       />
     </div>
   );

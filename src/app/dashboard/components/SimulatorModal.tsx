@@ -88,23 +88,23 @@ export default function SimulatorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
+      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200/80 my-auto">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
+        <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B] shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-purple-50 border border-purple-200/60 flex items-center justify-center text-purple-700 shrink-0">
               <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-[#1E293B] leading-snug">Live Engine Simulator</h2>
-              <p className="text-[11px] sm:text-xs text-[#64748B]">
-                Real server-side keyword detection & automated DM response.
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">Live Engine Simulator</h2>
+              <p className="text-[11px] sm:text-xs text-slate-500">
+                Real server-side keyword detection & automated DM response · Soho clinic.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-[#FAF6F0] flex items-center justify-center text-[#64748B] hover:text-[#1E293B]"
+            className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -114,7 +114,7 @@ export default function SimulatorModal({
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* Channel selector */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Simulate on Channel
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -134,7 +134,7 @@ export default function SimulatorModal({
                         : ch === 'threads'
                         ? 'border-neutral-900 bg-neutral-100 text-neutral-900 shadow-xs'
                         : 'border-[#25D366] bg-[#F0FDF4] text-[#16A34A] shadow-xs'
-                      : 'border-[#E2D9CF] bg-white text-[#64748B] hover:bg-[#FAF6F0]'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   <SocialPlatformIcon channel={ch} className="w-3.5 h-3.5" />
@@ -147,25 +147,25 @@ export default function SimulatorModal({
           {/* User & Post Inputs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Follower Handle
               </label>
               <input
                 type="text"
                 value={userHandle}
                 onChange={(e) => setUserHandle(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs bg-[#FCFAF7]"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Target Post / Reel
               </label>
               <input
                 type="text"
                 value={postTitle}
                 onChange={(e) => setPostTitle(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs bg-[#FCFAF7]"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50"
               />
             </div>
           </div>
@@ -173,16 +173,16 @@ export default function SimulatorModal({
           {/* Comment input */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-bold text-[#334155] uppercase tracking-wider">
+              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Follower Comment Text
               </label>
-              <span className="text-[10px] sm:text-[11px] text-[#94A3B8]">Tap preset below</span>
+              <span className="text-[10px] sm:text-[11px] text-slate-400">Tap preset below</span>
             </div>
             <textarea
               rows={2}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             />
             {/* Presets */}
             <div className="flex flex-wrap gap-1.5 mt-2">
@@ -191,9 +191,9 @@ export default function SimulatorModal({
                   key={idx}
                   type="button"
                   onClick={() => setCommentText(s.text)}
-                  className="px-2 py-1 bg-[#FAF6F0] hover:bg-[#F3EBE1] border border-[#F0E8DF] rounded-lg text-[10px] sm:text-[11px] font-medium text-[#475569] transition-colors"
+                  className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200/70 border border-slate-200 rounded-lg text-[10px] sm:text-[11px] font-medium text-slate-700 transition-colors"
                 >
-                  "{s.kw}"
+                  &ldquo;{s.kw}&rdquo;
                 </button>
               ))}
             </div>
@@ -204,7 +204,7 @@ export default function SimulatorModal({
             type="button"
             onClick={handleSimulate}
             disabled={isProcessing}
-            className="w-full py-2.5 sm:py-3 bg-[#E05A2B] hover:bg-[#C8491E] disabled:opacity-50 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-2"
+            className="w-full py-2.5 sm:py-3 bg-[#161616] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs sm:text-sm font-bold shadow-sm transition-all flex items-center justify-center space-x-2"
           >
             {isProcessing ? (
               <RefreshCw className="w-4 h-4 animate-spin" />
@@ -216,46 +216,46 @@ export default function SimulatorModal({
 
           {/* Live Execution Result */}
           {executionResult && (
-            <div className="p-3.5 sm:p-4 rounded-2xl border border-[#FED7AA] bg-[#FFFBF7] space-y-2.5 sm:space-y-3 animate-fade-in">
+            <div className="p-3.5 sm:p-4 rounded-2xl border border-emerald-200 bg-[#EAF6DA] space-y-2.5 sm:space-y-3 animate-fade-in">
               {executionResult.matched ? (
                 <>
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold text-emerald-900">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Keyword Matched: "{executionResult.matchedKeyword}"</span>
-                    <span className="text-[#94A3B8]">•</span>
-                    <span className="text-[#E05A2B] font-semibold">{executionResult.flowName}</span>
+                    <span>Keyword Matched: &ldquo;{executionResult.matchedKeyword}&rdquo;</span>
+                    <span className="text-emerald-400">•</span>
+                    <span className="text-purple-700 font-semibold">{executionResult.flowName}</span>
                   </div>
 
                   {/* Public Reply Card */}
-                  <div className="p-2.5 sm:p-3 bg-white rounded-xl border border-[#F0E8DF] space-y-1">
-                    <div className="flex items-center space-x-1.5 text-[10px] sm:text-[11px] font-bold text-[#64748B]">
+                  <div className="p-2.5 sm:p-3 bg-white rounded-xl border border-emerald-100 space-y-1">
+                    <div className="flex items-center space-x-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500">
                       <MessageSquare className="w-3.5 h-3.5 text-blue-500 shrink-0" />
                       <span>Step 1: Real Comment Reply Sent</span>
                     </div>
-                    <p className="text-xs text-[#1E293B] pl-4 sm:pl-5 font-medium leading-relaxed">
-                      "{executionResult.publicReply}"
+                    <p className="text-xs text-slate-800 pl-4 sm:pl-5 font-medium leading-relaxed">
+                      &ldquo;{executionResult.publicReply}&rdquo;
                     </p>
                   </div>
 
                   {/* Private DM Card */}
-                  <div className="p-2.5 sm:p-3 bg-white rounded-xl border border-[#F0E8DF] space-y-1">
-                    <div className="flex items-center space-x-1.5 text-[10px] sm:text-[11px] font-bold text-[#64748B]">
+                  <div className="p-2.5 sm:p-3 bg-white rounded-xl border border-emerald-100 space-y-1">
+                    <div className="flex items-center space-x-1.5 text-[10px] sm:text-[11px] font-bold text-slate-500">
                       <Send className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                       <span>Step 2: Real Private DM Dispatched</span>
                     </div>
-                    <p className="text-xs text-[#1E293B] pl-4 sm:pl-5 font-medium leading-relaxed">
-                      "{executionResult.privateDm}"
+                    <p className="text-xs text-slate-800 pl-4 sm:pl-5 font-medium leading-relaxed">
+                      &ldquo;{executionResult.privateDm}&rdquo;
                     </p>
                   </div>
 
                   {/* CRM Lead Confirmation */}
-                  <div className="flex items-center justify-between text-xs text-[#78350F] bg-[#FEF3E2] px-3 py-2 rounded-xl">
-                    <span className="text-[11px] sm:text-xs">✨ Persisted to Supabase CRM & Live Activity Stream!</span>
-                    <span className="font-bold text-[#E05A2B]">Saved</span>
+                  <div className="flex items-center justify-between text-xs text-emerald-900 bg-white/80 px-3 py-2 rounded-xl border border-emerald-200/60">
+                    <span className="text-[11px] sm:text-xs">✨ Persisted to CRM & Live Activity Stream!</span>
+                    <span className="font-bold text-emerald-700">Saved</span>
                   </div>
                 </>
               ) : (
-                <div className="text-xs font-medium text-amber-700">
+                <div className="text-xs font-medium text-amber-800">
                   No active automation matched the keywords in this comment.
                 </div>
               )}

@@ -4,17 +4,11 @@ import React from 'react';
 import {
   Plus,
   Sparkles,
-  Layers,
   ArrowRight,
   TrendingUp,
-  Clock,
   Calendar,
-  Zap,
   Globe,
-  CheckCircle2,
-  Video,
   PenTool,
-  Send
 } from 'lucide-react';
 import Link from 'next/link';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
@@ -27,7 +21,7 @@ export default function StartPage() {
       icon: PenTool,
       href: '/dashboard/composer',
       badge: 'Interactive Studio',
-      color: 'bg-[#FFF0E6] text-[#E05A2B] border-[#FED7AA]',
+      color: 'bg-purple-50 text-purple-700 border-purple-200/60',
     },
     {
       title: 'Visual Content Calendar',
@@ -35,15 +29,15 @@ export default function StartPage() {
       icon: Calendar,
       href: '/dashboard/calendar',
       badge: 'Timeline View',
-      color: 'bg-[#EFF6FF] text-[#1877F2] border-[#BFDBFE]',
+      color: 'bg-blue-50 text-blue-700 border-blue-200/60',
     },
     {
       title: 'Channel Integrations',
       description: 'Connect live accounts across X/Twitter, Meta, TikTok, and LinkedIn via 1-click OAuth.',
       icon: Globe,
-      href: '/dashboard',
+      href: '/dashboard/accounts',
       badge: 'Real-Time SSE',
-      color: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+      color: 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
     },
     {
       title: 'Performance & Analytics',
@@ -51,17 +45,17 @@ export default function StartPage() {
       icon: TrendingUp,
       href: '/dashboard/analytics',
       badge: 'Live Metrics',
-      color: 'bg-[#FAF5FF] text-purple-700 border-purple-200',
+      color: 'bg-indigo-50 text-indigo-700 border-indigo-200/60',
     },
   ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 font-sans pb-12 animate-fade-in">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#1E293B] text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl border border-neutral-800">
+      <div className="bg-[#141416] text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl border border-slate-800">
         <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold text-orange-300 border border-white/10">
-            <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold text-purple-300 border border-white/10">
+            <Sparkles className="w-3.5 h-3.5 text-purple-300" />
             <span>Buffermate AI Workspace 2.0</span>
           </div>
 
@@ -75,30 +69,30 @@ export default function StartPage() {
           <div className="pt-2 flex flex-wrap gap-3">
             <Link
               href="/dashboard/composer"
-              className="px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-lg shadow-orange-500/30 transition-all flex items-center space-x-2"
+              className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Create New Post</span>
             </Link>
 
             <Link
-              href="/dashboard"
-              className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-2xl text-xs font-bold backdrop-blur-xs transition-all flex items-center space-x-1.5"
+              href="/dashboard/accounts"
+              className="px-4 py-2.5 bg-white/10 hover:bg-white/15 text-white border border-white/20 rounded-full text-xs font-semibold backdrop-blur-xs transition-all flex items-center space-x-1.5 cursor-pointer"
             >
-              <Globe className="w-3.5 h-3.5 text-orange-300" />
+              <Globe className="w-3.5 h-3.5 text-purple-300" />
               <span>Manage Channels</span>
             </Link>
           </div>
         </div>
 
-        {/* Decorative Glows */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-[#E05A2B]/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+        {/* Decorative Ambient Luxury Glow */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
         <div className="absolute bottom-0 right-1/4 w-60 h-60 bg-blue-500/10 rounded-full blur-3xl translate-y-1/2 pointer-events-none"></div>
       </div>
 
       {/* Quick Launch Suite */}
       <div className="space-y-3.5">
-        <h2 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
           Quick Launch Workflows
         </h2>
 
@@ -107,7 +101,7 @@ export default function StartPage() {
             <Link
               key={action.title}
               href={action.href}
-              className="bg-white border-2 border-dashed border-[#CBD5E1] hover:border-[#FED7AA] rounded-3xl p-5 sm:p-6 transition-all duration-200 flex items-start justify-between space-x-4 shadow-xs hover:shadow-md group"
+              className="bg-white border border-slate-200/80 hover:border-slate-300 rounded-3xl p-5 sm:p-6 transition-all duration-200 flex items-start justify-between space-x-4 shadow-2xs hover:shadow-xs group cursor-pointer"
             >
               <div className="space-y-2 flex-1">
                 <div className="flex items-center space-x-2.5">
@@ -117,21 +111,21 @@ export default function StartPage() {
                     <action.icon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-[#1E293B] group-hover:text-[#E05A2B] transition-colors leading-tight">
+                    <h3 className="text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors leading-tight">
                       {action.title}
                     </h3>
-                    <span className="text-[10px] font-bold text-[#94A3B8] font-mono">
+                    <span className="text-[10px] font-semibold text-slate-400 font-mono">
                       {action.badge}
                     </span>
                   </div>
                 </div>
 
-                <p className="text-xs text-[#64748B] leading-relaxed pt-1">
+                <p className="text-xs text-slate-500 leading-relaxed pt-1">
                   {action.description}
                 </p>
               </div>
 
-              <div className="w-8 h-8 rounded-full bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center text-[#64748B] group-hover:bg-[#E05A2B] group-hover:text-white group-hover:border-[#E05A2B] transition-all shrink-0 mt-1">
+              <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-400 group-hover:bg-[#141416] group-hover:text-white group-hover:border-[#141416] transition-all shrink-0 mt-1 shadow-2xs">
                 <ArrowRight className="w-4 h-4" />
               </div>
             </Link>
@@ -140,16 +134,16 @@ export default function StartPage() {
       </div>
 
       {/* Connected Channel Ecosystem Quick Status */}
-      <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-bold text-[#1E293B]">Connected Channel Ecosystem</h3>
-            <p className="text-xs text-[#64748B]">Real-time multi-platform publishing readiness.</p>
+            <h3 className="text-sm font-bold text-slate-900">Connected Channel Ecosystem</h3>
+            <p className="text-xs text-slate-500">Real-time multi-platform publishing readiness.</p>
           </div>
 
           <Link
-            href="/dashboard"
-            className="text-xs font-bold text-[#E05A2B] hover:underline flex items-center space-x-1"
+            href="/dashboard/accounts"
+            className="text-xs font-semibold text-slate-700 hover:text-slate-900 hover:underline flex items-center space-x-1"
           >
             <span>View Integrations</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -167,13 +161,13 @@ export default function StartPage() {
           ].map((item) => (
             <div
               key={item.id}
-              className="p-3 bg-[#FCFAF7] border border-[#F0E8DF] rounded-2xl flex flex-col items-center text-center space-y-1.5"
+              className="p-3 bg-slate-50/70 border border-slate-100 rounded-2xl flex flex-col items-center text-center space-y-1.5"
             >
-              <div className="w-8 h-8 rounded-xl bg-white border border-[#E2D9CF] flex items-center justify-center shadow-2xs">
+              <div className="w-8 h-8 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center shadow-2xs text-slate-800">
                 <SocialPlatformIcon channel={item.id} className="w-4 h-4" />
               </div>
-              <span className="text-[11px] font-bold text-[#1E293B]">{item.name}</span>
-              <span className="px-1.5 py-0.2 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold">
+              <span className="text-[11px] font-bold text-slate-800">{item.name}</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[9px] font-semibold">
                 ● {item.status}
               </span>
             </div>

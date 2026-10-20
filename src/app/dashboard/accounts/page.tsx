@@ -318,17 +318,17 @@ export default function AccountsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
             Official Social API Connections
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Free-first direct official OAuth integrations. Authenticate real accounts without paid intermediary tools.
           </p>
         </div>
 
         <div className="flex items-center space-x-2 self-start sm:self-auto">
-          <div className="px-3.5 py-2 bg-gradient-to-r from-[#FFF0E6] to-[#FFE4D6] border border-[#FED7AA] rounded-2xl shadow-xs flex items-center space-x-2 text-xs font-bold text-[#9A3412]">
-            <ShieldCheck className="w-4 h-4 text-[#E05A2B]" />
+          <div className="px-3.5 py-1.5 bg-emerald-50 border border-emerald-200/60 rounded-full shadow-2xs flex items-center space-x-2 text-xs font-semibold text-emerald-800">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>{accounts.filter((a) => a.publishing_enabled).length} Live Publishing Accounts</span>
           </div>
         </div>
@@ -337,7 +337,7 @@ export default function AccountsPage() {
       {/* Accounts Grid */}
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-[#E05A2B]" />
+          <Loader2 className="w-8 h-8 animate-spin text-slate-800" />
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
@@ -354,13 +354,13 @@ export default function AccountsPage() {
             return (
               <div
                 key={provider.id}
-                className={`bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-xs border-2 border-dashed ${
+                className={`bg-white rounded-3xl p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between space-y-4 shadow-xs border border-slate-200/80 ${
                   isPublishingReady
                     ? 'border-emerald-300 hover:border-emerald-400 bg-white'
                     : isConnected
                     ? 'border-amber-300 bg-[#FFFDF9]'
                     : isBlocked
-                    ? 'border-[#E2D9CF] bg-[#FAF8F5]/80'
+                    ? 'border-slate-200/80 bg-slate-50/50/80'
                     : 'border-[#CBD5E1] hover:border-[#FED7AA]'
                 }`}
               >
@@ -375,7 +375,7 @@ export default function AccountsPage() {
                       </div>
                       <div>
                         <div className="flex items-center space-x-1.5">
-                          <h3 className="text-sm font-bold text-[#1E293B] leading-tight">
+                          <h3 className="text-sm font-bold text-slate-900 leading-tight">
                             {provider.name}
                           </h3>
                           {provider.free && (
@@ -384,7 +384,7 @@ export default function AccountsPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-[10px] text-[#94A3B8] font-mono mt-0.5">
+                        <p className="text-[10px] text-slate-400 font-mono mt-0.5">
                           {provider.subtitle}
                         </p>
                       </div>
@@ -394,14 +394,14 @@ export default function AccountsPage() {
                     <span
                       className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
                         isPublishingReady
-                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
                           : isExpired
-                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
                           : isConnected
-                          ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                          ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
                           : isBlocked
-                          ? 'bg-neutral-100 text-neutral-600 border border-neutral-300'
-                          : 'bg-orange-50 text-orange-700 border border-orange-200'
+                          ? 'bg-slate-100 text-slate-500 border border-slate-200/60'
+                          : 'bg-purple-50 text-purple-700 border border-purple-200/60'
                       }`}
                     >
                       {isPublishingReady
@@ -422,16 +422,16 @@ export default function AccountsPage() {
                       {providerAccounts.map((acc) => (
                         <div
                           key={acc.id}
-                          className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#F5EFE8] flex items-center justify-between text-xs"
+                          className="p-3 rounded-2xl bg-slate-50/70 border border-slate-100 flex items-center justify-between text-xs"
                         >
                           <div className="flex flex-col min-w-0 pr-2">
-                            <span className="text-[#64748B] text-[10px] uppercase font-bold tracking-wider">
+                            <span className="text-slate-500 text-[10px] uppercase font-bold tracking-wider">
                               Verified Identity:
                             </span>
-                            <span className="font-bold truncate text-xs text-[#1E293B]">
+                            <span className="font-bold truncate text-xs text-slate-900">
                               {acc.username}
                             </span>
-                            <span className="text-[10px] text-[#94A3B8] mt-0.5">
+                            <span className="text-[10px] text-slate-400 mt-0.5">
                               {acc.status_details || 'Official OAuth verified'}
                             </span>
                           </div>
@@ -453,7 +453,7 @@ export default function AccountsPage() {
                             <button
                               type="button"
                               onClick={() => handleDisconnect(provider.id, acc.id)}
-                              className="p-1.5 text-[#94A3B8] hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                               title="Disconnect account"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -463,14 +463,14 @@ export default function AccountsPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-3 rounded-2xl bg-[#FAF8F5] border border-[#F1E9DF] text-xs">
+                    <div className="p-3 rounded-2xl bg-slate-50/50 border border-slate-100 text-xs">
                       {isBlocked ? (
                         <div className="space-y-1.5">
                           <div className="flex items-center space-x-1.5 text-rose-600 font-bold text-[11px]">
                             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                             <span>Missing Server Credentials</span>
                           </div>
-                          <p className="text-[10px] text-[#64748B] leading-relaxed">
+                          <p className="text-[10px] text-slate-500 leading-relaxed">
                             {provider.id === 'x'
                               ? 'X API v2 write endpoints require a paid developer plan or credits. BufferMate prioritizes free official platform APIs.'
                               : `Configure ${pConfig.missing?.join(', ')} in your server environment to enable official OAuth.`}
@@ -480,7 +480,7 @@ export default function AccountsPage() {
                               href={pConfig.portal_url}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center space-x-1 text-[10px] font-bold text-[#E05A2B] hover:underline pt-0.5"
+                              className="inline-flex items-center space-x-1 text-[10px] font-bold text-slate-800 font-semibold hover:underline pt-0.5"
                             >
                               <span>Open Developer Portal</span>
                               <ExternalLink className="w-3 h-3" />
@@ -497,26 +497,26 @@ export default function AccountsPage() {
                   )}
 
                   {/* Platform Specifications */}
-                  <div className="text-[11px] text-[#64748B] space-y-1">
+                  <div className="text-[11px] text-slate-500 space-y-1">
                     <p className="leading-relaxed">{provider.description}</p>
-                    <div className="pt-1 flex items-center justify-between text-[10px] text-[#94A3B8]">
+                    <div className="pt-1 flex items-center justify-between text-[10px] text-slate-400">
                       <span>Media spec:</span>
-                      <span className="font-semibold text-[#475569]">{provider.mediaRequired}</span>
+                      <span className="font-semibold text-slate-600">{provider.mediaRequired}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Actions Row */}
-                <div className="pt-3 border-t border-[#F5EFE8]">
+                <div className="pt-3 border-t border-slate-100">
                   {isConnected ? (
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
                         onClick={() => handleTestConnection(provider.id, primaryAccount.id)}
                         disabled={isLoading}
-                        className="py-2 px-3 bg-[#F8FAFC] hover:bg-[#F1F5F9] text-[#334155] border border-[#CBD5E1] rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5"
+                        className="py-2 px-3 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200/80 rounded-full text-xs font-semibold transition-all flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
                       >
-                        {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3 text-[#E05A2B]" />}
+                        {isLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3 text-slate-800" />}
                         <span>Verify API</span>
                       </button>
 
@@ -531,7 +531,7 @@ export default function AccountsPage() {
                           setTestPostResult(null);
                         }}
                         disabled={isLoading || !isPublishingReady}
-                        className="py-2 px-3 bg-[#FFF0E6] hover:bg-[#FFE4D6] text-[#E05A2B] border border-[#FED7AA] rounded-xl text-xs font-bold transition-colors flex items-center justify-center space-x-1.5 disabled:opacity-50"
+                        className="py-2 px-3 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold transition-all flex items-center justify-center space-x-1.5 disabled:opacity-50 shadow-2xs cursor-pointer"
                       >
                         <Send className="w-3 h-3" />
                         <span>Send Test Post</span>
@@ -542,7 +542,7 @@ export default function AccountsPage() {
                       type="button"
                       onClick={() => handleLaunchOAuthPopup(provider.id)}
                       disabled={isLoading || isBlocked}
-                      className="w-full py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-orange-500/20 flex items-center justify-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="w-full py-2.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center justify-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {isLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -562,13 +562,13 @@ export default function AccountsPage() {
       )}
 
       {/* Security & Token Storage Info Footer */}
-      <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 sm:p-6 flex items-start space-x-3.5 shadow-xs">
-        <Lock className="w-5 h-5 text-[#E05A2B] mt-0.5 shrink-0" />
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 flex items-start space-x-3.5 shadow-xs">
+        <Lock className="w-5 h-5 text-slate-700 mt-0.5 shrink-0" />
         <div>
-          <h4 className="text-xs sm:text-sm font-bold text-[#1E293B]">
+          <h4 className="text-xs sm:text-sm font-bold text-slate-900">
             AES-256-GCM Token Encryption & Free-First Official Policy
           </h4>
-          <p className="text-xs text-[#64748B] mt-1 leading-relaxed">
+          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
             OAuth access tokens are encrypted at rest with distinct initialization vectors and decrypted only server-side during authorized dispatches. Buffermate connects directly to official platform endpoints (Meta Graph API, LinkedIn UGC API, TikTok Content Posting API) without third-party publishing surcharges.
           </p>
         </div>
@@ -577,36 +577,36 @@ export default function AccountsPage() {
       {/* Real Test Post Confirmation Modal */}
       {testPostTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
-            <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200/80 my-auto">
+            <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B]">
+                <div className="w-10 h-10 rounded-2xl bg-purple-50 border border-purple-200/60 flex items-center justify-center text-purple-700">
                   <Send className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#1E293B]">
+                  <h3 className="text-base font-bold text-slate-900">
                     Send Test Post: {testPostTarget.provider.toUpperCase()}
                   </h3>
-                  <p className="text-xs text-[#64748B]">
-                    Destination: <span className="font-bold text-[#1E293B]">{testPostTarget.username}</span>
+                  <p className="text-xs text-slate-500">
+                    Destination: <span className="font-bold text-slate-900">{testPostTarget.username}</span>
                   </p>
                 </div>
               </div>
               <button
                 onClick={() => setTestPostTarget(null)}
-                className="w-8 h-8 rounded-full hover:bg-[#FAF6F0] flex items-center justify-center text-[#64748B]"
+                className="w-8 h-8 rounded-full hover:bg-[#FAF6F0] flex items-center justify-center text-slate-500"
               >
                 ✕
               </button>
             </div>
 
             <div className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="bg-[#FAF8F5] border border-[#FED7AA] rounded-2xl p-4 space-y-2">
+              <div className="bg-slate-50/50 border border-[#FED7AA] rounded-2xl p-4 space-y-2">
                 <span className="font-bold text-[#334155] block">Post Payload Preview:</span>
-                <p className="text-xs text-[#1E293B] font-mono bg-white p-3 rounded-xl border border-[#E2D9CF] leading-relaxed">
+                <p className="text-xs text-slate-900 font-mono bg-white p-3 rounded-xl border border-slate-200/80 leading-relaxed">
                   BufferMate Real-Account Connection Test ({new Date().toLocaleTimeString()} WAT). Live official API verification passed! 🚀 #buffermate
                 </p>
-                <p className="text-[10px] text-[#64748B]">
+                <p className="text-[10px] text-slate-500">
                   This post will be dispatched live to your connected account using the official provider API. You can delete it on your social profile afterwards.
                 </p>
               </div>
@@ -654,7 +654,7 @@ export default function AccountsPage() {
                 <button
                   type="button"
                   onClick={() => setTestPostTarget(null)}
-                  className="px-4 py-2 text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0] rounded-xl"
+                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-[#FAF6F0] rounded-xl"
                 >
                   Close
                 </button>
@@ -662,7 +662,7 @@ export default function AccountsPage() {
                   type="button"
                   onClick={handleExecuteTestPost}
                   disabled={actionLoading?.startsWith('testpost_')}
-                  className="px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 flex items-center space-x-1.5"
+                  className="px-5 py-2.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs flex items-center space-x-1.5 cursor-pointer"
                 >
                   {actionLoading?.startsWith('testpost_') ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />

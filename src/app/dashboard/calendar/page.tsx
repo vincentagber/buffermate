@@ -217,23 +217,23 @@ export default function CalendarPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
             Content Calendar & Schedule
           </h1>
-          <p className="text-xs sm:text-sm text-[#64748B] mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Drag and drop posts between dates to reschedule campaigns effortlessly.
           </p>
         </div>
 
         <div className="flex items-center flex-wrap gap-2.5">
           {/* View Toggle */}
-          <div className="bg-white border border-[#E2D9CF] p-1 rounded-2xl flex items-center shadow-2xs">
+          <div className="bg-white border border-slate-200/80 p-1 rounded-2xl flex items-center shadow-2xs">
             <button
               onClick={() => setViewMode('agenda')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 viewMode === 'agenda'
-                  ? 'bg-[#E05A2B] text-white shadow-xs'
-                  : 'text-[#64748B] hover:text-[#1E293B]'
+                  ? 'bg-[#141416] text-white shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Agenda Feed
@@ -242,8 +242,8 @@ export default function CalendarPage() {
               onClick={() => setViewMode('month')}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 viewMode === 'month'
-                  ? 'bg-[#E05A2B] text-white shadow-xs'
-                  : 'text-[#64748B] hover:text-[#1E293B]'
+                  ? 'bg-[#141416] text-white shadow-2xs'
+                  : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               Month View
@@ -252,7 +252,7 @@ export default function CalendarPage() {
 
           <Link
             href="/dashboard/composer"
-            className="px-4 py-2 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1.5"
+            className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Schedule Post</span>
@@ -261,18 +261,18 @@ export default function CalendarPage() {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
+      <div className="bg-white border border-slate-200/80 rounded-3xl p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
         {/* Status Filter Chips */}
         <div className="flex items-center flex-wrap gap-1.5">
-          <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mr-1">Status:</span>
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Status:</span>
           {(['all', 'scheduled', 'posted', 'draft'] as const).map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
               className={`px-3 py-1 rounded-xl text-xs font-bold capitalize transition-all ${
                 statusFilter === st
-                  ? 'bg-[#1E293B] text-white shadow-xs'
-                  : 'bg-[#FAF8F5] text-[#64748B] hover:bg-[#F3EBE1] border border-[#E2D9CF]'
+                  ? 'bg-[#141416] text-white shadow-2xs'
+                  : 'bg-slate-50/70 text-slate-500 hover:bg-slate-100 border border-slate-200/80'
               }`}
             >
               {st === 'all' ? `All (${posts.length})` : st}
@@ -282,7 +282,7 @@ export default function CalendarPage() {
 
         {/* Platform Filter Chips */}
         <div className="flex items-center flex-wrap gap-1.5">
-          <span className="text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider mr-1">Channel:</span>
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Channel:</span>
           {[
             { id: 'all', label: 'All' },
             { id: 'facebook', label: 'FB' },
@@ -297,8 +297,8 @@ export default function CalendarPage() {
               onClick={() => setSelectedPlatform(ch.id)}
               className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all ${
                 selectedPlatform === ch.id
-                  ? 'bg-[#E05A2B] text-white shadow-xs'
-                  : 'bg-[#FAF8F5] text-[#64748B] hover:bg-[#F3EBE1] border border-[#E2D9CF]'
+                  ? 'bg-[#141416] text-white shadow-2xs'
+                  : 'bg-slate-50/70 text-slate-500 hover:bg-slate-100 border border-slate-200/80'
               }`}
             >
               {ch.label}
@@ -322,23 +322,23 @@ export default function CalendarPage() {
                   onDrop={(e) => handleDrop(e, dateLabel)}
                   className={`space-y-3 p-3 rounded-3xl transition-all duration-200 ${
                     isDragTarget
-                      ? 'bg-[#FFF0E6] border-2 border-dashed border-[#E05A2B] scale-[1.01]'
+                      ? 'bg-purple-50/50 border border-purple-300 scale-[1.01]'
                       : ''
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#E05A2B]"></div>
-                      <h3 className="text-sm font-bold text-[#1E293B] uppercase tracking-wider">
+                      <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>
+                      <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                         {dateLabel}
                       </h3>
-                      <span className="text-xs text-[#94A3B8] font-semibold">
+                      <span className="text-xs text-slate-400 font-semibold">
                         ({dayPosts.length} {dayPosts.length === 1 ? 'post' : 'posts'})
                       </span>
                     </div>
 
                     {isDragTarget && (
-                      <span className="text-xs font-bold text-[#E05A2B] animate-pulse">
+                      <span className="text-xs font-semibold text-purple-700 animate-pulse">
                         Drop to reschedule here 📌
                       </span>
                     )}
@@ -356,28 +356,28 @@ export default function CalendarPage() {
                           key={post.id}
                           draggable={true}
                           onDragStart={(e) => handleDragStart(e, post)}
-                          className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 hover:border-[#FED7AA] hover:shadow-md transition-all flex flex-col justify-between space-y-3.5 shadow-xs cursor-grab active:cursor-grabbing active:opacity-60"
+                          className="bg-white border border-slate-200/80 rounded-3xl p-5 hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between space-y-3.5 shadow-2xs cursor-grab active:cursor-grabbing active:opacity-60"
                         >
                           <div className="space-y-2.5">
                             {/* Card Top: Platforms & Status */}
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-1.5">
-                                <div className="p-1 text-[#94A3B8] hover:text-[#1E293B] cursor-grab">
+                                <div className="p-1 text-slate-400 hover:text-slate-900 cursor-grab">
                                   <GripVertical className="w-3.5 h-3.5" />
                                 </div>
                                 {post.platforms && post.platforms.length > 0 ? (
                                   post.platforms.map((p) => (
                                     <div
                                       key={p}
-                                      className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center text-neutral-800"
+                                      className="w-7 h-7 rounded-lg bg-slate-50/70 border border-slate-200/80 flex items-center justify-center text-neutral-800"
                                       title={p.toUpperCase()}
                                     >
                                       <SocialPlatformIcon channel={p} className="w-3.5 h-3.5" />
                                     </div>
                                   ))
                                 ) : (
-                                  <div className="w-7 h-7 rounded-lg bg-[#FAF8F5] border border-[#E2D9CF] flex items-center justify-center">
-                                    <Layers className="w-3.5 h-3.5 text-[#64748B]" />
+                                  <div className="w-7 h-7 rounded-lg bg-slate-50/70 border border-slate-200/80 flex items-center justify-center">
+                                    <Layers className="w-3.5 h-3.5 text-slate-500" />
                                   </div>
                                 )}
                               </div>
@@ -396,22 +396,22 @@ export default function CalendarPage() {
                             </div>
 
                             {/* Post Content */}
-                            <p className="text-xs sm:text-sm text-[#1E293B] font-medium line-clamp-3 leading-relaxed">
+                            <p className="text-xs sm:text-sm text-slate-900 font-medium line-clamp-3 leading-relaxed">
                               {post.content}
                             </p>
                           </div>
 
                           {/* Card Bottom: Timestamp & Quick Action */}
-                          <div className="pt-2.5 border-t border-[#F5EFE8] flex items-center justify-between text-xs">
-                            <div className="flex items-center space-x-1.5 text-[#64748B] text-[11px] font-medium">
-                              <Clock className="w-3.5 h-3.5 text-[#E05A2B]" />
+                          <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <div className="flex items-center space-x-1.5 text-slate-500 text-[11px] font-medium">
+                              <Clock className="w-3.5 h-3.5 text-slate-400" />
                               <span>{postTime}</span>
                             </div>
 
                             <div className="flex items-center space-x-1">
                               <Link
                                 href={`/dashboard/composer?draftId=${post.id}`}
-                                className="p-1.5 hover:bg-[#FAF6F0] text-[#64748B] hover:text-[#E05A2B] rounded-lg transition-colors"
+                                className="p-1.5 hover:bg-[#FAF6F0] text-slate-500 hover:text-slate-900 rounded-lg transition-colors"
                                 title="Edit in Composer"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
@@ -426,15 +426,15 @@ export default function CalendarPage() {
               );
             })
           ) : (
-            <div className="text-center py-16 bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-6">
-              <CalendarIcon className="w-12 h-12 text-[#E05A2B]/40 mx-auto mb-3" />
-              <h3 className="text-base font-bold text-[#1E293B]">No Scheduled Posts Found</h3>
-              <p className="text-xs text-[#64748B] mt-1 max-w-sm mx-auto">
+            <div className="text-center py-16 bg-white border border-slate-200/80 rounded-3xl p-6">
+              <CalendarIcon className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <h3 className="text-base font-bold text-slate-900">No Scheduled Posts Found</h3>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
                 No content matches your current status or channel filter. Click below to craft and schedule a new post.
               </p>
               <Link
                 href="/dashboard/composer"
-                className="mt-4 inline-flex items-center space-x-1.5 px-4 py-2 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-md shadow-orange-500/20"
+                className="mt-4 inline-flex items-center space-x-1.5 px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create New Post</span>
@@ -444,9 +444,9 @@ export default function CalendarPage() {
         </div>
       ) : (
         /* Month Matrix Grid View */
-        <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-3xl p-5 sm:p-6 shadow-xs space-y-4">
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-[#1E293B]">
+            <h2 className="text-base font-bold text-slate-900">
               {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </h2>
             <div className="flex items-center space-x-1">
@@ -454,13 +454,13 @@ export default function CalendarPage() {
                 onClick={() =>
                   setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))
                 }
-                className="p-1.5 hover:bg-[#FAF6F0] border border-[#E2D9CF] rounded-xl text-[#64748B]"
+                className="p-1.5 hover:bg-[#FAF6F0] border border-slate-200/80 rounded-xl text-slate-500"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setCurrentDate(new Date())}
-                className="px-3 py-1 bg-[#FAF8F5] border border-[#E2D9CF] rounded-xl text-xs font-bold text-[#475569]"
+                className="px-3 py-1 bg-slate-50/70 border border-slate-200/80 rounded-xl text-xs font-bold text-[#475569]"
               >
                 Today
               </button>
@@ -468,14 +468,14 @@ export default function CalendarPage() {
                 onClick={() =>
                   setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
                 }
-                className="p-1.5 hover:bg-[#FAF6F0] border border-[#E2D9CF] rounded-xl text-[#64748B]"
+                className="p-1.5 hover:bg-[#FAF6F0] border border-slate-200/80 rounded-xl text-slate-500"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-1 text-center font-bold text-[11px] text-[#94A3B8] pb-2 border-b border-[#F5EFE8]">
+          <div className="grid grid-cols-7 gap-1 text-center font-bold text-[11px] text-slate-400 pb-2 border-b border-slate-100">
             <span>Sun</span>
             <span>Mon</span>
             <span>Tue</span>
@@ -495,13 +495,13 @@ export default function CalendarPage() {
                   key={i}
                   className={`min-h-[70px] sm:min-h-[90px] p-2 rounded-2xl border transition-all flex flex-col justify-between ${
                     hasPost
-                      ? 'bg-[#FFF8F5] border-[#FED7AA]'
-                      : 'bg-[#FCFAF7] border-[#F5EFE8] hover:border-[#E2D9CF]'
+                      ? 'bg-purple-50/40 border-purple-200'
+                      : 'bg-slate-50/50 border-slate-100 hover:border-slate-200'
                   }`}
                 >
-                  <span className="text-[11px] font-bold text-[#64748B]">{dayNum}</span>
+                  <span className="text-[11px] font-bold text-slate-500">{dayNum}</span>
                   {hasPost && (
-                    <div className="p-1 bg-[#E05A2B] text-white rounded-lg text-[9px] font-bold truncate leading-tight mt-1">
+                    <div className="p-1 bg-[#141416] text-white rounded-md text-[9px] font-semibold truncate leading-tight mt-1">
                       2 Posts Scheduled
                     </div>
                   )}

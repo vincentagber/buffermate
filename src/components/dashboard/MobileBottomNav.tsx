@@ -59,7 +59,7 @@ export default function MobileBottomNav({
   ];
 
   return (
-    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E2D9CF] px-2 py-1.5 shadow-2xl flex items-center justify-around font-sans">
+    <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-2 py-1.5 shadow-2xl flex items-center justify-around font-sans">
       {navItems.map((item) => {
         if (item.isPrimary) {
           return (
@@ -68,10 +68,10 @@ export default function MobileBottomNav({
               href={item.href}
               className="flex flex-col items-center justify-center -mt-5"
             >
-              <div className="w-12 h-12 rounded-full bg-[#E05A2B] hover:bg-[#C8491E] text-white flex items-center justify-center shadow-lg shadow-orange-500/30 transition-transform active:scale-95 border-2 border-white">
+              <div className="w-12 h-12 rounded-full bg-[#141416] hover:bg-black text-white flex items-center justify-center shadow-lg shadow-black/25 transition-transform active:scale-95 border-2 border-white">
                 <item.icon className="w-6 h-6" />
               </div>
-              <span className="text-[10px] font-bold text-[#E05A2B] mt-0.5">Create</span>
+              <span className="text-[10px] font-bold text-slate-900 mt-0.5">Create</span>
             </Link>
           );
         }
@@ -82,8 +82,8 @@ export default function MobileBottomNav({
             href={item.href}
             className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-colors ${
               item.active
-                ? 'text-[#E05A2B]'
-                : 'text-[#64748B] hover:text-[#1E293B]'
+                ? 'text-slate-900'
+                : 'text-slate-400 hover:text-slate-900'
             }`}
           >
             <item.icon className="w-5 h-5" />

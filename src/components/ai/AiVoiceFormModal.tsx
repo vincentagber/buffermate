@@ -320,12 +320,12 @@ export default function AiVoiceFormModal({
                 {/* Pulsing ring animation when recording */}
                 {isRecording && (
                   <>
-                    <div className="absolute -inset-4 rounded-full bg-emerald-500/20 animate-ping" />
-                    <div className="absolute -inset-8 rounded-full bg-emerald-500/10 animate-pulse" />
+                    <div className="absolute -inset-4 rounded-full bg-rose-500/20 animate-ping" />
+                    <div className="absolute -inset-8 rounded-full bg-rose-500/10 animate-pulse" />
                   </>
                 )}
 
-                {/* Big Circular Green Button (Matches Kobble Screenshot) */}
+                {/* Big Circular Luxury Black Button */}
                 <button
                   type="button"
                   onClick={() => {
@@ -338,10 +338,10 @@ export default function AiVoiceFormModal({
                   className={`relative w-24 h-24 rounded-full flex items-center justify-center text-white transition-all transform active:scale-95 shadow-xl ${
                     isRecording
                       ? 'bg-rose-600 hover:bg-rose-700 shadow-rose-600/30'
-                      : 'bg-[#5b8743] hover:bg-[#4d7438] sm:bg-[#608b47] shadow-[#5b8743]/30 hover:scale-105'
+                      : 'bg-[#141416] hover:bg-black shadow-black/30 hover:scale-105'
                   }`}
                   style={{
-                    backgroundColor: isRecording ? '#dc2626' : '#5f8e43',
+                    backgroundColor: isRecording ? '#dc2626' : '#141416',
                   }}
                   title={isRecording ? 'Click to finish' : 'Click to record'}
                 >
@@ -471,7 +471,7 @@ export default function AiVoiceFormModal({
                       key={sample.label}
                       type="button"
                       onClick={() => setDraftText(sample.text)}
-                      className="text-[11px] font-medium px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200 border border-transparent rounded-lg text-slate-600 transition-all"
+                      className="text-[11px] font-semibold px-3 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 border border-transparent rounded-full text-slate-600 transition-all cursor-pointer"
                     >
                       💡 {sample.label}
                     </button>
@@ -485,10 +485,9 @@ export default function AiVoiceFormModal({
                   type="button"
                   onClick={handleTextSubmit}
                   disabled={!draftText.trim()}
-                  className="w-full py-3 px-4 rounded-xl font-bold text-sm text-white transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-[0.99]"
-                  style={{ backgroundColor: '#5f8e43' }}
+                  className="w-full py-3 px-4 rounded-full font-semibold text-xs text-white bg-[#141416] hover:bg-black transition-all shadow-2xs flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.99] cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4 text-purple-300" />
                   Generate Task
                 </button>
               </div>

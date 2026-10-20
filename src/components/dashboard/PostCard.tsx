@@ -126,7 +126,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
     };
 
     return (
-        <div className="bg-white border-2 border-dashed border-[#CBD5E1] rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow relative">
+        <div className="bg-white border border-slate-200/80 rounded-3xl p-5 sm:p-6 shadow-2xs hover:shadow-xs transition-all relative">
             <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2.5 mb-3">
@@ -229,33 +229,33 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                             {post.status === 'draft' ? (
                                 <Link
                                     href={`/dashboard/composer?draftId=${post.id}`}
-                                    className="flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-semibold shadow-xs transition-colors"
+                                    className="flex items-center px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all"
                                 >
-                                    <Edit3 className="w-3 h-3 mr-1.5" />
+                                    <Edit3 className="w-3.5 h-3.5 mr-1.5" />
                                     Resume Draft
                                 </Link>
                             ) : post.status !== 'posted' && (
                                 <button
                                     onClick={handlePublishNow}
                                     disabled={isLoading}
-                                    className="flex items-center px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-md text-xs font-semibold shadow-xs disabled:opacity-50"
+                                    className="flex items-center px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs disabled:opacity-50 transition-all cursor-pointer"
                                 >
-                                    {isLoading ? <Loader2 className="w-3 h-3 animate-spin mr-1.5" /> : <Send className="w-3 h-3 mr-1.5" />}
+                                    {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> : <Send className="w-3.5 h-3.5 mr-1.5" />}
                                     Publish Now
                                 </button>
                             )}
 
                             <button
                                 onClick={() => setIsEditing(!isEditing)}
-                                className="px-2.5 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-md text-xs font-medium text-slate-700 flex items-center"
+                                className="px-3.5 py-2 border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-700 flex items-center shadow-2xs transition-all cursor-pointer"
                             >
-                                <Edit3 className="w-3 h-3 mr-1" />
+                                <Edit3 className="w-3.5 h-3.5 mr-1.5" />
                                 Edit
                             </button>
 
                             <button
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="p-1.5 border border-slate-200 rounded-md text-slate-500 hover:bg-slate-50"
+                                className="p-2 border border-slate-200/80 rounded-full text-slate-500 hover:bg-slate-50 shadow-2xs transition-all cursor-pointer"
                                 title="More options"
                             >
                                 <MoreHorizontal className="w-3.5 h-3.5" />
@@ -263,11 +263,11 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
 
                             {/* Dropdown Menu */}
                             {isMenuOpen && (
-                                <div className="absolute right-0 top-8 z-30 w-44 bg-white border border-slate-200 rounded-lg shadow-lg py-1 animate-[fade-in_0.15s_ease-out]">
+                                <div className="absolute right-0 top-10 z-30 w-44 bg-white border border-slate-200/80 rounded-2xl shadow-xl py-1.5 animate-[fade-in_0.15s_ease-out]">
                                     <button
                                         onClick={handleDelete}
                                         disabled={isLoading}
-                                        className="w-full px-4 py-2 text-left text-xs font-medium text-red-600 hover:bg-red-50 flex items-center"
+                                        className="w-full px-4 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 flex items-center"
                                     >
                                         <Trash2 className="w-3.5 h-3.5 mr-2" />
                                         Delete Post
@@ -279,7 +279,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                 </div>
 
                 {hasMedia && (
-                    <div className="w-40 sm:w-48 h-32 bg-slate-100 rounded-lg overflow-hidden relative shrink-0 border border-slate-200">
+                    <div className="w-40 sm:w-48 h-32 bg-slate-100 rounded-2xl overflow-hidden relative shrink-0 border border-slate-200/80">
                         {thumbnailUrl ? (
                             <img src={thumbnailUrl} alt="Post media" className="w-full h-full object-cover" />
                         ) : (

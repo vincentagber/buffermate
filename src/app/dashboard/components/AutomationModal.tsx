@@ -120,25 +120,25 @@ export default function AutomationModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border-2 border-dashed border-[#CBD5E1] my-auto">
+      <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200/80 my-auto">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-[#F5EFE8] flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
+        <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-10 rounded-t-3xl">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#FFF0E6] border border-[#FED7AA] flex items-center justify-center text-[#E05A2B] shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-purple-50 border border-purple-200/60 flex items-center justify-center text-purple-700 shrink-0">
               <Bot className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-[#1E293B] leading-snug">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
                 {initialData ? 'Edit Automation Flow' : 'Create Real Automation'}
               </h2>
-              <p className="text-[11px] sm:text-xs text-[#64748B]">
-                Auto-reply to comments & send DMs on keyword match.
+              <p className="text-[11px] sm:text-xs text-slate-500">
+                Auto-reply to comments & send DMs on keyword match · Soho clinic.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-[#FAF6F0] flex items-center justify-center text-[#64748B] hover:text-[#1E293B]"
+            className="w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -148,7 +148,7 @@ export default function AutomationModal({
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {/* Flow Name */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Automation Name
             </label>
             <input
@@ -157,13 +157,13 @@ export default function AutomationModal({
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Summer Promo Keyword Funnel"
               required
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             />
           </div>
 
           {/* Target Channel */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Select Social Channel
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -183,7 +183,7 @@ export default function AutomationModal({
                         : ch.id === 'threads'
                         ? 'border-neutral-900 bg-neutral-100 text-neutral-900 shadow-xs'
                         : 'border-[#25D366] bg-[#F0FDF4] text-[#16A34A] shadow-xs'
-                      : 'border-[#E2D9CF] bg-white text-[#64748B] hover:bg-[#FAF6F0]'
+                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
                   }`}
                 >
                   <SocialPlatformIcon channel={ch.id} className="w-4 h-4" />
@@ -195,13 +195,13 @@ export default function AutomationModal({
 
           {/* Trigger Type */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Trigger Event
             </label>
             <select
               value={triggerType}
               onChange={(e) => setTriggerType(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             >
               <option value="comment_keyword">Comment with Specific Keywords (Recommended)</option>
               <option value="dm_received">Direct Message (DM) Received</option>
@@ -213,7 +213,7 @@ export default function AutomationModal({
           {/* Keywords List */}
           {triggerType === 'comment_keyword' && (
             <div>
-              <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
                 Trigger Keywords
               </label>
               <div className="flex space-x-2 mb-2">
@@ -223,12 +223,12 @@ export default function AutomationModal({
                   onChange={(e) => setKeywordInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Add keyword (e.g., price, link, book)"
-                  className="flex-1 px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs bg-[#FCFAF7]"
+                  className="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs bg-slate-50/50"
                 />
                 <button
                   type="button"
                   onClick={addKeyword}
-                  className="px-3.5 py-2 bg-[#E05A2B] text-white rounded-xl text-xs font-bold hover:bg-[#C8491E] transition-colors flex items-center space-x-1"
+                  className="px-3.5 py-2 bg-[#161616] hover:bg-black text-white rounded-xl text-xs font-bold transition-colors flex items-center space-x-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add</span>
@@ -236,24 +236,24 @@ export default function AutomationModal({
               </div>
 
               {/* Tags Cloud */}
-              <div className="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-[#FAF6F0] border border-[#F0E8DF] min-h-[44px]">
+              <div className="flex flex-wrap gap-1.5 p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 min-h-[44px]">
                 {keywords.map((kw) => (
                   <span
                     key={kw}
-                    className="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200"
                   >
                     {kw}
                     <button
                       type="button"
                       onClick={() => removeKeyword(kw)}
-                      className="ml-1.5 text-[#E05A2B] hover:text-red-700"
+                      className="ml-1.5 text-purple-500 hover:text-red-700"
                     >
                       ×
                     </button>
                   </span>
                 ))}
                 {keywords.length === 0 && (
-                  <span className="text-xs text-[#94A3B8]">No keywords added yet.</span>
+                  <span className="text-xs text-slate-400">No keywords added yet.</span>
                 )}
               </div>
             </div>
@@ -261,7 +261,7 @@ export default function AutomationModal({
 
           {/* Public Comment Reply */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               1. Public Auto-Reply to Comment
             </label>
             <input
@@ -269,13 +269,13 @@ export default function AutomationModal({
               value={replyComment}
               onChange={(e) => setReplyComment(e.target.value)}
               placeholder="e.g., Sent you a DM! Check your inbox 🚀"
-              className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             />
           </div>
 
           {/* Private DM Message */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               2. Private Direct Message (DM) Sent to Inbox
             </label>
             <textarea
@@ -283,13 +283,13 @@ export default function AutomationModal({
               value={dmMessage}
               onChange={(e) => setDmMessage(e.target.value)}
               placeholder="e.g., Hey @user! Here is your exclusive link..."
-              className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             />
           </div>
 
           {/* Link URL */}
           <div>
-            <label className="block text-xs font-bold text-[#334155] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Landing Page / Product Link
             </label>
             <input
@@ -297,23 +297,23 @@ export default function AutomationModal({
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="https://buffermate.ai/deal"
-              className="w-full px-3.5 py-2 rounded-xl border border-[#E2D9CF] text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-[#E05A2B] bg-[#FCFAF7]"
+              className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs sm:text-sm focus:outline-hidden focus:ring-2 focus:ring-purple-200 bg-slate-50/50"
             />
           </div>
 
           {/* Actions */}
-          <div className="pt-3 border-t border-[#F5EFE8] flex items-center justify-end space-x-2.5">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-end space-x-2.5">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0] transition-colors"
+              className="px-4 py-2 rounded-full text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-5 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20 transition-all flex items-center space-x-1.5"
+              className="px-5 py-2.5 bg-[#161616] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs font-bold shadow-sm transition-all flex items-center space-x-1.5"
             >
               {isSubmitting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
               <span>{initialData ? 'Save Changes' : 'Activate Automation'}</span>

@@ -6,7 +6,7 @@ export function triggerConfetti() {
   const count = 200;
   const defaults = {
     origin: { y: 0.7 },
-    colors: ['#E05A2B', '#FF8A50', '#FFA07A', '#10B981', '#3B82F6', '#F59E0B', '#8B5CF6'],
+    colors: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#10B981', '#34D399', '#3B82F6', '#141416'],
     zIndex: 9999,
   };
 

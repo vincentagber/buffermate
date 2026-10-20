@@ -39,7 +39,7 @@ interface HeaderProps {
 
 export default function Header({
   currentTab = 'command-center',
-  userName = 'Vincent Agber',
+  userName = 'Alex Morgan',
   onOpenCreateModal,
   onOpenSimulatorModal,
   onSignOut,
@@ -55,8 +55,31 @@ export default function Header({
   const supabase = createClient();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [activeUserName, setActiveUserName] = useState(userName);
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [activeUserName, setActiveUserName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('buffermate_user_profile');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.fullName) return parsed.fullName;
+        }
+      } catch (e) {}
+    }
+    return userName || 'Alex Morgan';
+  });
+  const [avatarUrl, setAvatarUrl] = useState(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('buffermate_user_profile');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.avatarUrl) return parsed.avatarUrl;
+        }
+      } catch (e) {}
+    }
+    return '';
+  });
+  const [activeRole, setActiveRole] = useState('Owner · Soho Clinic');
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
@@ -72,6 +95,7 @@ export default function Header({
             const parsed = JSON.parse(cached);
             if (parsed.fullName) setActiveUserName(parsed.fullName);
             if (parsed.avatarUrl) setAvatarUrl(parsed.avatarUrl);
+            if (parsed.businessName) setActiveRole(`Founder · ${parsed.businessName}`);
           }
         }
       } catch (e) {}
@@ -82,6 +106,7 @@ export default function Header({
       if (e.detail) {
         if (e.detail.fullName) setActiveUserName(e.detail.fullName);
         if (e.detail.avatarUrl !== undefined) setAvatarUrl(e.detail.avatarUrl);
+        if (e.detail.businessName) setActiveRole(`Founder · ${e.detail.businessName}`);
       }
     };
     window.addEventListener('user-profile-updated', handleProfileUpdate);
@@ -161,22 +186,22 @@ export default function Header({
         )}
       </div>
 
-      {/* Middle: Universal Search Bar matching Screenshot 1 & 2 ("Ask Socialyn, set a goal, or search...") */}
+      {/* Middle: Universal Search Bar matching Reports aesthetic */}
       <div className="flex-1 max-w-xl mx-3 sm:mx-6">
         <form onSubmit={handleSearchSubmit} className="relative w-full">
           <div
             onClick={onOpenSearch}
-            className="w-full flex items-center bg-[#F8FAFC] hover:bg-[#F1F5F9] border border-[#CBD5E1] hover:border-[#94A3B8] rounded-2xl px-3.5 py-2 transition-all cursor-pointer group"
+            className="w-full flex items-center bg-white hover:bg-slate-50 border border-slate-200/80 hover:border-slate-300 rounded-full px-4 py-2 transition-all cursor-pointer group shadow-2xs"
           >
-            <Search className="w-4 h-4 text-[#94A3B8] group-hover:text-[#0F172A] mr-2.5 shrink-0" />
+            <Search className="w-4 h-4 text-slate-400 group-hover:text-slate-700 mr-2.5 shrink-0" />
             <input
               type="text"
               readOnly
               value={searchValue}
-              placeholder="Ask Socialyn, set a goal, or search..."
-              className="bg-transparent text-xs text-[#0F172A] placeholder-[#94A3B8] w-full focus:outline-none cursor-pointer"
+              placeholder="Search clients, treatments, campaigns..."
+              className="bg-transparent text-xs text-slate-900 placeholder-slate-400 w-full focus:outline-none cursor-pointer font-medium"
             />
-            <div className="hidden sm:flex items-center space-x-1 text-[10px] font-bold text-[#94A3B8] bg-white px-2 py-0.5 rounded-lg border border-[#E2E8F0] shrink-0 ml-2 shadow-2xs">
+            <div className="hidden sm:flex items-center space-x-1 text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded font-mono shrink-0 ml-2">
               <Command className="w-3 h-3" />
               <span>K</span>
             </div>
@@ -186,6 +211,15 @@ export default function Header({
 
       {/* Right side: Actions, Notifications, Profile */}
       <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        {/* Messages quick toggle */}
+        <button
+          onClick={() => onSelectTab && onSelectTab('inbox')}
+          className="w-9 h-9 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-2xs transition-colors shrink-0"
+          title="Messages & Inbox"
+        >
+          <span className="text-xs">💬</span>
+        </button>
+
         {/* Notifications */}
         <div className="relative">
           <button
@@ -193,37 +227,37 @@ export default function Header({
               setShowNotifications(!showNotifications);
               setShowUserMenu(false);
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-xl text-[#64748B] hover:bg-[#F8FAFC] hover:text-[#0F172A] transition-colors relative"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs transition-colors relative"
             aria-label="View notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#6366F1] ring-2 ring-white"></span>
+            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
           </button>
 
           {/* Notifications Dropdown */}
           {showNotifications && (
-            <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-80 max-w-sm bg-white rounded-2xl shadow-xl border border-[#E2E8F0] py-2 z-50 animate-fade-in">
-              <div className="px-4 py-2 border-b border-[#F1F5F9] flex items-center justify-between">
-                <span className="text-xs font-bold text-[#0F172A]">Notifications</span>
-                <span className="text-[10px] font-semibold text-[#6366F1] bg-[#EEF2FF] px-2 py-0.5 rounded-full">
+            <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-80 max-w-sm bg-white rounded-3xl shadow-xl border border-slate-100 py-2.5 z-50 animate-scale-up">
+              <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
+                <span className="text-xs font-bold text-[#161616]">Notifications</span>
+                <span className="text-[10px] font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
                   2 New
                 </span>
               </div>
-              <div className="divide-y divide-[#F1F5F9] max-h-64 overflow-y-auto">
+              <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
                 {notifications.map((item) => (
-                  <div key={item.id} className="p-3 hover:bg-[#F8FAFC] transition-colors cursor-pointer">
+                  <div key={item.id} className="p-3 hover:bg-slate-50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between">
-                      <p className="text-xs font-bold text-[#0F172A]">{item.title}</p>
-                      <span className="text-[10px] text-[#94A3B8]">{item.time}</span>
+                      <p className="text-xs font-bold text-slate-900">{item.title}</p>
+                      <span className="text-[10px] text-slate-400">{item.time}</span>
                     </div>
-                    <p className="text-xs text-[#64748B] mt-0.5 leading-snug">{item.desc}</p>
+                    <p className="text-xs text-slate-500 mt-0.5 leading-snug">{item.desc}</p>
                   </div>
                 ))}
               </div>
-              <div className="px-3 pt-2 text-center border-t border-[#F1F5F9]">
+              <div className="px-3 pt-2 text-center border-t border-slate-100">
                 <button
                   onClick={() => setShowNotifications(false)}
-                  className="text-xs font-semibold text-[#6366F1] hover:underline"
+                  className="text-xs font-semibold text-purple-700 hover:underline"
                 >
                   Close
                 </button>
@@ -239,12 +273,20 @@ export default function Header({
               setShowUserMenu(!showUserMenu);
               setShowNotifications(false);
             }}
-            className="flex items-center space-x-2 p-1 rounded-xl hover:bg-[#F8FAFC] transition-colors"
+            className="flex items-center space-x-2 p-1.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200/80 transition-colors shadow-2xs"
           >
-            <div className="w-8 h-8 rounded-xl bg-[#0F172A] flex items-center justify-center text-white font-bold text-xs shadow-xs">
-              {activeUserName[0]?.toUpperCase() || 'V'}
-            </div>
-            <span className="hidden sm:inline-block text-xs font-bold text-[#0F172A] max-w-[100px] truncate">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={activeUserName}
+                className="w-7 h-7 rounded-full object-cover border border-slate-200 shrink-0"
+              />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-[#161616] flex items-center justify-center text-white font-bold text-xs shadow-xs">
+                {activeUserName[0]?.toUpperCase() || 'A'}
+              </div>
+            )}
+            <span className="hidden sm:inline-block text-xs font-bold text-slate-800 pr-1 max-w-[130px] truncate">
               {activeUserName}
             </span>
           </button>
@@ -253,7 +295,7 @@ export default function Header({
             <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-52 bg-white rounded-2xl shadow-xl border border-[#E2E8F0] py-1.5 z-50 animate-fade-in">
               <div className="px-3.5 py-2 border-b border-[#F1F5F9]">
                 <p className="text-xs font-bold text-[#0F172A] truncate">{activeUserName}</p>
-                <p className="text-[10px] text-[#64748B]">Admin · Northstar</p>
+                <p className="text-[10px] text-[#64748B]">{activeRole}</p>
               </div>
               <button
                 onClick={() => {

@@ -142,33 +142,35 @@ export default function CommandCenterView({
         </div>
       </div>
 
-      {/* Attention Queue Banner (PRD Section 4) */}
+      {/* Attention Queue Banner (Matching At-Risk Peach Card) */}
       {dataContract?.attention && dataContract.attention.length > 0 && (
-        <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center space-x-3">
-            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+        <div className="bg-[#FFF1ED] border border-[#FFE2D9] rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-8 h-8 rounded-full bg-[#FFE2D9] text-[#C84A2A] flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
             <div>
-              <span className="font-bold text-xs sm:text-sm text-[#92400E]">
+              <span className="font-extrabold text-sm text-[#8C2E15]">
                 Attention Queue: 2 Pending Approvals
               </span>
-              <p className="text-xs text-[#B45309]">
+              <p className="text-xs text-[#A8482D] mt-0.5 font-medium">
                 Reviewer action required before scheduled queue can dispatch live to channels.
               </p>
             </div>
           </div>
           <button
             onClick={() => onNavigateTab && onNavigateTab('campaigns')}
-            className="text-xs font-bold text-amber-900 bg-white px-3 py-1.5 rounded-xl border border-[#FDE68A] hover:bg-[#FEF3C7] transition-colors self-start sm:self-auto"
+            className="text-xs font-bold text-white bg-[#161616] hover:bg-black px-4 py-2 rounded-full transition-all self-start sm:self-auto shadow-2xs"
           >
             Review Drafts →
           </button>
         </div>
       )}
 
-      {/* Top 2 Metric Cards Grid matching Screenshot 2 (Dotted borderlines maintained) */}
+      {/* Top 2 Metric Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Card 1: PIPELINE FROM SOCIAL */}
-        <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#94A3B8] transition-all flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200/70 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between">
           <div className="space-y-1">
             <div className="text-xs font-bold text-[#64748B] tracking-wider uppercase flex items-center justify-between">
               <span>PIPELINE FROM SOCIAL</span>
@@ -220,7 +222,7 @@ export default function CommandCenterView({
         </div>
 
         {/* Card 2: QUALIFIED LEADS */}
-        <div className="bg-white rounded-3xl p-6 border-2 border-dashed border-[#CBD5E1] shadow-xs hover:border-[#94A3B8] transition-all flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 border border-slate-200/70 shadow-2xs hover:shadow-xs transition-shadow flex flex-col justify-between">
           <div className="space-y-1">
             <div className="text-xs font-bold text-[#64748B] tracking-wider uppercase flex items-center justify-between">
               <span>QUALIFIED LEADS</span>
@@ -272,8 +274,8 @@ export default function CommandCenterView({
         </div>
       </div>
 
-      {/* Middle Card: Goals in flight (Dotted borderlines maintained) */}
-      <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
+      {/* Middle Card: Goals in flight */}
+      <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/70 shadow-2xs space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-base sm:text-lg font-bold text-[#0F172A]">Goals in flight</h2>
@@ -358,10 +360,10 @@ export default function CommandCenterView({
         </div>
       </div>
 
-      {/* Bottom 2 Cards: Autopilot and Risk Radar (Dotted borderlines maintained) */}
+      {/* Bottom 2 Cards: Autopilot and Risk Radar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Autopilot Card with Real Kill Switch */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-5 flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/70 shadow-2xs space-y-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center space-x-2.5">
@@ -438,7 +440,7 @@ export default function CommandCenterView({
         </div>
 
         {/* Risk Radar Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-5 flex flex-col justify-between">
+        <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/70 shadow-2xs space-y-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-base sm:text-lg font-bold text-[#0F172A]">Risk radar</h3>
@@ -503,7 +505,7 @@ export default function CommandCenterView({
       {/* Guardrails Modal with Dry-Run Execution */}
       {showGuardrailsModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-2xl space-y-5 animate-fade-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 border border-slate-100 shadow-2xl space-y-5 animate-scale-up max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#F1F5F9] pb-3">
               <div className="flex items-center space-x-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-600" />

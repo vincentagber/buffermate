@@ -84,31 +84,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] font-sans antialiased text-[#1E293B] flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden">
+    <div className="min-h-screen bg-[#FAF9F5] font-sans antialiased text-slate-900 flex items-center justify-center p-4 sm:p-6 lg:p-10 relative overflow-hidden">
       {/* Background ambient gradient blurs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#FED7AA]/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#FFE4D6]/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-100/40 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-slate-200/30 rounded-full blur-3xl pointer-events-none" />
 
       {/* Centered Glass/Dashed Card Container */}
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl sm:rounded-[2.5rem] border-2 border-dashed border-[#CBD5E1] shadow-xl p-6 sm:p-9 space-y-6 relative z-10">
+      <div className="w-full max-w-md bg-white rounded-3xl sm:rounded-[2.25rem] border border-slate-200/80 shadow-xl p-6 sm:p-9 space-y-6 relative z-10">
         
         {/* Brand Logo & Header */}
         <div className="text-center space-y-2">
           <div className="inline-flex items-center space-x-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#E05A2B] to-[#F97316] text-white flex items-center justify-center font-black shadow-md shadow-orange-500/20">
+            <div className="w-9 h-9 rounded-2xl bg-[#141416] text-white flex items-center justify-center font-black shadow-xs">
               <Zap className="w-5 h-5 fill-current" />
             </div>
             <div className="flex items-baseline space-x-1.5">
-              <span className="text-2xl font-black tracking-tight text-[#1E293B]">BufferMate</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#E05A2B]" />
+              <span className="text-2xl font-black tracking-tight text-slate-900">BufferMate</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-600" />
             </div>
           </div>
 
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-[#1E293B] mt-1.5">
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 mt-1.5">
               Welcome back
             </h1>
-            <p className="text-xs text-[#64748B] mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Enter your credentials to access your account
             </p>
           </div>
@@ -122,10 +122,10 @@ export default function LoginPage() {
               setAuthMethod('password');
               setError(null);
             }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center ${
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-center ${
               authMethod === 'password'
-                ? 'bg-white text-[#E05A2B] shadow-xs'
-                : 'text-[#64748B] hover:text-[#1E293B]'
+                ? 'bg-[#141416] text-white shadow-2xs'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             Password
@@ -136,10 +136,10 @@ export default function LoginPage() {
               setAuthMethod('magic-link');
               setError(null);
             }}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center ${
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all text-center ${
               authMethod === 'magic-link'
-                ? 'bg-white text-[#E05A2B] shadow-xs'
-                : 'text-[#64748B] hover:text-[#1E293B]'
+                ? 'bg-[#141416] text-white shadow-2xs'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             Magic Link
@@ -147,20 +147,20 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Quick-Fill Pill Banner */}
-        <div className="bg-[#FFF7ED] border border-[#FED7AA] rounded-2xl p-3 flex items-center justify-between text-xs">
+        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3 flex items-center justify-between text-xs shadow-2xs">
           <div className="space-y-0.5">
-            <span className="font-bold text-[#E05A2B] flex items-center space-x-1 text-[11px]">
-              <Key className="w-3 h-3" />
+            <span className="font-semibold text-slate-800 flex items-center space-x-1.5 text-[11px]">
+              <Key className="w-3 h-3 text-slate-600" />
               <span>Demo Credentials</span>
             </span>
-            <p className="text-[10px] text-[#475569] font-mono">
+            <p className="text-[10px] text-slate-500 font-mono">
               demo@buffermate.app • Demo@12345
             </p>
           </div>
           <button
             type="button"
             onClick={handleQuickDemoLogin}
-            className="px-3 py-1.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-xl text-[11px] font-bold shadow-xs transition-all cursor-pointer"
+            className="px-3.5 py-1.5 bg-[#141416] hover:bg-black text-white rounded-full text-[11px] font-semibold shadow-2xs transition-all cursor-pointer"
           >
             1-Click Fill
           </button>
@@ -171,11 +171,11 @@ export default function LoginPage() {
           <form onSubmit={authMethod === 'password' ? handlePasswordLogin : handleMagicLink} className="space-y-4">
             {/* Email Input */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#334155] uppercase tracking-wider block">
+              <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">
                 Work Email
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Mail className="h-4 w-4" />
                 </div>
                 <input
@@ -187,7 +187,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="demo@buffermate.app"
-                  className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:bg-white focus:outline-hidden transition-all text-[#1E293B]"
+                  className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-slate-200/80 text-xs sm:text-sm bg-slate-50/50 focus:ring-2 focus:ring-slate-900 focus:bg-white focus:outline-hidden transition-all text-slate-900"
                 />
               </div>
             </div>
@@ -195,11 +195,11 @@ export default function LoginPage() {
             {/* Password Input (If Password Method) */}
             {authMethod === 'password' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-[#334155] uppercase tracking-wider block">
+                <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">
                   Password
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#94A3B8]">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -211,7 +211,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-[#E2D9CF] text-xs sm:text-sm bg-[#FCFAF7] focus:ring-2 focus:ring-[#E05A2B] focus:bg-white focus:outline-hidden transition-all text-[#1E293B]"
+                    className="w-full pl-10 pr-3.5 py-3 rounded-2xl border border-slate-200/80 text-xs sm:text-sm bg-slate-50/50 focus:ring-2 focus:ring-slate-900 focus:bg-white focus:outline-hidden transition-all text-slate-900"
                   />
                 </div>
               </div>
@@ -229,7 +229,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-[#E05A2B] hover:bg-[#C8491E] disabled:opacity-50 text-white rounded-2xl text-xs sm:text-sm font-bold shadow-md shadow-orange-500/20 transition-all flex items-center justify-center space-x-2 cursor-pointer"
+              className="w-full py-3 px-4 bg-[#141416] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs sm:text-sm font-semibold shadow-2xs transition-all flex items-center justify-center space-x-2 cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -243,13 +243,13 @@ export default function LoginPage() {
           </form>
         ) : (
           /* Magic Link Sent State */
-          <div className="bg-[#FFF0E6] border border-[#FED7AA] rounded-2xl p-5 text-center space-y-3 animate-fade-in">
+          <div className="bg-purple-50/50 border border-purple-200/60 rounded-2xl p-5 text-center space-y-3 animate-fade-in">
             <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-5 h-5" />
             </div>
-            <h4 className="text-sm font-bold text-[#1E293B]">Magic Link Dispatched</h4>
-            <p className="text-xs text-[#64748B]">
-              Check your email for the sign-in link sent to <span className="font-bold text-[#1E293B]">{email}</span>.
+            <h4 className="text-sm font-bold text-slate-900">Magic Link Dispatched</h4>
+            <p className="text-xs text-slate-500">
+              Check your email for the sign-in link sent to <span className="font-bold text-slate-900">{email}</span>.
             </p>
             <button
               type="button"
@@ -257,7 +257,7 @@ export default function LoginPage() {
                 setMagicLinkSent(false);
                 setError(null);
               }}
-              className="text-xs text-[#E05A2B] font-bold hover:underline"
+              className="text-xs text-slate-900 font-semibold hover:underline"
             >
               ← Back to login
             </button>
@@ -267,10 +267,10 @@ export default function LoginPage() {
         {/* Divider */}
         <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-[#E2D9CF]"></div>
+            <div className="w-full border-t border-slate-200/80"></div>
           </div>
           <div className="relative flex justify-center text-xs">
-            <span className="px-3 bg-white text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
+            <span className="px-3 bg-white text-slate-400 font-bold uppercase tracking-wider text-[10px]">
               Or continue with
             </span>
           </div>
@@ -282,7 +282,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuthSignIn('google')}
             disabled={loading}
-            className="flex items-center justify-center py-2.5 px-3 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2 cursor-pointer"
+            className="flex items-center justify-center py-2.5 px-3 bg-white border border-slate-200/80 hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2 cursor-pointer"
           >
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -297,9 +297,9 @@ export default function LoginPage() {
             type="button"
             onClick={() => handleOAuthSignIn('github')}
             disabled={loading}
-            className="flex items-center justify-center py-2.5 px-3 bg-white border border-[#E2D9CF] hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2 cursor-pointer"
+            className="flex items-center justify-center py-2.5 px-3 bg-white border border-slate-200/80 hover:bg-[#FAF6F0] rounded-2xl text-xs font-bold text-[#334155] transition-all disabled:opacity-50 shadow-xs space-x-2 cursor-pointer"
           >
-            <svg className="w-4 h-4 fill-current shrink-0 text-[#1E293B]" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 fill-current shrink-0 text-slate-900" viewBox="0 0 24 24">
               <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
             </svg>
             <span>GitHub</span>
@@ -307,19 +307,19 @@ export default function LoginPage() {
         </div>
 
         {/* Footer Terms & Signup link */}
-        <div className="space-y-2.5 pt-3 border-t border-[#F5EFE8] text-center">
-          <p className="text-xs text-[#64748B]">
+        <div className="space-y-2.5 pt-3 border-t border-slate-100 text-center">
+          <p className="text-xs text-slate-500">
             Don&apos;t have an account yet?{' '}
-            <Link href="/signup" className="font-bold text-[#E05A2B] hover:underline">
+            <Link href="/signup" className="font-semibold text-slate-900 hover:underline">
               Create Account
             </Link>
           </p>
 
-          <p className="text-[11px] text-[#94A3B8]">
+          <p className="text-[11px] text-slate-400">
             By clicking continue, you agree to our{' '}
-            <Link href="#" className="underline hover:text-[#1E293B]">Terms of Service</Link>
+            <Link href="#" className="underline hover:text-slate-900">Terms of Service</Link>
             {' '}and{' '}
-            <Link href="#" className="underline hover:text-[#1E293B]">Privacy Policy</Link>.
+            <Link href="#" className="underline hover:text-slate-900">Privacy Policy</Link>.
           </p>
         </div>
 

@@ -28,7 +28,8 @@ export default function SettingsPage() {
       <Sidebar
         currentTab="settings"
         onSelectTab={(tab) => {
-          if (tab === 'overview') router.push('/dashboard');
+          if (tab === 'analytics') router.push('/dashboard/analytics');
+          else if (tab === 'overview') router.push('/dashboard');
           else router.push(`/dashboard?tab=${tab}`);
         }}
         onOpenCreateModal={() => setIsPostModalOpen(true)}
@@ -42,7 +43,7 @@ export default function SettingsPage() {
 
       {/* Main Content Area */}
       <div
-        className={`min-h-screen flex flex-col transition-all duration-300 ${
+        className={`min-h-screen flex flex-col pt-16 transition-all duration-300 ${
           isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'
         }`}
       >
@@ -56,7 +57,7 @@ export default function SettingsPage() {
         />
 
         {/* Content Body */}
-        <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-3 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl w-full mx-auto">
           <ProfileSettingsView />
         </main>
       </div>

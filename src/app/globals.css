@@ -2,22 +2,22 @@
 @import "tailwindcss";
 
 :root {
-  /* Warm Terracotta / BufferMate Palette matching screenshots */
-  --color-brand-orange: #E05A2B;
-  --color-brand-orange-hover: #C8491E;
-  --color-brand-orange-light: #FFF0E6;
-  --color-brand-orange-border: #FED7AA;
+  /* Boutique Luxury Clinic Palette */
+  --color-brand-orange: #141416;
+  --color-brand-orange-hover: #000000;
+  --color-brand-orange-light: #EDE9FE;
+  --color-brand-orange-border: #DDD6FE;
   
-  --color-bg-page: #FAF7F2;
+  --color-bg-page: #F8F9FA;
   --color-bg-card: #FFFFFF;
   --color-bg-sidebar: #FFFFFF;
   
-  --color-text-main: #1E293B;
+  --color-text-main: #0F172A;
   --color-text-muted: #64748B;
   --color-text-light: #94A3B8;
 
-  --color-border: #F1E9DF;
-  --color-border-card: #F0E8E0;
+  --color-border: #E2E8F0;
+  --color-border-card: #E2E8F0;
 }
 
 body {

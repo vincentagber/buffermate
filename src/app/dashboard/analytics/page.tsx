@@ -285,12 +285,13 @@ export default function AnalyticsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FDFBF7] font-sans antialiased text-[#1E293B] overflow-x-hidden">
+        <div className="min-h-screen bg-[#FAF9F5] font-sans antialiased text-slate-900 overflow-x-hidden">
             {/* Sidebar */}
             <Sidebar
-                currentTab="post-manager"
+                currentTab="analytics"
                 onSelectTab={(tab) => {
-                    if (tab === 'overview') router.push('/dashboard');
+                    if (tab === 'analytics') return;
+                    if (tab === 'overview' || tab === 'command-center') router.push('/dashboard');
                     else router.push(`/dashboard?tab=${tab}`);
                 }}
                 onOpenCreateModal={() => setIsPostModalOpen(true)}
@@ -304,7 +305,7 @@ export default function AnalyticsPage() {
 
             {/* Main Content Area */}
             <div
-                className={`min-h-screen flex flex-col transition-all duration-300 ${
+                className={`min-h-screen flex flex-col pt-16 transition-all duration-300 ${
                     isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'
                 }`}
             >
@@ -319,19 +320,19 @@ export default function AnalyticsPage() {
                 />
 
                 {/* Content Body */}
-                <main className="flex-1 p-3 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+                <main className="flex-1 px-3 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl w-full mx-auto space-y-6">
                     {/* Header with Title, Platform Filter, and Timeframe Selector */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <div className="flex items-center space-x-2.5">
-                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#1E293B]">Analytics & Audience Intelligence</h1>
-                                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
+                                <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">Analytics & Audience Intelligence</h1>
+                                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200/60">
                                     Pro Tier
                                 </span>
                             </div>
                             <p className="text-xs sm:text-sm text-[#64748B] mt-1">
                                 Performance benchmarks, viral hook engagement, and audience metrics for{' '}
-                                <span className="font-bold text-[#1E293B]">{activeOption.label}</span>
+                                <span className="font-bold text-slate-900">{activeOption.label}</span>
                             </p>
                         </div>
 
@@ -342,7 +343,7 @@ export default function AnalyticsPage() {
                                     id="platform-filter-button"
                                     type="button"
                                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                    className="flex items-center space-x-2 px-3.5 py-2 bg-white border border-[#E2D9CF] rounded-2xl text-xs font-bold text-[#1E293B] shadow-2xs hover:bg-[#FAF6F0] transition-colors"
+                                    className="flex items-center space-x-2 px-3.5 py-2 bg-white border border-[#E2D9CF] rounded-2xl text-xs font-bold text-slate-900 shadow-2xs hover:bg-[#FAF6F0] transition-colors"
                                 >
                                     <IconComponent className={`w-3.5 h-3.5 ${activeOption.color}`} />
                                     <span>{activeOption.label}</span>
@@ -358,7 +359,7 @@ export default function AnalyticsPage() {
                                         />
                                         <div
                                             id="platform-dropdown-menu"
-                                            className="absolute right-0 mt-1.5 w-56 bg-white border border-[#E2D9CF] rounded-2xl shadow-xl z-30 py-1.5 overflow-hidden animate-fade-in"
+                                            className="absolute right-0 mt-2 w-56 bg-white border border-slate-200/80 rounded-2xl shadow-xl z-30 py-1.5 overflow-hidden animate-fade-in"
                                         >
                                             <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#94A3B8] border-b border-[#F5EFE8]">
                                                 Filter By Platform
@@ -375,8 +376,8 @@ export default function AnalyticsPage() {
                                                         }}
                                                         className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors ${
                                                             isSelected
-                                                                ? 'bg-[#FFF0E6] text-[#E05A2B] font-bold'
-                                                                : 'text-[#475569] hover:bg-[#FAF6F0]'
+                                                                ? 'bg-purple-50 text-purple-700 font-semibold'
+                                                                : 'text-slate-600 hover:bg-slate-50'
                                                         }`}
                                                     >
                                                         <div className="flex items-center space-x-2.5">
@@ -386,7 +387,7 @@ export default function AnalyticsPage() {
                                                             <span>{option.label}</span>
                                                         </div>
                                                         {isSelected && (
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#E05A2B]"></div>
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-purple-600"></div>
                                                         )}
                                                     </button>
                                                 );
@@ -397,33 +398,33 @@ export default function AnalyticsPage() {
                             </div>
 
                             {/* Timeframe Selector */}
-                            <div className="flex bg-[#FCFAF7] p-1 rounded-2xl border border-[#E2D9CF]">
+                            <div className="flex bg-slate-100/80 p-1 rounded-full border border-slate-200/60">
                                 <button
                                     onClick={() => setTimeframe('7')}
-                                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                                         timeframe === '7'
-                                            ? 'bg-white shadow-xs text-[#E05A2B]'
-                                            : 'text-[#64748B] hover:text-[#1E293B]'
+                                            ? 'bg-[#141416] text-white shadow-2xs'
+                                            : 'text-slate-500 hover:text-slate-900'
                                     }`}
                                 >
                                     7D
                                 </button>
                                 <button
                                     onClick={() => setTimeframe('30')}
-                                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                                         timeframe === '30'
-                                            ? 'bg-white shadow-xs text-[#E05A2B]'
-                                            : 'text-[#64748B] hover:text-[#1E293B]'
+                                            ? 'bg-[#141416] text-white shadow-2xs'
+                                            : 'text-slate-500 hover:text-slate-900'
                                     }`}
                                 >
                                     30D
                                 </button>
                                 <button
                                     onClick={() => setTimeframe('90')}
-                                    className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                                    className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                                         timeframe === '90'
-                                            ? 'bg-white shadow-xs text-[#E05A2B]'
-                                            : 'text-[#64748B] hover:text-[#1E293B]'
+                                            ? 'bg-[#141416] text-white shadow-2xs'
+                                            : 'text-slate-500 hover:text-slate-900'
                                     }`}
                                 >
                                     90D
@@ -434,7 +435,7 @@ export default function AnalyticsPage() {
                             <button
                                 type="button"
                                 onClick={handleDownloadCSV}
-                                className="flex items-center space-x-1.5 px-3.5 py-2 bg-white border border-[#E2D9CF] rounded-2xl text-xs font-bold text-[#1E293B] shadow-2xs hover:bg-[#FAF6F0] transition-colors"
+                                className="flex items-center space-x-1.5 px-3.5 py-2 bg-white border border-[#E2D9CF] rounded-2xl text-xs font-bold text-slate-900 shadow-2xs hover:bg-[#FAF6F0] transition-colors"
                                 title="Download current analytics as CSV"
                             >
                                 <Download className="w-3.5 h-3.5 text-[#64748B]" />
@@ -445,7 +446,7 @@ export default function AnalyticsPage() {
                             <button
                                 type="button"
                                 onClick={() => setIsUpgradeModalOpen(true)}
-                                className="flex items-center space-x-1.5 px-3.5 py-2 bg-gradient-to-r from-[#F06535] to-[#E05A2B] text-white rounded-2xl text-xs font-bold shadow-xs hover:opacity-95 transition-all"
+                                className="flex items-center space-x-1.5 px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer"
                             >
                                 <Crown className="w-3.5 h-3.5 text-amber-200" />
                                 <span>View Pro Plans</span>
@@ -455,13 +456,13 @@ export default function AnalyticsPage() {
 
                     {/* Active Platform Banner */}
                     {selectedPlatform !== 'all' && (
-                        <div className="bg-[#FFF8F4] border border-[#FED7AA] rounded-2xl px-4 py-3 flex items-center justify-between">
+                        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl px-4 py-3 flex items-center justify-between shadow-2xs">
                             <div className="flex items-center space-x-3">
-                                <div className="w-8 h-8 rounded-xl bg-white shadow-2xs border border-[#FED7AA] flex items-center justify-center">
+                                <div className="w-8 h-8 rounded-xl bg-white shadow-2xs border border-slate-200/80 flex items-center justify-center">
                                     <IconComponent className={`w-4 h-4 ${activeOption.color}`} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-bold text-[#1E293B]">
+                                    <p className="text-xs font-bold text-slate-900">
                                         Filtered to: {activeOption.label}
                                     </p>
                                     <p className="text-[11px] text-[#64748B]">
@@ -471,7 +472,7 @@ export default function AnalyticsPage() {
                             </div>
                             <button
                                 onClick={() => setSelectedPlatform('all')}
-                                className="text-xs font-bold text-[#E05A2B] hover:underline px-2 py-1"
+                                className="text-xs font-semibold text-slate-700 hover:text-slate-900 hover:underline px-2 py-1"
                             >
                                 Reset Filter
                             </button>
@@ -481,9 +482,9 @@ export default function AnalyticsPage() {
                     {/* Key Metrics */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {data.metrics.map((metric, i) => (
-                            <div key={i} className="bg-white p-5 rounded-3xl border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-3">
+                            <div key={i} className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
                                 <div className="flex items-center justify-between">
-                                    <div className="w-9 h-9 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center">
+                                    <div className="w-9 h-9 rounded-2xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
                                         <metric.icon className="w-4 h-4" />
                                     </div>
                                     {metric.change && (
@@ -506,7 +507,7 @@ export default function AnalyticsPage() {
                                 <div>
                                     <h3 className="text-xs font-semibold text-[#64748B]">{metric.label}</h3>
                                     <div className="flex items-baseline space-x-2 mt-0.5">
-                                        <span className="text-2xl font-bold text-[#1E293B]">{metric.value}</span>
+                                        <span className="text-2xl font-bold text-slate-900">{metric.value}</span>
                                         {metric.sub && <span className="text-xs font-medium text-[#94A3B8]">{metric.sub}</span>}
                                     </div>
                                 </div>
@@ -516,24 +517,24 @@ export default function AnalyticsPage() {
 
                     {/* Charts & Top Posts */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-3xl border-2 border-dashed border-[#CBD5E1] shadow-xs flex flex-col justify-between min-w-0">
+                        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between min-w-0">
                             <div>
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
                                     <div>
-                                        <h3 className="text-base font-bold text-[#1E293B]">Audience Reach & Impressions Trend</h3>
+                                        <h3 className="text-base font-bold text-slate-900">Audience Reach & Impressions Trend</h3>
                                         <p className="text-xs text-[#64748B] mt-0.5">
-                                            Calculated monthly metrics for {activeOption.label}
+                                             Calculated monthly metrics for {activeOption.label}
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <div className="flex bg-[#FCFAF7] p-0.5 rounded-xl border border-[#E2D9CF] text-xs">
+                                        <div className="flex bg-slate-100/80 p-0.5 rounded-full border border-slate-200/60 text-xs">
                                             <button
                                                 type="button"
                                                 onClick={() => setChartType('bar')}
-                                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                                                     chartType === 'bar'
-                                                        ? 'bg-white text-[#E05A2B] shadow-2xs'
-                                                        : 'text-[#64748B] hover:text-[#1E293B]'
+                                                        ? 'bg-[#141416] text-white shadow-2xs'
+                                                        : 'text-slate-500 hover:text-slate-900'
                                                 }`}
                                             >
                                                 Bar
@@ -541,17 +542,17 @@ export default function AnalyticsPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setChartType('area')}
-                                                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                                                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                                                     chartType === 'area'
-                                                        ? 'bg-white text-[#E05A2B] shadow-2xs'
-                                                        : 'text-[#64748B] hover:text-[#1E293B]'
+                                                        ? 'bg-[#141416] text-white shadow-2xs'
+                                                        : 'text-slate-500 hover:text-slate-900'
                                                 }`}
                                             >
                                                 Area
                                             </button>
                                         </div>
-                                        <span className="inline-flex items-center px-2 py-1 rounded-lg text-[11px] font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-[#E05A2B] mr-1.5"></span>
+                                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200/60">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mr-1.5"></span>
                                             Impressions
                                         </span>
                                     </div>
@@ -584,7 +585,7 @@ export default function AnalyticsPage() {
                                                                 <div className="bg-[#1E293B] text-white p-3.5 rounded-2xl shadow-2xl text-xs border border-neutral-700 animate-fade-in">
                                                                     <p className="font-bold text-slate-200 mb-1.5 flex items-center justify-between">
                                                                         <span>{label} 2026</span>
-                                                                        <span className="text-[10px] text-[#E05A2B] bg-[#FFF0E6] px-1.5 py-0.2 rounded font-mono">Live</span>
+                                                                        <span className="text-[10px] text-purple-300 bg-purple-950/60 px-1.5 py-0.2 rounded font-mono border border-purple-500/30">Live</span>
                                                                     </p>
                                                                     <div className="space-y-1.5">
                                                                         <p className="flex items-center justify-between gap-4 text-blue-300">
@@ -604,7 +605,7 @@ export default function AnalyticsPage() {
                                                 />
                                                 <Bar
                                                     dataKey="impressions"
-                                                    fill="#E05A2B"
+                                                    fill="#8B5CF6"
                                                     radius={[6, 6, 0, 0]}
                                                     maxBarSize={36}
                                                 />
@@ -613,8 +614,8 @@ export default function AnalyticsPage() {
                                             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                                 <defs>
                                                     <linearGradient id="colorImpressions" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#E05A2B" stopOpacity={0.35} />
-                                                        <stop offset="95%" stopColor="#E05A2B" stopOpacity={0.0} />
+                                                        <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.35} />
+                                                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.0} />
                                                     </linearGradient>
                                                 </defs>
                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -639,7 +640,7 @@ export default function AnalyticsPage() {
                                                                 <div className="bg-[#1E293B] text-white p-3.5 rounded-2xl shadow-2xl text-xs border border-neutral-700 animate-fade-in">
                                                                     <p className="font-bold text-slate-200 mb-1.5 flex items-center justify-between">
                                                                         <span>{label} 2026</span>
-                                                                        <span className="text-[10px] text-[#E05A2B] bg-[#FFF0E6] px-1.5 py-0.2 rounded font-mono">Live</span>
+                                                                        <span className="text-[10px] text-purple-300 bg-purple-950/60 px-1.5 py-0.2 rounded font-mono border border-purple-500/30">Live</span>
                                                                     </p>
                                                                     <div className="space-y-1.5">
                                                                         <p className="flex items-center justify-between gap-4 text-blue-300">
@@ -660,7 +661,7 @@ export default function AnalyticsPage() {
                                                 <Area
                                                     type="monotone"
                                                     dataKey="impressions"
-                                                    stroke="#E05A2B"
+                                                    stroke="#8B5CF6"
                                                     strokeWidth={3}
                                                     fillOpacity={1}
                                                     fill="url(#colorImpressions)"
@@ -673,23 +674,23 @@ export default function AnalyticsPage() {
                         </div>
 
                         {/* Top Performing Posts Card */}
-                        <div className="bg-white p-5 sm:p-6 rounded-3xl border-2 border-dashed border-[#CBD5E1] shadow-xs flex flex-col justify-between min-w-0">
+                        <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between min-w-0">
                             <div>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-base font-bold text-[#1E293B]">Top Performing Posts</h3>
-                                    <span className="text-xs font-bold text-[#E05A2B]">{data.posts.length} posts</span>
+                                    <h3 className="text-base font-bold text-slate-900">Top Performing Posts</h3>
+                                    <span className="text-xs font-semibold text-slate-500">{data.posts.length} posts</span>
                                 </div>
                                 <div className="space-y-3">
                                     {data.posts.map((post, i) => (
                                         <div
                                             key={i}
-                                            className="p-3 rounded-2xl bg-[#FCFAF7] border border-[#F1E9DF] hover:border-[#FED7AA] hover:bg-[#FFFBF8] transition-all cursor-pointer group space-y-1.5"
+                                            className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all cursor-pointer group space-y-1.5"
                                         >
                                             <div className="flex items-start space-x-2.5">
-                                                <div className="w-7 h-7 rounded-xl bg-white border border-[#E2D9CF] flex items-center justify-center text-[#E05A2B] shrink-0">
+                                                <div className="w-7 h-7 rounded-xl bg-white border border-slate-200/80 flex items-center justify-center text-slate-700 shrink-0">
                                                     <IconComponent className="w-3.5 h-3.5" />
                                                 </div>
-                                                <p className="text-xs font-bold text-[#1E293B] group-hover:text-[#E05A2B] transition-colors line-clamp-2">
+                                                <p className="text-xs font-bold text-slate-900 group-hover:text-slate-900 transition-colors line-clamp-2">
                                                     {post.title}
                                                 </p>
                                             </div>
@@ -708,23 +709,23 @@ export default function AnalyticsPage() {
                             </div>
                             <button
                                 onClick={() => router.push('/dashboard?tab=post-manager')}
-                                className="w-full mt-4 py-2.5 text-xs font-bold text-[#1E293B] bg-[#FCFAF7] border border-[#E2D9CF] rounded-2xl hover:bg-[#FAF6F0] transition-colors flex items-center justify-center space-x-1.5"
+                                className="w-full mt-4 py-2.5 text-xs font-semibold text-slate-800 bg-white border border-slate-200/80 rounded-full hover:bg-slate-50 transition-colors flex items-center justify-center space-x-1.5 shadow-2xs"
                             >
-                                <Share2 className="w-3.5 h-3.5 text-[#E05A2B]" />
+                                <Share2 className="w-3.5 h-3.5 text-slate-600" />
                                 <span>Manage All Posts</span>
                             </button>
                         </div>
                     </div>
 
                     {/* PRO PLANS & SUBSCRIPTION TIERS SECTION */}
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-6">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#F5EFE8]">
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
                             <div>
                                 <div className="flex items-center space-x-2">
-                                    <div className="w-8 h-8 rounded-xl bg-[#FFF0E6] text-[#E05A2B] flex items-center justify-center">
+                                    <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 border border-purple-200/60 flex items-center justify-center">
                                         <Crown className="w-4 h-4" />
                                     </div>
-                                    <h2 className="text-lg sm:text-xl font-bold text-[#1E293B]">
+                                    <h2 className="text-lg sm:text-xl font-bold text-slate-900">
                                         Buffermate Pro Plans & Pricing
                                     </h2>
                                 </div>
@@ -734,13 +735,13 @@ export default function AnalyticsPage() {
                             </div>
 
                             {/* Billing Cycle Toggle */}
-                            <div className="flex items-center space-x-3 self-start md:self-auto bg-[#FCFAF7] p-1 rounded-2xl border border-[#E2D9CF]">
+                            <div className="flex items-center space-x-1 self-start md:self-auto bg-slate-100/80 p-1 rounded-full border border-slate-200/60">
                                 <button
                                     onClick={() => setBillingCycle('monthly')}
                                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
                                         billingCycle === 'monthly'
-                                            ? 'bg-white text-[#1E293B] shadow-xs'
-                                            : 'text-[#64748B] hover:text-[#1E293B]'
+                                            ? 'bg-white text-slate-900 shadow-xs'
+                                            : 'text-[#64748B] hover:text-slate-900'
                                     }`}
                                 >
                                     Monthly Billing
@@ -750,11 +751,11 @@ export default function AnalyticsPage() {
                                     className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
                                         billingCycle === 'annual'
                                             ? 'bg-[#1E293B] text-white shadow-xs'
-                                            : 'text-[#64748B] hover:text-[#1E293B]'
+                                            : 'text-[#64748B] hover:text-slate-900'
                                     }`}
                                 >
                                     <span>Annual Billing</span>
-                                    <span className="px-1.5 py-0.2 bg-[#E05A2B] text-white text-[10px] rounded-md font-bold">
+                                    <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] rounded-full font-semibold">
                                         Save 20%
                                     </span>
                                 </button>
@@ -764,7 +765,7 @@ export default function AnalyticsPage() {
                         {/* Plan Comparison Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
                             {/* 1. Starter Free */}
-                            <div className="p-6 rounded-3xl border border-[#E2D9CF] bg-[#FCFAF7] flex flex-col justify-between space-y-6">
+                            <div className="p-6 rounded-3xl border border-slate-200/80 bg-slate-50/50 flex flex-col justify-between space-y-6 shadow-2xs">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#F1E9DF] text-[#64748B]">
@@ -773,7 +774,7 @@ export default function AnalyticsPage() {
                                     </div>
                                     <div>
                                         <div className="flex items-baseline space-x-1">
-                                            <span className="text-3xl font-bold text-[#1E293B]">$0</span>
+                                            <span className="text-3xl font-bold text-slate-900">$0</span>
                                             <span className="text-xs text-[#64748B]">/ forever</span>
                                         </div>
                                         <p className="text-xs text-[#64748B] mt-1">
@@ -807,10 +808,10 @@ export default function AnalyticsPage() {
 
                                 <button
                                     onClick={() => handleSelectPlan('free')}
-                                    className={`w-full py-2.5 rounded-2xl text-xs font-bold border transition-colors ${
+                                    className={`w-full py-2.5 rounded-full text-xs font-semibold border transition-all shadow-2xs ${
                                         currentPlan === 'free'
-                                            ? 'bg-white border-[#E05A2B] text-[#E05A2B]'
-                                            : 'bg-white border-[#E2D9CF] text-[#1E293B] hover:bg-[#FAF6F0]'
+                                            ? 'bg-[#141416] text-white border-transparent'
+                                            : 'bg-white border-slate-200/80 text-slate-800 hover:bg-slate-50'
                                     }`}
                                 >
                                     {currentPlan === 'free' ? 'Current Active Plan' : 'Downgrade to Free'}
@@ -818,20 +819,20 @@ export default function AnalyticsPage() {
                             </div>
 
                             {/* 2. Pro Growth (Featured) */}
-                            <div className="p-6 rounded-3xl border-2 border-[#E05A2B] bg-gradient-to-b from-[#FFFDF9] to-[#FFF6F0] flex flex-col justify-between space-y-6 relative shadow-md">
-                                <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full text-[10px] font-bold bg-[#E05A2B] text-white shadow-xs">
+                            <div className="p-6 rounded-3xl border-2 border-slate-900 bg-white flex flex-col justify-between space-y-6 relative shadow-md">
+                                <div className="absolute -top-3 right-6 px-3 py-0.5 rounded-full text-[10px] font-semibold bg-[#141416] text-white shadow-xs">
                                     MOST POPULAR
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
-                                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA]">
+                                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200/60">
                                             Pro Growth Plan
                                         </span>
                                     </div>
                                     <div>
                                         <div className="flex items-baseline space-x-1">
-                                            <span className="text-3xl font-bold text-[#1E293B]">
+                                            <span className="text-3xl font-bold text-slate-900">
                                                 ${billingCycle === 'annual' ? '23' : '29'}
                                             </span>
                                             <span className="text-xs text-[#64748B]">/ month {billingCycle === 'annual' ? '(billed yearly)' : ''}</span>
@@ -843,27 +844,27 @@ export default function AnalyticsPage() {
 
                                     <ul className="space-y-2.5 text-xs text-[#334155] pt-2">
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span className="font-semibold">Unlimited Connected Channels</span>
                                         </li>
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span className="font-semibold">Unlimited Scheduled Content Queue</span>
                                         </li>
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span>Full 90-Day Advanced Analytics & CSV Export</span>
                                         </li>
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span>AI Script & Viral Hook Generation (GPT-4)</span>
                                         </li>
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span>24/7 Comment Keyword Auto-DM Lead Bots</span>
                                         </li>
                                         <li className="flex items-center space-x-2">
-                                            <Check className="w-4 h-4 text-[#E05A2B] shrink-0" />
+                                            <Check className="w-4 h-4 text-purple-600 shrink-0" />
                                             <span>AI Predictive Peak Time Heatmaps</span>
                                         </li>
                                     </ul>
@@ -871,10 +872,10 @@ export default function AnalyticsPage() {
 
                                 <button
                                     onClick={() => handleSelectPlan('pro')}
-                                    className={`w-full py-2.5 rounded-2xl text-xs font-bold shadow-xs transition-colors ${
+                                    className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
                                         currentPlan === 'pro'
-                                            ? 'bg-[#1E293B] text-white hover:bg-black'
-                                            : 'bg-[#E05A2B] text-white hover:bg-[#C8491E]'
+                                            ? 'bg-[#141416] text-white hover:bg-black'
+                                            : 'bg-[#141416] text-white hover:bg-black'
                                     }`}
                                 >
                                     {currentPlan === 'pro' ? 'Current Active Plan (Active)' : 'Upgrade to Pro Growth'}
@@ -882,7 +883,7 @@ export default function AnalyticsPage() {
                             </div>
 
                             {/* 3. Agency & Scale */}
-                            <div className="p-6 rounded-3xl border border-[#E2D9CF] bg-[#FCFAF7] flex flex-col justify-between space-y-6">
+                            <div className="p-6 rounded-3xl border border-slate-200/80 bg-slate-50/50 flex flex-col justify-between space-y-6 shadow-2xs">
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#EFF6FF] text-[#1D4ED8] border border-[#BFDBFE]">
@@ -891,7 +892,7 @@ export default function AnalyticsPage() {
                                     </div>
                                     <div>
                                         <div className="flex items-baseline space-x-1">
-                                            <span className="text-3xl font-bold text-[#1E293B]">
+                                            <span className="text-3xl font-bold text-slate-900">
                                                 ${billingCycle === 'annual' ? '63' : '79'}
                                             </span>
                                             <span className="text-xs text-[#64748B]">/ month {billingCycle === 'annual' ? '(billed yearly)' : ''}</span>
@@ -927,7 +928,7 @@ export default function AnalyticsPage() {
 
                                 <button
                                     onClick={() => handleSelectPlan('agency')}
-                                    className="w-full py-2.5 rounded-2xl text-xs font-bold bg-white hover:bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] transition-colors"
+                                    className="w-full py-2.5 rounded-full text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-800 transition-all cursor-pointer shadow-2xs"
                                 >
                                     {currentPlan === 'agency' ? 'Current Active Plan' : 'Upgrade to Agency Scale'}
                                 </button>
@@ -936,18 +937,18 @@ export default function AnalyticsPage() {
                     </div>
 
                     {/* AI PREDICTIVE PEAK POSTING INTELLIGENCE (PRO EXCLUSIVE MODULE) */}
-                    <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-dashed border-[#CBD5E1] shadow-xs space-y-5">
+                    <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#F5EFE8]">
                             <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-2xl bg-[#FFF0E6] text-[#E05A2B] border border-[#FED7AA] flex items-center justify-center font-bold">
+                                <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200/60 flex items-center justify-center font-bold">
                                     <Sparkles className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <div className="flex items-center space-x-2">
-                                        <h3 className="text-base font-bold text-[#1E293B]">
+                                        <h3 className="text-base font-bold text-slate-900">
                                             AI Predictive Best Times to Publish
                                         </h3>
-                                        <span className="text-[10px] font-bold bg-[#E05A2B] text-white px-2 py-0.5 rounded-md">
+                                        <span className="text-[10px] font-semibold bg-purple-50 text-purple-700 border border-purple-200/60 px-2 py-0.5 rounded-full">
                                             PRO
                                         </span>
                                     </div>
@@ -959,19 +960,19 @@ export default function AnalyticsPage() {
 
                             <button
                                 onClick={() => router.push('/dashboard/composer')}
-                                className="px-3.5 py-2 bg-[#FAF6F0] hover:bg-[#F3ECE4] text-[#78350F] border border-[#E2D9CF] rounded-2xl text-xs font-bold transition-colors flex items-center space-x-1.5 self-start sm:self-auto"
+                                className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/80 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 self-start sm:self-auto shadow-2xs cursor-pointer"
                             >
-                                <Zap className="w-3.5 h-3.5 text-[#E05A2B]" />
+                                <Zap className="w-3.5 h-3.5 text-purple-600" />
                                 <span>Schedule at Optimal Slot</span>
                             </button>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div className="p-4 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF] space-y-2">
+                            <div className="p-4 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-2">
                                 <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">
                                     🔥 Highest Engagement Peak
                                 </span>
-                                <p className="text-lg font-bold text-[#1E293B]">
+                                <p className="text-lg font-bold text-slate-900">
                                     Wednesday @ 10:00 AM
                                 </p>
                                 <p className="text-xs text-emerald-600 font-semibold">
@@ -979,11 +980,11 @@ export default function AnalyticsPage() {
                                 </p>
                             </div>
 
-                            <div className="p-4 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF] space-y-2">
+                            <div className="p-4 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-2">
                                 <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">
                                     ⚡ Secondary Viral Slot
                                 </span>
-                                <p className="text-lg font-bold text-[#1E293B]">
+                                <p className="text-lg font-bold text-slate-900">
                                     Friday @ 6:30 PM
                                 </p>
                                 <p className="text-xs text-emerald-600 font-semibold">
@@ -991,11 +992,11 @@ export default function AnalyticsPage() {
                                 </p>
                             </div>
 
-                            <div className="p-4 bg-[#FCFAF7] rounded-2xl border border-[#F1E9DF] space-y-2">
+                            <div className="p-4 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-2">
                                 <span className="text-[10px] font-bold text-[#64748B] uppercase tracking-wider block">
                                     🎯 Weekend Lead Magnet Slot
                                 </span>
-                                <p className="text-lg font-bold text-[#1E293B]">
+                                <p className="text-lg font-bold text-slate-900">
                                     Sunday @ 4:15 PM
                                 </p>
                                 <p className="text-xs text-emerald-600 font-semibold">
@@ -1024,20 +1025,20 @@ export default function AnalyticsPage() {
             {/* Pro Plan Upgrade Modal */}
             {isUpgradeModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-                    <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 border-2 border-dashed border-[#CBD5E1] shadow-2xl space-y-5 animate-fade-in relative">
+                    <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 border border-slate-200/80 shadow-2xl space-y-5 animate-fade-in relative">
                         <button
                             onClick={() => setIsUpgradeModalOpen(false)}
-                            className="absolute top-5 right-5 p-1.5 text-[#94A3B8] hover:text-[#1E293B] rounded-lg hover:bg-[#FAF6F0]"
+                            className="absolute top-5 right-5 p-1.5 text-[#94A3B8] hover:text-slate-900 rounded-lg hover:bg-[#FAF6F0]"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
                         <div className="flex items-center space-x-3">
-                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#F06535] to-[#E05A2B] text-white flex items-center justify-center shadow-xs">
+                            <div className="w-11 h-11 rounded-2xl bg-[#141416] text-white flex items-center justify-center shadow-xs">
                                 <Crown className="w-6 h-6 text-amber-200" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-[#1E293B]">
+                                <h3 className="text-lg font-bold text-slate-900">
                                     Upgrade to Buffermate Pro Growth
                                 </h3>
                                 <p className="text-xs text-[#64748B]">
@@ -1046,9 +1047,9 @@ export default function AnalyticsPage() {
                             </div>
                         </div>
 
-                        <div className="p-4 bg-[#FFF8F4] border border-[#FED7AA] rounded-2xl space-y-2 text-xs text-[#78350F]">
+                        <div className="p-4 bg-purple-50/50 border border-purple-200/60 rounded-2xl space-y-2 text-xs text-purple-900">
                             <p className="font-bold flex items-center">
-                                <Sparkles className="w-4 h-4 mr-1.5 text-[#E05A2B]" />
+                                <Sparkles className="w-4 h-4 mr-1.5 text-purple-600" />
                                 Instant Pro Membership Benefits:
                             </p>
                             <ul className="space-y-1.5 pl-6 list-disc">
@@ -1059,10 +1060,10 @@ export default function AnalyticsPage() {
                             </ul>
                         </div>
 
-                        <div className="flex items-center justify-between p-4 bg-[#FCFAF7] rounded-2xl border border-[#E2D9CF]">
+                        <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
                             <div>
                                 <span className="text-xs font-bold text-[#64748B] block">Selected Billing</span>
-                                <span className="text-lg font-bold text-[#1E293B] block">$23 / month (billed yearly)</span>
+                                <span className="text-lg font-bold text-slate-900 block">$23 / month (billed yearly)</span>
                             </div>
                             <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                 20% Discount
@@ -1072,13 +1073,13 @@ export default function AnalyticsPage() {
                         <div className="flex items-center space-x-3 pt-2">
                             <button
                                 onClick={() => setIsUpgradeModalOpen(false)}
-                                className="flex-1 py-2.5 bg-white border border-[#E2D9CF] rounded-2xl text-xs font-bold text-[#64748B] hover:bg-[#FAF6F0]"
+                                className="flex-1 py-2.5 bg-white border border-slate-200/80 rounded-full text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-2xs"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={() => handleSelectPlan('pro')}
-                                className="flex-1 py-2.5 bg-[#E05A2B] hover:bg-[#C8491E] text-white rounded-2xl text-xs font-bold shadow-xs transition-colors flex items-center justify-center space-x-1.5"
+                                className="flex-1 py-2.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                             >
                                 <Zap className="w-4 h-4" />
                                 <span>Confirm Upgrade</span>

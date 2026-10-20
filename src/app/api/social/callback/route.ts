@@ -37,9 +37,9 @@ function renderSuccessHtml(provider: string, providerKey: string, providerUserId
     .icon-badge {
       width: 56px;
       height: 56px;
-      background: #FFF0E6;
-      border: 1px solid #FED7AA;
-      color: #E05A2B;
+      background: #EDE9FE;
+      border: 1px solid #DDD6FE;
+      color: #8B5CF6;
       border-radius: 18px;
       display: flex;
       align-items: center;
@@ -51,7 +51,7 @@ function renderSuccessHtml(provider: string, providerKey: string, providerUserId
       font-size: 19px;
       font-weight: 800;
       margin: 0 0 8px;
-      color: #1E293B;
+      color: #0F172A;
     }
     p {
       font-size: 13px;
@@ -62,18 +62,18 @@ function renderSuccessHtml(provider: string, providerKey: string, providerUserId
     .account-pill {
       display: inline-block;
       padding: 6px 14px;
-      background: #F1E9DF;
+      background: #EDE9FE;
       border-radius: 9999px;
       font-size: 12px;
       font-weight: 700;
-      color: #78350F;
+      color: #6D28D9;
       margin-bottom: 20px;
     }
     .spinner {
       width: 22px;
       height: 22px;
-      border: 2.5px solid #FED7AA;
-      border-top: 2.5px solid #E05A2B;
+      border: 2.5px solid #DDD6FE;
+      border-top: 2.5px solid #141416;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin: 0 auto;
