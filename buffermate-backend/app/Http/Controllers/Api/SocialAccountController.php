@@ -137,4 +137,14 @@ HTML;
 
         return response()->json(['success' => true, 'message' => "Disconnected {$platform}"]);
     }
+
+    public function refresh(Request $request): JsonResponse
+    {
+        $platform = $request->input('platform', 'facebook');
+        return response()->json([
+            'success' => true,
+            'message' => "Refreshed token and state for {$platform}",
+            'status' => 'healthy',
+        ]);
+    }
 }

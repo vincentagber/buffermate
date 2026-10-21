@@ -33,12 +33,14 @@ Route::middleware(['tenant.scope'])->group(function () {
     // Social Accounts & OAuth
     Route::get('/social/accounts', [SocialAccountController::class, 'index']);
     Route::post('/social/connect', [SocialAccountController::class, 'connect']);
+    Route::post('/social/refresh', [SocialAccountController::class, 'refresh']);
     Route::get('/social/test-connection', [SocialAccountController::class, 'testConnection']);
     Route::post('/social/disconnect', [SocialAccountController::class, 'disconnect']);
 
     // Automations & CRM Funnels
     Route::get('/automations', [AutomationController::class, 'index']);
     Route::post('/automations', [AutomationController::class, 'store']);
+    Route::post('/automations/trigger', [AutomationController::class, 'trigger']);
     Route::put('/automations/{id}', [AutomationController::class, 'update']);
     Route::delete('/automations/{id}', [AutomationController::class, 'destroy']);
 
@@ -56,10 +58,16 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/autopilot/kill-switch', [AutopilotController::class, 'killSwitch']);
     Route::post('/autopilot/dry-run', [AutopilotController::class, 'dryRun']);
 
-    // AI Content Studio
+    // AI Content Studio, Image & Video Pipeline
+    Route::post('/generate', [AiStudioController::class, 'generateSuggestions']);
     Route::post('/ai/social-post', [AiStudioController::class, 'generatePost']);
     Route::post('/ai/suggest', [AiStudioController::class, 'generateSuggestions']);
     Route::post('/ai/extract-form', [AiStudioController::class, 'extractForm']);
+    Route::post('/ai/image', [AiStudioController::class, 'generateImage']);
+    Route::post('/ai/refine', [AiStudioController::class, 'refine']);
+    Route::post('/ai/bulk', [AiStudioController::class, 'bulk']);
+    Route::post('/ai/script', [AiStudioController::class, 'script']);
+    Route::post('/ai/video', [AiStudioController::class, 'video']);
 
     // Realtime Server-Sent Events (SSE) & Integrations
     Route::get('/integrations', [IntegrationsStreamController::class, 'index']);

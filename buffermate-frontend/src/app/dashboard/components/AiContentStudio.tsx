@@ -235,8 +235,8 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         }),
       });
 
-      const json = await res.json();
-      if (json.success && json.data) {
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      if (json && json.success && json.data) {
         const postData = json.data;
         setGeneratedData((prev) => ({
           ...postData,
@@ -277,8 +277,8 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         }),
       });
 
-      const json = await res.json();
-      const url = json.imageUrl || json.image_url;
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      const url = json?.imageUrl || json?.image_url;
       if (url) {
         setGeneratedData((prev) => (prev ? { ...prev, imageUrl: url, imagePrompt: promptToUse } : {
           mainCaption: editableCaption,
@@ -327,7 +327,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
           brandInfo: { name: brandName },
           additionalInstructions,
         }),
-      }).then((r) => r.json());
+      }).then((r) => (r.ok ? r.json().catch(() => null) : null)).catch(() => null);
 
       const imagePromise = fetch('/api/ai/image', {
         method: 'POST',
@@ -337,7 +337,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
           style: 'photorealistic',
           aspectRatio: '1:1',
         }),
-      }).then((r) => r.json());
+      }).then((r) => (r.ok ? r.json().catch(() => null) : null)).catch(() => null);
 
       const [postRes, imgRes] = await Promise.all([postPromise, imagePromise]);
 
@@ -381,8 +381,8 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         }),
       });
 
-      const json = await res.json();
-      if (json.success && json.data?.result) {
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      if (json && json.success && json.data?.result) {
         setEditableCaption(json.data.result);
         showToast(`Content ${mode}d successfully with Gemini!`);
       }
@@ -413,8 +413,8 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         }),
       });
 
-      const json = await res.json();
-      if (json.success && json.data?.posts) {
+      const json = res.ok ? await res.json().catch(() => null) : null;
+      if (json && json.success && json.data?.posts) {
         setBulkPosts(json.data.posts);
         showToast(`Google Gemini generated a full ${days}-day automated campaign!`);
       }
