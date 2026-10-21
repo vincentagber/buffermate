@@ -58,9 +58,11 @@ class IntegrationsStreamController extends Controller
             'accounts' => $accounts,
             'channels' => $accounts->map(fn($a) => [
                 'id' => $a->provider instanceof \BackedEnum ? $a->provider->value : (string)$a->provider,
-                'name' => ucfirst($a->provider instanceof \BackedEnum ? $a->provider->value : (string)$a->provider),
+                'name' => $a->meta['name'] ?? ucfirst($a->provider instanceof \BackedEnum ? $a->provider->value : (string)$a->provider),
                 'connected' => $a->health_status === 'connected',
                 'handle' => $a->provider_user_id,
+                'followers' => $a->meta['followers'] ?? null,
+                'meta' => $a->meta ?? [],
             ]),
         ]);
     }

@@ -60,8 +60,8 @@ class FacebookProvider implements SocialProviderInterface
 
     public function publish(SocialAccount $account, string $content, array $attachments = []): array
     {
-        $token = $account->access_token;
-        $pageId = $account->provider_user_id ?: env('FACEBOOK_PAGE_ID');
+        $token = $account->access_token ?: env('FACEBOOK_PAGE_ACCESS_TOKEN');
+        $pageId = $account->provider_user_id ?: env('FACEBOOK_PAGE_ID', '111006725414026');
 
         if (!$token || !$pageId) {
             return [

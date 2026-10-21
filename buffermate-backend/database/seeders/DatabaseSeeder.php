@@ -78,16 +78,32 @@ class DatabaseSeeder extends Seeder
 
         // 3. Add Connected Social Channels for Lumière Aesthetics
         foreach ([SocialChannel::INSTAGRAM, SocialChannel::FACEBOOK, SocialChannel::TIKTOK, SocialChannel::X] as $channel) {
-            SocialAccount::firstOrCreate(
+            $isFacebook = $channel === SocialChannel::FACEBOOK;
+            $providerUserId = $isFacebook ? '111006725414026' : '@lumiere.' . $channel->value;
+            $token = $isFacebook 
+                ? (env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BSwmZC7VXXHUOkkHEfrK24EXDJtBWZAIVRQsMLKQyxWr1hFgw06XrmrtLGQ6bnlSffxMoObEZAKftQ5xFMMtL9I3VNHXwf4PpaNAd70EqWBGV98sMpWcEwpvVV9Is2dTRjldBQgewZAwAZAX7kaWTi8G1uS48yRfZBgI1ZBPPVSzeGQC1ATDZAjbGbhED4ZCgRNX1a5HZAEGia9a8QKP8lGy9rGkPVnxJLQ5rqEWplXC7MA5X2LtCcZD')
+                : 'lumiere_token_' . $channel->value;
+            $meta = $isFacebook
+                ? [
+                    'name' => 'Jija-Bokoti Media',
+                    'category' => 'Newspaper',
+                    'followers' => 14494,
+                    'fan_count' => 14494,
+                    'link' => 'https://www.facebook.com/111006725414026',
+                    'verified' => true,
+                ]
+                : ['followers' => 12500, 'verified' => true];
+
+            SocialAccount::updateOrCreate(
                 ['workspace_id' => $workspace->id, 'provider' => $channel->value],
                 [
                     'id' => Str::uuid()->toString(),
                     'user_id' => $userId,
-                    'provider_user_id' => '@lumiere.' . $channel->value,
-                    'access_token_encrypted' => encrypt('lumiere_token_' . $channel->value),
+                    'provider_user_id' => $providerUserId,
+                    'access_token_encrypted' => encrypt($token),
                     'health_status' => 'connected',
-                    'capabilities' => ['create_text', 'publish_image', 'schedule'],
-                    'meta' => ['followers' => 12500, 'verified' => true],
+                    'capabilities' => ['create_text', 'publish_image', 'publish_video', 'publish_carousel', 'schedule', 'comments_read', 'comments_reply', 'account_metrics'],
+                    'meta' => $meta,
                     'last_sync_at' => now(),
                 ]
             );
