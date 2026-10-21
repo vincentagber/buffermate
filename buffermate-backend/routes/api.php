@@ -58,6 +58,7 @@ Route::middleware(['tenant.scope'])->group(function () {
     // AI Content Studio
     Route::post('/ai/social-post', [AiStudioController::class, 'generatePost']);
     Route::post('/ai/suggest', [AiStudioController::class, 'generateSuggestions']);
+    Route::post('/ai/extract-form', [AiStudioController::class, 'extractForm']);
 
     // Realtime Server-Sent Events (SSE) & Integrations
     Route::get('/integrations', [IntegrationsStreamController::class, 'index']);
