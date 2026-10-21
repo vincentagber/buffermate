@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
             $isFacebook = $channel === SocialChannel::FACEBOOK;
             $providerUserId = $isFacebook ? '111006725414026' : '@lumiere.' . $channel->value;
             $token = $isFacebook 
-                ? (env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BSwmZC7VXXHUOkkHEfrK24EXDJtBWZAIVRQsMLKQyxWr1hFgw06XrmrtLGQ6bnlSffxMoObEZAKftQ5xFMMtL9I3VNHXwf4PpaNAd70EqWBGV98sMpWcEwpvVV9Is2dTRjldBQgewZAwAZAX7kaWTi8G1uS48yRfZBgI1ZBPPVSzeGQC1ATDZAjbGbhED4ZCgRNX1a5HZAEGia9a8QKP8lGy9rGkPVnxJLQ5rqEWplXC7MA5X2LtCcZD')
+                ? (env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BS9PTPJ6RZBZCVauuST8ALZCzhZBZAiRcy5ABelhFczZCvi5SOgOlPZAtFsNS7YxjVWiW7941x7GRNgPIZBadAqhKCaEeyWs55ZA46AQ7X8MMWTZBjKeGSIVpfgi8Nl1qcPZCTIDJC1Uj4mW0RVs73ZBmZAKYWtw5Aijj5gjRTunokkMIY01xQNwz4SZBekuXv0k1QAhSHadREVZA9WybsKuCkAuP0EEy7biLQNohBpZCGkn8KHQALSkTiFQG')
                 : 'lumiere_token_' . $channel->value;
             $meta = $isFacebook
                 ? [
