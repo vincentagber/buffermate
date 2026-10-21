@@ -41,6 +41,14 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::put('/automations/{id}', [AutomationController::class, 'update']);
     Route::delete('/automations/{id}', [AutomationController::class, 'destroy']);
 
+    // CRM Leads & Clients
+    Route::get('/leads', [\App\Http\Controllers\Api\LeadController::class, 'index']);
+    Route::post('/leads', [\App\Http\Controllers\Api\LeadController::class, 'store']);
+    Route::put('/leads/{id}', [\App\Http\Controllers\Api\LeadController::class, 'update']);
+
+    // Social Activity Stream
+    Route::get('/activity', [\App\Http\Controllers\Api\ActivityController::class, 'index']);
+
     // Autopilot Engine & Guardrails
     Route::get('/autopilot/config', [AutopilotController::class, 'getConfig']);
     Route::post('/autopilot/config', [AutopilotController::class, 'updateConfig']);
@@ -51,6 +59,7 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/ai/social-post', [AiStudioController::class, 'generatePost']);
     Route::post('/ai/suggest', [AiStudioController::class, 'generateSuggestions']);
 
-    // Realtime Server-Sent Events (SSE)
+    // Realtime Server-Sent Events (SSE) & Integrations
+    Route::get('/integrations', [IntegrationsStreamController::class, 'index']);
     Route::get('/integrations/stream', [IntegrationsStreamController::class, 'stream']);
 });

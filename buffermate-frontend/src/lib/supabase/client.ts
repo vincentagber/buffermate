@@ -1,17 +1,12 @@
-import { createBrowserClient } from '@supabase/ssr'
-import { getMockSupabaseClient } from './mock-client'
+import { createBrowserClient } from '@supabase/ssr';
 
 export function createClient() {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://sgsmadjmfwgvtbqrmbhw.supabase.co';
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
-    if (!url || !key || url.includes('placeholder')) {
-        return getMockSupabaseClient() as any;
+    if (!url || !key) {
+        throw new Error('Supabase URL or Anon key is missing from environment variables.');
     }
 
-    try {
-        return createBrowserClient(url, key);
-    } catch {
-        return getMockSupabaseClient() as any;
-    }
+    return createBrowserClient(url, key);
 }

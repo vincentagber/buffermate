@@ -102,7 +102,7 @@ export default function Sidebar({
         }
       } catch (e) {}
     }
-    return 'Alex Morgan';
+    return 'Vincent Agber';
   });
   const [profileAvatar, setProfileAvatar] = useState(() => {
     if (typeof window !== 'undefined') {

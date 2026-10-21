@@ -45,4 +45,23 @@ class IntegrationsStreamController extends Controller
 
         return $response;
     }
+
+    /**
+     * Return current integrations status.
+     */
+    public function index(Request $request)
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $accounts = SocialAccount::where('workspace_id', $workspaceId)->get();
+        return response()->json([
+            'success' => true,
+            'accounts' => $accounts,
+            'channels' => $accounts->map(fn($a) => [
+                'id' => $a->provider instanceof \BackedEnum ? $a->provider->value : (string)$a->provider,
+                'name' => ucfirst($a->provider instanceof \BackedEnum ? $a->provider->value : (string)$a->provider),
+                'connected' => $a->health_status === 'connected',
+                'handle' => $a->provider_user_id,
+            ]),
+        ]);
+    }
 }

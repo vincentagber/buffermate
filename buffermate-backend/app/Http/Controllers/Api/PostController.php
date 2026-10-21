@@ -52,6 +52,16 @@ class PostController extends Controller
         $userId = $request->attributes->get('supabase_user_id') ?: 'dev_user';
         $workspaceId = $request->attributes->get('workspace_id');
 
+        // Normalize channels and scheduled_at from frontend payloads
+        $destinations = $request->input('destinations');
+        if (!$destinations && $request->has('channels')) {
+            $destinations = array_map(fn($ch) => ['platform' => $ch], (array)$request->input('channels'));
+            $request->merge(['destinations' => $destinations]);
+        }
+        if (!$request->has('scheduledAt') && $request->has('scheduled_at')) {
+            $request->merge(['scheduledAt' => $request->input('scheduled_at')]);
+        }
+
         $validated = $request->validate([
             'content' => 'required|string',
             'destinations' => 'required|array|min:1',

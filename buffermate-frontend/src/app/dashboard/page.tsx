@@ -107,7 +107,7 @@ export default function DashboardPage() {
     connectedChannels: ['instagram', 'tiktok', 'facebook', 'threads', 'whatsapp', 'x'],
   });
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(true);
-  const [userName, setUserName] = useState<string>('Alex Morgan');
+  const [userName, setUserName] = useState<string>('Vincent Agber');
 
   // Real Database State
   const [automations, setAutomations] = useState<SocialAutomation[]>(INITIAL_AUTOMATIONS);

@@ -1,35 +1,31 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { getMockSupabaseClient } from './mock-client';
 
 export async function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://sgsmadjmfwgvtbqrmbhw.supabase.co';
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || '';
 
-  if (!url || !key || url.includes('placeholder')) {
-    return getMockSupabaseClient() as any;
+  if (!url || !key) {
+    throw new Error('Supabase URL or Anon key is missing from environment variables.');
   }
 
-  try {
-    const cookieStore = await cookies();
+  const cookieStore = await cookies();
 
-    return createServerClient(url, key, {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options);
-            });
-          } catch {
-            // The `setAll` method was called from a Server Component.
-          }
-        },
+  return createServerClient(url, key, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
       },
-    });
-  } catch {
-    return getMockSupabaseClient() as any;
-  }
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // The `setAll` method was called from a Server Component.
+        }
+      },
+    },
+  });
 }
+

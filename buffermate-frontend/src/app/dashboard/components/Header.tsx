@@ -39,7 +39,7 @@ interface HeaderProps {
 
 export default function Header({
   currentTab = 'command-center',
-  userName = 'Alex Morgan',
+  userName = 'Vincent Agber',
   onOpenCreateModal,
   onOpenSimulatorModal,
   onSignOut,
@@ -65,7 +65,7 @@ export default function Header({
         }
       } catch (e) {}
     }
-    return userName || 'Alex Morgan';
+    return userName || 'Vincent Agber';
   });
   const [avatarUrl, setAvatarUrl] = useState(() => {
     if (typeof window !== 'undefined') {

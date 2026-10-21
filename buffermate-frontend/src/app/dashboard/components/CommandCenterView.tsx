@@ -49,7 +49,7 @@ export default function CommandCenterView({
   const fetchMetrics = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/dashboard/stats?workspaceId=ws_northstar_main');
+      const res = await fetch('/api/dashboard/stats');
       const json = await res.json();
       if (json.success && json.data?.contract) {
         setDataContract(json.data.contract);
