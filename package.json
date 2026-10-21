@@ -7,12 +7,9 @@
     "build": "next build",
     "start": "NODE_OPTIONS='--max-http-header-size=131072' BUN_OPTIONS='--max-http-header-size=131072' next start -p ${PORT:-3000}",
     "lint": "eslint src",
-    "test:integrations": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_integrations.ts",
-    "test:social": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_social_connections.ts",
-    "test:prd": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_prd_compliance.ts",
-    "test:autopilot": "ts-node -O '{\"module\":\"commonjs\"}' scripts/test_autopilot_worker.ts",
-    "seed": "ts-node scripts/seed.ts",
-    "worker": "ts-node -O '{\"module\":\"commonjs\"}' worker/index.ts"
+    "backend:serve": "cd buffermate-backend && php artisan serve --port=8001",
+    "backend:worker": "cd buffermate-backend && php artisan queue:work",
+    "backend:test": "cd buffermate-backend && php artisan test"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
