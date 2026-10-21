@@ -89,6 +89,17 @@ class PostController extends Controller
             ], 422);
         }
 
+        $isImmediate = $request->boolean('isImmediate')
+            || $request->input('status') === 'posted'
+            || (isset($validated['scheduledAt']) && \Carbon\Carbon::parse($validated['scheduledAt'])->lte(now()->addSeconds(30)));
+
+        $publishResults = [];
+        if ($isImmediate && !empty($res['jobs'])) {
+            foreach ($res['jobs'] as $job) {
+                $publishResults[] = $this->engine->executeSingleJob($job);
+            }
+        }
+
         AuditLog::log(
             $workspaceId,
             $userId,
@@ -98,11 +109,133 @@ class PostController extends Controller
             ['destinations' => $validated['destinations']]
         );
 
+        $freshPost = $res['post']->fresh()->load('publishJobs');
+
         return response()->json([
             'success' => true,
-            'post' => $res['post'],
-            'jobs' => $res['jobs'],
+            'id' => $freshPost->id,
+            'post' => $freshPost,
+            'jobs' => $freshPost->publishJobs,
+            'channels' => $freshPost->publishJobs->pluck('platform')->toArray(),
+            'content' => $freshPost->content,
+            'status' => $freshPost->status->value,
+            'scheduled_at' => $freshPost->scheduled_at?->toIso8601String(),
+            'publish_results' => $publishResults,
         ], 201);
+    }
+
+    /**
+     * POST /api/social/publish
+     * Direct publish endpoint called by composer and scheduler modal.
+     */
+    public function publish(Request $request): JsonResponse
+    {
+        $userId = $request->attributes->get('supabase_user_id') ?: 'dev_user';
+        $workspaceId = $request->attributes->get('workspace_id');
+
+        $postId = $request->input('post_id');
+        $content = $request->input('content', '');
+        $attachments = $request->input('attachments', []);
+
+        $normalizedAttachments = array_map(function ($att) {
+            if (is_string($att)) {
+                return ['type' => 'image', 'url' => $att];
+            }
+            return $att;
+        }, (array)$attachments);
+
+        $channels = $request->input('channels');
+        $destinations = $request->input('destinations');
+        $accountIds = $request->input('social_account_ids', []);
+
+        if ($postId) {
+            $post = Post::with('publishJobs')->where('workspace_id', $workspaceId)->find($postId);
+        } else {
+            $post = null;
+        }
+
+        if (!$post) {
+            $destArray = [];
+            if (!empty($destinations)) {
+                $destArray = $destinations;
+            } elseif (!empty($channels)) {
+                $destArray = array_map(fn($ch) => ['platform' => $ch], (array)$channels);
+            } elseif (!empty($accountIds)) {
+                $accounts = \App\Models\SocialAccount::whereIn('id', $accountIds)->get();
+                $destArray = $accounts->map(fn($acc) => [
+                    'platform' => $acc->provider->value,
+                    'socialAccountId' => $acc->id,
+                ])->toArray();
+            }
+
+            if (empty($destArray)) {
+                $destArray = [['platform' => 'facebook']];
+            }
+
+            $scheduleRes = $this->engine->schedulePost([
+                'workspaceId' => $workspaceId,
+                'creatorUserId' => $userId,
+                'content' => $content ?: 'New update from BufferMate',
+                'destinations' => $destArray,
+                'attachments' => $normalizedAttachments,
+                'scheduledAt' => now()->toIso8601String(),
+                'requireApproval' => false,
+            ]);
+
+            if (!$scheduleRes['success']) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'VALIDATION_FAILED',
+                    'validationErrors' => $scheduleRes['validationErrors'],
+                ], 422);
+            }
+
+            $post = $scheduleRes['post'];
+        }
+
+        $jobs = $post->publishJobs()->where('status', 'scheduled')->get();
+        if ($jobs->isEmpty()) {
+            $jobs = $post->publishJobs;
+        }
+
+        $results = [];
+        $successCount = 0;
+
+        foreach ($jobs as $job) {
+            $this->engine->executeSingleJob($job);
+            $job->refresh();
+            $isSuccess = $job->status === 'published';
+            if ($isSuccess) {
+                $successCount++;
+            }
+
+            $results[] = [
+                'status' => $isSuccess ? 'success' : 'failed',
+                'platform' => $job->platform->value ?? (string)$job->platform,
+                'external_id' => $job->external_post_id,
+                'error' => $job->error_message,
+            ];
+        }
+
+        $freshPost = $post->fresh()->load('publishJobs');
+
+        AuditLog::log(
+            $workspaceId,
+            $userId,
+            'post.published',
+            'post',
+            $freshPost->id,
+            ['success_count' => $successCount, 'results' => $results]
+        );
+
+        return response()->json([
+            'success' => $successCount > 0 || empty($jobs),
+            'id' => $freshPost->id,
+            'publishedCount' => $successCount,
+            'results' => $results,
+            'post' => $freshPost,
+            'channels' => $freshPost->publishJobs->pluck('platform')->toArray(),
+        ]);
     }
 
     public function show(Request $request, string $id): JsonResponse

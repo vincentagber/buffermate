@@ -472,10 +472,8 @@ export default function DashboardPage() {
             setDashboardSubView('command_center');
           }
         }}
-        onOpenCreateModal={() => {
-          setEditingAutomation(null);
-          setIsCreateAutomationOpen(true);
-        }}
+        onOpenCreateModal={() => setIsPostComposerOpen(true)}
+        onOpenPostModal={() => setIsPostComposerOpen(true)}
         onOpenSimulatorModal={() => setIsSimulatorOpen(true)}
         onOpenFlowAssist={() => setIsFlowAssistOpen(true)}
         onSignOut={handleSignOut}
@@ -489,10 +487,8 @@ export default function DashboardPage() {
       <Header
         currentTab={currentTab}
         userName={userName}
-        onOpenCreateModal={() => {
-          setEditingAutomation(null);
-          setIsCreateAutomationOpen(true);
-        }}
+        onOpenCreateModal={() => setIsPostComposerOpen(true)}
+        onOpenPostModal={() => setIsPostComposerOpen(true)}
         onOpenSimulatorModal={() => setIsSimulatorOpen(true)}
         onSignOut={handleSignOut}
         isMobileMenuOpen={isMobileMenuOpen}
@@ -567,6 +563,13 @@ export default function DashboardPage() {
               {/* Quick Jump Buttons */}
               <div className="flex items-center space-x-2 self-end sm:self-auto">
                 <button
+                  onClick={() => setIsPostComposerOpen(true)}
+                  className="px-3.5 py-1.5 bg-[#161616] hover:bg-black text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Create Post</span>
+                </button>
+                <button
                   onClick={() => setCurrentTab('campaigns')}
                   className="px-3.5 py-1.5 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-medium text-slate-700 transition-colors flex items-center space-x-1.5 shadow-2xs"
                 >
@@ -594,6 +597,7 @@ export default function DashboardPage() {
                 setEditingAutomation(null);
                 setIsCreateAutomationOpen(true);
               }}
+              onOpenCreatePost={() => setIsPostComposerOpen(true)}
               userName={userName}
             />
           )}

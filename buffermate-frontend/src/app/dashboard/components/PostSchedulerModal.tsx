@@ -38,8 +38,6 @@ export default function PostSchedulerModal({
   onClose,
   onSavePost,
 }: PostSchedulerModalProps) {
-  if (!isOpen) return null;
-
   const [content, setContent] = useState('');
   const [selectedChannels, setSelectedChannels] = useState<SocialChannel[]>([
     'instagram',
@@ -148,12 +146,15 @@ export default function PostSchedulerModal({
       channels: selectedChannels,
       scheduled_at: isImmediate ? new Date().toISOString() : new Date(scheduledDate).toISOString(),
       status: isImmediate ? 'posted' : 'scheduled',
+      isImmediate,
       attachments: imageUrl ? [{ type: 'image', url: imageUrl }] : [],
     };
 
     try {
+      let savedPost: any = null;
+
       if (isImmediate) {
-        await fetch('/api/social/publish', {
+        const res = await fetch('/api/social/publish', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -162,22 +163,27 @@ export default function PostSchedulerModal({
             attachments: imageUrl ? [imageUrl] : [],
           }),
         });
+        const pubData = await res.json();
+        savedPost = pubData.post || pubData;
+      } else {
+        const res = await fetch('/api/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(postPayload),
+        });
+        const postData = await res.json();
+        savedPost = postData.post || postData;
       }
 
-      const res = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(postPayload),
-      });
-      const data = await res.json();
-      if (data && data.id) {
-        onSavePost(data);
+      if (savedPost && (savedPost.id || savedPost._id)) {
+        onSavePost(savedPost);
       } else {
         onSavePost({ id: `post-${Date.now()}`, user_id: 'user-current', ...postPayload, created_at: new Date().toISOString() } as unknown as Post);
       }
 
       triggerConfetti();
-    } catch {
+    } catch (err) {
+      console.error('Error saving post:', err);
       onSavePost({ id: `post-${Date.now()}`, user_id: 'user-current', ...postPayload, created_at: new Date().toISOString() } as unknown as Post);
       triggerConfetti();
     } finally {
@@ -194,6 +200,8 @@ export default function PostSchedulerModal({
     { id: 'x', label: 'X (Twitter)' },
     { id: 'whatsapp', label: 'WhatsApp' },
   ];
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">

@@ -27,6 +27,8 @@ class PublishingEngine
             'twitter' => new TwitterProvider(),
             'facebook' => new FacebookProvider(),
             'instagram' => new InstagramProvider(),
+            'threads' => new InstagramProvider(),
+            'whatsapp' => new FacebookProvider(),
             'linkedin' => new LinkedInProvider(),
             'tiktok' => new TikTokProvider(),
         ];

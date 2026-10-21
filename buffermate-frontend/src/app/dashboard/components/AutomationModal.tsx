@@ -22,8 +22,6 @@ export default function AutomationModal({
   defaultChannel,
   defaultTriggerType,
 }: AutomationModalProps) {
-  if (!isOpen) return null;
-
   const [channel, setChannel] = useState<SocialChannel>(initialData?.channel || defaultChannel || 'instagram');
   const [name, setName] = useState(initialData?.name || '');
   const [triggerType, setTriggerType] = useState(initialData?.trigger_type || defaultTriggerType || 'comment_keyword');
@@ -117,6 +115,8 @@ export default function AutomationModal({
     { id: 'threads', name: 'Threads' },
     { id: 'whatsapp', name: 'WhatsApp' },
   ];
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">

@@ -49,6 +49,7 @@ interface SidebarProps {
   currentTab?: string;
   onSelectTab?: (tabId: string) => void;
   onOpenCreateModal?: () => void;
+  onOpenPostModal?: () => void;
   onOpenSimulatorModal?: () => void;
   onOpenFlowAssist?: () => void;
   onSignOut?: () => void;
@@ -78,6 +79,7 @@ export default function Sidebar({
   currentTab = 'command-center',
   onSelectTab,
   onOpenCreateModal,
+  onOpenPostModal,
   onOpenSimulatorModal,
   onOpenFlowAssist,
   onSignOut,
@@ -132,6 +134,11 @@ export default function Sidebar({
   }, []);
 
   const handleItemClick = (tabId: string) => {
+    if (tabId === 'composer') {
+      router.push('/dashboard/composer');
+      if (onCloseMobile) onCloseMobile();
+      return;
+    }
     if (tabId === 'analytics') {
       router.push('/dashboard/analytics');
     } else if (tabId === 'overview' || tabId === 'command-center') {
@@ -155,6 +162,14 @@ export default function Sidebar({
     {
       group: 'WORKSPACE',
       items: [
+        {
+          id: 'composer',
+          alias: ['create-post', 'new-post'],
+          label: 'Composer',
+          icon: PenTool,
+          badge: 'POST',
+          badgeColor: 'bg-emerald-100 text-emerald-800',
+        },
         {
           id: 'calendar',
           label: 'Calendar',
@@ -342,6 +357,35 @@ export default function Sidebar({
           )}
         </div>
       )}
+
+      {/* Primary Quick CTA: Create Post Button */}
+      <div className={`${isCollapsed ? 'px-2 pt-2.5 pb-1 flex justify-center' : 'px-3 pt-2.5 pb-1'} shrink-0`}>
+        {isCollapsed ? (
+          <button
+            onClick={() => {
+              if (onOpenPostModal) onOpenPostModal();
+              else if (onOpenCreateModal) onOpenCreateModal();
+            }}
+            title="Create Post"
+            className="w-10 h-10 bg-[#161616] hover:bg-black text-white rounded-2xl shadow-sm flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          >
+            <Plus className="w-5 h-5 text-emerald-400" />
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              if (onOpenPostModal) onOpenPostModal();
+              else if (onOpenCreateModal) onOpenCreateModal();
+            }}
+            className="w-full py-2.5 px-3.5 bg-[#161616] hover:bg-black text-white rounded-2xl shadow-sm flex items-center justify-center gap-2 text-xs font-bold transition-all hover:scale-[1.01] active:scale-[0.98] cursor-pointer group"
+          >
+            <div className="w-5 h-5 rounded-lg bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform">
+              <Plus className="w-3.5 h-3.5 text-emerald-400" />
+            </div>
+            <span>Create Post</span>
+          </button>
+        )}
+      </div>
 
       {/* Navigation List */}
       <div className={`flex-1 overflow-y-auto ${isCollapsed ? 'px-2 py-2' : 'px-3 py-2'} space-y-3.5 scrollbar-thin`}>

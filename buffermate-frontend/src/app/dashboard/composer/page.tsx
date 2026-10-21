@@ -665,7 +665,7 @@ export default function ComposerPage() {
             }
 
             const postData = await res.json();
-            const postId = postData?.id;
+            const postId = postData?.id || postData?.post?.id;
 
             // 2. If immediate publishing requested, trigger publish API
             if (isImmediate) {

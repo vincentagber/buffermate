@@ -211,6 +211,19 @@ export default function Header({
 
       {/* Right side: Actions, Notifications, Profile */}
       <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        {/* Quick Create Post Action */}
+        <button
+          onClick={() => {
+            if (onOpenPostModal) onOpenPostModal();
+            else if (onOpenCreateModal) onOpenCreateModal();
+          }}
+          className="flex items-center space-x-1.5 px-3 sm:px-3.5 py-1.5 bg-[#161616] hover:bg-black text-white text-xs font-bold rounded-full shadow-2xs hover:shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          title="Create & Schedule Post"
+        >
+          <Plus className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="hidden sm:inline">Create Post</span>
+        </button>
+
         {/* Messages quick toggle */}
         <button
           onClick={() => onSelectTab && onSelectTab('inbox')}

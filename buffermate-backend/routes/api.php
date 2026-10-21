@@ -24,6 +24,7 @@ Route::middleware(['tenant.scope'])->group(function () {
     // Posts & Content Lifecycle
     Route::get('/posts', [PostController::class, 'index']);
     Route::post('/posts', [PostController::class, 'store']);
+    Route::post('/social/publish', [PostController::class, 'publish']);
     Route::get('/posts/{id}', [PostController::class, 'show']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     Route::post('/posts/{id}/submit-for-approval', [PostController::class, 'submitForApproval']);
