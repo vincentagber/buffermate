@@ -175,10 +175,18 @@ class PublishingEngine
         }
 
         // Publish with social account or fallback
-        $account = $job->socialAccount ?: new SocialAccount([
-            'provider' => $platform,
-            'provider_user_id' => 'default',
-        ]);
+        $account = $job->socialAccount;
+        if (!$account) {
+            $account = SocialAccount::where('workspace_id', $job->workspace_id)
+                ->where('provider', $platform)
+                ->first();
+        }
+        if (!$account) {
+            $account = new SocialAccount([
+                'provider' => $platform,
+                'provider_user_id' => 'default',
+            ]);
+        }
 
         $res = $provider->publish($account, $job->post->content, $job->post->attachments ?? []);
 
