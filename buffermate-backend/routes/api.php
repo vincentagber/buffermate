@@ -61,5 +61,9 @@ Route::middleware(['tenant.scope'])->group(function () {
 
     // Realtime Server-Sent Events (SSE) & Integrations
     Route::get('/integrations', [IntegrationsStreamController::class, 'index']);
+    Route::post('/integrations', [IntegrationsStreamController::class, 'store']);
+    Route::patch('/integrations', [IntegrationsStreamController::class, 'update']);
+    Route::delete('/integrations', [IntegrationsStreamController::class, 'destroy']);
+    Route::post('/integrations/webhook-test', [IntegrationsStreamController::class, 'webhookTest']);
     Route::get('/integrations/stream', [IntegrationsStreamController::class, 'stream']);
 });
