@@ -59,9 +59,19 @@ export const env = {
   databaseUrl: process.env.DATABASE_URL,
 
   // Google Gemini AI
-  geminiApiKey: process.env.GEMINI_API_KEY,
-  geminiTextModel: process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash',
+  geminiApiKey: process.env.NEWSPILOT_GEMINI_API_KEY || process.env.GEMINI_API_KEY,
+  geminiTextModel: process.env.NEWSPILOT_GEMINI_MODEL || process.env.GEMINI_TEXT_MODEL || 'gemini-3.1-flash-lite',
   geminiImageModel: process.env.GEMINI_IMAGE_MODEL || 'imagen-3.0-generate-002',
+
+  // Meta / Facebook
+  facebookPageId: process.env.NEWSPILOT_FB_PAGE_ID || process.env.FACEBOOK_PAGE_ID || '111006725414026',
+  facebookPageAccessToken: process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
+
+  // NewsPilot Configuration
+  newspilotPublicSiteUrl: process.env.NEWSPILOT_PUBLIC_SITE_URL || 'https://bokoti.com',
+  newspilotPostStatus: process.env.NEWSPILOT_POST_STATUS || 'publish',
+  newspilotHumanApprovalRequired: process.env.NEWSPILOT_HUMAN_APPROVAL_REQUIRED === '1',
+  newspilotFbEnabled: process.env.NEWSPILOT_FB_ENABLED !== '0',
 
   // OpenAI (fallback/optional)
   openaiApiKey: process.env.OPENAI_API_KEY,

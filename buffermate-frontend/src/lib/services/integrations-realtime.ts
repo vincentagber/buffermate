@@ -19,6 +19,11 @@ export interface ChannelIntegrationState {
   features: string[];
   autoCommentReply: boolean;
   leadCaptureFunnel: boolean;
+  newsAutomation?: {
+    enabled: boolean;
+    publishing_mode: 'auto_publish' | 'manual_review';
+    custom_instructions?: string;
+  };
   webhookUrl: string;
   verifyToken: string;
   subscribedEvents: string[];

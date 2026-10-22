@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Calendar,
@@ -31,20 +31,30 @@ interface PostSchedulerModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSavePost: (post: Post) => void;
+  initialContent?: string;
+  initialChannels?: SocialChannel[];
 }
 
 export default function PostSchedulerModal({
   isOpen,
   onClose,
   onSavePost,
+  initialContent,
+  initialChannels,
 }: PostSchedulerModalProps) {
-  const [content, setContent] = useState('');
-  const [selectedChannels, setSelectedChannels] = useState<SocialChannel[]>([
-    'instagram',
-    'tiktok',
-    'facebook',
-    'threads',
-  ]);
+  const [content, setContent] = useState(initialContent || '');
+  const [selectedChannels, setSelectedChannels] = useState<SocialChannel[]>(
+    initialChannels && initialChannels.length > 0
+      ? initialChannels
+      : ['instagram', 'tiktok', 'facebook', 'threads']
+  );
+
+  useEffect(() => {
+    if (isOpen) {
+      if (initialContent) setContent(initialContent);
+      if (initialChannels && initialChannels.length > 0) setSelectedChannels(initialChannels);
+    }
+  }, [isOpen, initialContent, initialChannels]);
   const [scheduledDate, setScheduledDate] = useState(
     new Date(Date.now() + 3600000 * 2).toISOString().slice(0, 16)
   );

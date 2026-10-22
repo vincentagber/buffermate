@@ -89,7 +89,7 @@ export default function Sidebar({
   const router = useRouter();
 
   // Dynamic user profile state synced with Profile & Settings
-  const [profileName, setProfileName] = useState('Vincent Agber');
+  const [profileName, setProfileName] = useState('Alex Morgan');
   const [profileAvatar, setProfileAvatar] = useState(
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
   );
@@ -220,6 +220,14 @@ export default function Sidebar({
           alias: ['ai-autopilot'],
           label: 'Content studio',
           icon: PenTool,
+        },
+        {
+          id: 'news-pilot',
+          alias: ['news-discovery', 'news-automation'],
+          label: 'News Pilot',
+          icon: Radio,
+          badge: 'AUTO',
+          badgeColor: 'bg-indigo-100 text-indigo-700 font-bold text-[9px]',
         },
       ],
     },

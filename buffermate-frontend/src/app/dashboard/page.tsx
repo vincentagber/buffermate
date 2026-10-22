@@ -62,6 +62,7 @@ import PostSchedulerModal from './components/PostSchedulerModal';
 import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
+import NewsPilotView from './components/NewsPilotView';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import {
@@ -85,7 +86,7 @@ export default function DashboardPage() {
 
   // Navigation & View state - Defaulting to Command Center matching Socialyn OS
   const [currentTab, setCurrentTab] = useState('command-center');
-  const [dashboardSubView, setDashboardSubView] = useState<'command_center' | 'platform_overview' | 'metrics_dashboard'>('command_center');
+  const [dashboardSubView, setDashboardSubView] = useState<'command_center' | 'metrics_dashboard'>('command_center');
   const [activityFilter, setActivityFilter] = useState<'all' | 'automations' | 'leads' | 'posts'>('all');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -106,7 +107,7 @@ export default function DashboardPage() {
     connectedChannels: ['instagram', 'tiktok', 'facebook', 'threads', 'whatsapp', 'x'],
   });
   const [isRealtimeConnected, setIsRealtimeConnected] = useState(true);
-  const [userName, setUserName] = useState<string>('Vincent Agber');
+  const [userName, setUserName] = useState<string>('Alex Morgan');
 
   // Real Database State
   const [automations, setAutomations] = useState<SocialAutomation[]>(INITIAL_AUTOMATIONS);
@@ -123,6 +124,7 @@ export default function DashboardPage() {
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false);
   const [isFlowAssistOpen, setIsFlowAssistOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [composerPrefill, setComposerPrefill] = useState<{ content?: string; channels?: SocialChannel[] } | null>(null);
 
   const handleToggleSelectPost = (postId: string) => {
     setSelectedPostIds((prev) =>
@@ -317,7 +319,7 @@ export default function DashboardPage() {
         setCurrentTab(tabParam);
       }
       const subviewParam = searchParams.get('subview');
-      if (subviewParam === 'platform_overview' || subviewParam === 'metrics_dashboard' || subviewParam === 'command_center') {
+      if (subviewParam === 'metrics_dashboard' || subviewParam === 'command_center') {
         setDashboardSubView(subviewParam);
       }
     } catch (e) {}
@@ -541,19 +543,6 @@ export default function DashboardPage() {
                 <button
                   onClick={() => {
                     setCurrentTab('command-center');
-                    setDashboardSubView('platform_overview');
-                  }}
-                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
-                    dashboardSubView === 'platform_overview'
-                      ? 'bg-[#161616] text-white shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-                  }`}
-                >
-                  Platform & Channels
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentTab('command-center');
                     setDashboardSubView('metrics_dashboard');
                   }}
                   className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
@@ -657,477 +646,6 @@ export default function DashboardPage() {
 
 
           {/* =========================================================
-              VIEW 1: PLATFORM OVERVIEW & CHANNELS (BUFFERMATE LUXURY DESIGN)
-             ========================================================= */}
-          {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'platform_overview' && (
-            <div className="space-y-5 sm:space-y-6 animate-fade-in">
-              {/* Header Title Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-                <div>
-                  <div className="flex flex-wrap items-center gap-2.5">
-                    <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                      Platform Overview & Channels
-                    </h2>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
-                      Live Channels
-                    </span>
-                  </div>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Monitor real-time automations, incoming social activity, and conversions across all connected channels.
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => {
-                      setEditingAutomation(null);
-                      setIsCreateAutomationOpen(true);
-                    }}
-                    className="flex-1 sm:flex-initial px-4 py-2 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-800 shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                  >
-                    <Bot className="w-3.5 h-3.5 text-slate-600" />
-                    <span>Create Flow</span>
-                  </button>
-                  <button
-                    onClick={() => router.push('/dashboard/analytics')}
-                    className="flex-1 sm:flex-initial px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
-                  >
-                    <TrendingUp className="w-3.5 h-3.5" />
-                    <span>Analytics</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* 5 Channel Cards Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
-                {/* 1. Instagram */}
-                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 flex items-center justify-center font-bold">
-                          <SocialPlatformIcon channel="instagram" className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-slate-900">Instagram</h3>
-                          <p className="text-[10px] text-slate-400">4 active flows</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                        Active
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
-                      <div className="flex justify-between text-slate-500">
-                        <span>Active Flows</span>
-                        <span className="font-semibold text-slate-900">3</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>DMs Triggered</span>
-                        <span className="font-semibold text-slate-900">241</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Comment Conv.</span>
-                        <span className="font-semibold text-slate-900">40.7%</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                    <button onClick={() => setCurrentTab('instagram')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <Bot className="w-3 h-3" />
-                      <span>Automations</span>
-                    </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <MessageCircle className="w-3 h-3" />
-                      <span>Inbox</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 2. TikTok */}
-                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center font-bold">
-                          <SocialPlatformIcon channel="tiktok" className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-slate-900">TikTok</h3>
-                          <p className="text-[10px] text-slate-400">2 active flows</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                        Active
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
-                      <div className="flex justify-between text-slate-500">
-                        <span>Active Bots</span>
-                        <span className="font-semibold text-slate-900">2</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Comments Replied</span>
-                        <span className="font-semibold text-slate-900">1,204</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Leads Captured</span>
-                        <span className="font-semibold text-slate-900">456</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                    <button onClick={() => setCurrentTab('tiktok')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <Bot className="w-3 h-3" />
-                      <span>Automations</span>
-                    </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <MessageCircle className="w-3 h-3" />
-                      <span>Inbox</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 3. Facebook */}
-                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-blue-50 text-[#1877F2] border border-blue-100 flex items-center justify-center font-bold">
-                          <SocialPlatformIcon channel="facebook" className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-slate-900">Facebook</h3>
-                          <p className="text-[10px] text-slate-400">2 active flows</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                        Active
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
-                      <div className="flex justify-between text-slate-500">
-                        <span>Active Flows</span>
-                        <span className="font-semibold text-slate-900">2</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Messenger Chats</span>
-                        <span className="font-semibold text-slate-900">89</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Ad Leads</span>
-                        <span className="font-semibold text-slate-900">34</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                    <button onClick={() => setCurrentTab('facebook')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <Bot className="w-3 h-3" />
-                      <span>Automations</span>
-                    </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <MessageCircle className="w-3 h-3" />
-                      <span>Inbox</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 4. Threads */}
-                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-neutral-950 text-white flex items-center justify-center font-bold">
-                          <SocialPlatformIcon channel="threads" className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-slate-900">Threads</h3>
-                          <p className="text-[10px] text-slate-400">1 active flow</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
-                        Ready
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
-                      <div className="flex justify-between text-slate-500">
-                        <span>Active Flows</span>
-                        <span className="font-semibold text-slate-900">1</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Post Replies</span>
-                        <span className="font-semibold text-slate-900">42</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Keyword Hits</span>
-                        <span className="font-semibold text-slate-900">18</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                    <button onClick={() => setCurrentTab('threads')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <Bot className="w-3 h-3" />
-                      <span>Automations</span>
-                    </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <MessageCircle className="w-3 h-3" />
-                      <span>Inbox</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* 5. WhatsApp */}
-                <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-2.5">
-                        <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold">
-                          <SocialPlatformIcon channel="whatsapp" className="w-4 h-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-xs font-bold text-slate-900">WhatsApp</h3>
-                          <p className="text-[10px] text-slate-400">0 active flows</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
-                        Ready
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5 text-xs py-2.5 border-t border-slate-100">
-                      <div className="flex justify-between text-slate-500">
-                        <span>Auto-Responses</span>
-                        <span className="font-semibold text-slate-900">0</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Contacts</span>
-                        <span className="font-semibold text-slate-900">0</span>
-                      </div>
-                      <div className="flex justify-between text-slate-500">
-                        <span>Messages Today</span>
-                        <span className="font-semibold text-slate-900">0</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-600">
-                    <button onClick={() => setCurrentTab('whatsapp')} className="hover:text-slate-900 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <Bot className="w-3 h-3" />
-                      <span>Automations</span>
-                    </button>
-                    <button onClick={() => setCurrentTab('social-crm')} className="text-slate-400 hover:text-slate-800 transition-colors flex items-center space-x-1 cursor-pointer">
-                      <MessageCircle className="w-3 h-3" />
-                      <span>Inbox</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Two Column Layout: Active Automations + Live Activity Stream */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
-                
-                {/* Left Column: Active Multi-Channel Automations List */}
-                <div className="lg:col-span-8 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <Bot className="w-4 h-4 text-slate-700" />
-                        <h3 className="text-sm sm:text-base font-bold text-slate-900">
-                          Active Multi-Channel Automations
-                        </h3>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200/60">
-                          {automations.length} Live Flows
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Live database flows with real keyword detection.
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setEditingAutomation(null);
-                        setIsCreateAutomationOpen(true);
-                      }}
-                      className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5 self-start sm:self-auto cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>New Automation</span>
-                    </button>
-                  </div>
-
-                  {/* Flow List Items */}
-                  <div className="divide-y divide-slate-100">
-                    {automations.map((flow) => (
-                      <div
-                        key={flow.id}
-                        className="py-3 sm:py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/80 p-2.5 rounded-2xl transition-colors"
-                      >
-                        <div className="flex items-start space-x-2.5 sm:space-x-3">
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60 shrink-0 mt-0.5">
-                            {flow.channel}
-                          </span>
-                          <div className="space-y-0.5">
-                            <div className="flex items-center space-x-2">
-                              <h4 className="text-xs font-bold text-slate-900">{flow.name}</h4>
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  flow.status === 'active' ? 'bg-emerald-500' : 'bg-slate-300'
-                                }`}
-                              ></span>
-                              <span className="text-[10px] font-medium text-emerald-700">
-                                {flow.status === 'active' ? 'Active' : 'Paused'}
-                              </span>
-                            </div>
-
-                            <p className="text-[11px] sm:text-xs text-slate-500">
-                              Trigger:{' '}
-                              <span className="text-slate-800 font-medium">
-                                {flow.trigger_type === 'comment_keyword'
-                                  ? `Keyword [${flow.keywords.join(', ')}]`
-                                  : flow.trigger_type === 'dm_received'
-                                  ? 'New DM received'
-                                  : flow.trigger_type === 'story_reply'
-                                  ? 'Story reply received'
-                                  : 'Spam filter'}
-                              </span>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center justify-between sm:justify-end space-x-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 sm:self-auto shrink-0">
-                          <div className="text-left sm:text-right">
-                            <p className="text-xs font-bold text-slate-900">
-                              {flow.runs_today} runs today
-                            </p>
-                            <p className="text-[10px] text-slate-400">
-                              {flow.runs_total?.toLocaleString() || 0} total
-                            </p>
-                          </div>
-
-                          <div className="flex items-center space-x-1.5">
-                            <button
-                              onClick={() => {
-                                setEditingAutomation(flow);
-                                setIsCreateAutomationOpen(true);
-                              }}
-                              className="px-3 py-1 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-semibold text-slate-700 transition-colors shadow-2xs cursor-pointer"
-                            >
-                              Edit
-                            </button>
-
-                            <button
-                              onClick={() => handleToggleAutomationStatus(flow.id)}
-                              className="p-1.5 text-slate-400 hover:text-slate-800 cursor-pointer"
-                              title={flow.status === 'active' ? 'Pause Flow' : 'Resume Flow'}
-                            >
-                              {flow.status === 'active' ? (
-                                <ToggleRight className="w-5 h-5 text-emerald-600" />
-                              ) : (
-                                <ToggleLeft className="w-5 h-5 text-slate-400" />
-                              )}
-                            </button>
-
-                            <button
-                              onClick={() => handleDeleteAutomation(flow.id)}
-                              className="p-1.5 text-slate-400 hover:text-red-600 cursor-pointer"
-                              title="Delete Flow"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Right Column: Live Activity Stream */}
-                <div className="lg:col-span-4 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/80 shadow-2xs space-y-4 flex flex-col justify-between">
-                  <div>
-                    <div className="pb-3 border-b border-slate-100">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <Activity className="w-4 h-4 text-slate-700" />
-                          <h3 className="text-sm font-bold text-slate-900">Live Activity Stream</h3>
-                        </div>
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 mt-0.5">
-                        Real-time Supabase event logs.
-                      </p>
-                    </div>
-
-                    {/* Filter Pills */}
-                    <div className="flex space-x-1.5 pt-3 pb-2 overflow-x-auto">
-                      {(['all', 'automations', 'leads'] as const).map((filterKey) => (
-                        <button
-                          key={filterKey}
-                          onClick={() => setActivityFilter(filterKey)}
-                          className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition-all shrink-0 cursor-pointer ${
-                            activityFilter === filterKey
-                              ? 'bg-[#141416] text-white shadow-2xs'
-                              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                          }`}
-                        >
-                          {filterKey}
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Event Items */}
-                    <div className="space-y-2 mt-1 max-h-[340px] overflow-y-auto pr-1">
-                      {filteredActivities.map((act) => (
-                        <div
-                          key={act.id}
-                          className="p-3 bg-slate-50/70 rounded-2xl border border-slate-100 space-y-1 text-xs hover:border-slate-200 transition-colors"
-                        >
-                          <div className="flex items-center justify-between">
-                            <span className="font-semibold text-slate-900 text-[11px]">
-                              {act.event_type === 'auto_dm'
-                                ? '⚡️ Auto DM'
-                                : act.event_type === 'lead_captured'
-                                ? '🎯 Lead Captured'
-                                : act.event_type === 'comment_replied'
-                                ? '💬 Comment Replied'
-                                : '🚀 Auto-Posted'}
-                            </span>
-                            <span className="text-[10px] text-slate-400">{act.time_ago || 'just now'}</span>
-                          </div>
-                          <p className="font-semibold text-slate-900 text-xs">{act.title}</p>
-                          <p className="text-[11px] text-slate-500 leading-snug">
-                            {act.description}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Simulator Trigger in bottom of stream */}
-                  <div className="pt-3 border-t border-slate-100">
-                    <button
-                      onClick={() => setIsSimulatorOpen(true)}
-                      className="w-full py-2.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/80 rounded-full text-xs font-semibold transition-all flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
-                    >
-                      <Play className="w-3 h-3 fill-current" />
-                      <span>Simulate Incoming Comment</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* =========================================================
               VIEW 2: METRICS & KPI DASHBOARD (BUFFERMATE LUXURY DESIGN)
              ========================================================= */}
           {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'metrics_dashboard' && (
@@ -1171,11 +689,11 @@ export default function DashboardPage() {
                   <span>Overview</span>
                 </button>
                 <button
-                  onClick={() => setDashboardSubView('platform_overview')}
+                  onClick={() => setDashboardSubView('command_center')}
                   className="px-3.5 py-1.5 rounded-full text-slate-600 hover:text-slate-900 transition-colors flex items-center space-x-1.5 cursor-pointer"
                 >
                   <Activity className="w-3.5 h-3.5" />
-                  <span>Activity</span>
+                  <span>Command Center</span>
                 </button>
                 <button
                   onClick={() => router.push('/dashboard/analytics')}
@@ -1681,6 +1199,23 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
+              VIEW: NEWS PILOT & TRENDS AUTONOMOUS ENGINE
+             ========================================================= */}
+          {(currentTab === 'news-pilot' || currentTab === 'news-discovery' || currentTab === 'news-automation') && (
+            <NewsPilotView
+              onOpenComposer={(prefill) => {
+                if (prefill) {
+                  setComposerPrefill({
+                    content: prefill.content,
+                    channels: prefill.channels as SocialChannel[],
+                  });
+                }
+                setIsPostComposerOpen(true);
+              }}
+            />
+          )}
+
+          {/* =========================================================
               VIEW 7: CHANNEL SPECIFIC VIEWS & SUBTAB HUBS
              ========================================================= */}
           {(() => {
@@ -2138,8 +1673,13 @@ export default function DashboardPage() {
 
       <PostSchedulerModal
         isOpen={isPostComposerOpen}
-        onClose={() => setIsPostComposerOpen(false)}
+        onClose={() => {
+          setIsPostComposerOpen(false);
+          setComposerPrefill(null);
+        }}
         onSavePost={handleSavePost}
+        initialContent={composerPrefill?.content}
+        initialChannels={composerPrefill?.channels}
       />
 
       <FlowAssistModal

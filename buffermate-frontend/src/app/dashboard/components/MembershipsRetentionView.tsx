@@ -128,7 +128,7 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
       }
 
       setCurrentUserEmail(email);
-      setCurrentUserName(name || 'Vincent Agber');
+      setCurrentUserName(name || 'Alex Morgan');
       setCurrentUserRole(role || 'Workspace Owner');
 
       // Admin verification:

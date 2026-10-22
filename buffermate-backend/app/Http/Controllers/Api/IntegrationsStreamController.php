@@ -172,6 +172,12 @@ class IntegrationsStreamController extends Controller
                 'features' => $def['features'],
                 'autoCommentReply' => $account?->meta['autoCommentReply'] ?? true,
                 'leadCaptureFunnel' => $account?->meta['leadCaptureFunnel'] ?? true,
+                'newsAutomation' => $account?->meta['news_automation'] ?? [
+                    'enabled' => $isConnected,
+                    'publishing_mode' => 'manual_review',
+                    'custom_instructions' => '',
+                ],
+                'dbAccountId' => $account?->id,
                 'webhookUrl' => $account?->meta['webhookUrl'] ?? $def['webhookUrl'],
                 'verifyToken' => $account?->meta['verifyToken'] ?? $def['verifyToken'],
                 'subscribedEvents' => $account?->meta['subscribedEvents'] ?? $def['subscribedEvents'],
@@ -321,6 +327,13 @@ class IntegrationsStreamController extends Controller
                 if ($request->has('verifyToken')) {
                     $meta['verifyToken'] = $request->input('verifyToken');
                 }
+            } elseif ($action === 'update_news_automation') {
+                $meta['news_automation'] = [
+                    'enabled' => (bool)$request->input('enabled', false),
+                    'publishing_mode' => $request->input('publishing_mode', 'manual_review'),
+                    'custom_instructions' => $request->input('custom_instructions', ''),
+                    'updated_at' => now()->toIso8601String(),
+                ];
             }
 
             $account->meta = $meta;

@@ -77,4 +77,17 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::delete('/integrations', [IntegrationsStreamController::class, 'destroy']);
     Route::post('/integrations/webhook-test', [IntegrationsStreamController::class, 'webhookTest']);
     Route::get('/integrations/stream', [IntegrationsStreamController::class, 'stream']);
+
+    // NewsPilot: News Discovery, AI Post Generation & Automated Publishing
+    Route::get('/news/feeds', [\App\Http\Controllers\Api\NewsPilotController::class, 'getFeeds']);
+    Route::post('/news/feeds', [\App\Http\Controllers\Api\NewsPilotController::class, 'storeFeed']);
+    Route::delete('/news/feeds/{id}', [\App\Http\Controllers\Api\NewsPilotController::class, 'destroyFeed']);
+    Route::get('/news/topics', [\App\Http\Controllers\Api\NewsPilotController::class, 'getTopics']);
+    Route::post('/news/topics/{id}/draft', [\App\Http\Controllers\Api\NewsPilotController::class, 'draftFromTopic']);
+    Route::post('/news/topics/{id}/dismiss', [\App\Http\Controllers\Api\NewsPilotController::class, 'dismissTopic']);
+    Route::get('/news/settings', [\App\Http\Controllers\Api\NewsPilotController::class, 'getSettings']);
+    Route::post('/news/settings', [\App\Http\Controllers\Api\NewsPilotController::class, 'updateSettings']);
+    Route::post('/news/pipeline/run', [\App\Http\Controllers\Api\NewsPilotController::class, 'runPipeline']);
+    Route::post('/social/accounts/{id}/automation-settings', [\App\Http\Controllers\Api\NewsPilotController::class, 'updateAccountAutomation']);
 });
+

@@ -107,11 +107,11 @@ export class GeminiService {
    * Get or initialize the official Google Generative AI client
    */
   private static getClient(): GoogleGenerativeAI {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.NEWSPILOT_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
       throw new Error(
-        'GEMINI_API_KEY is not configured on the server. Please set GEMINI_API_KEY in your environment variables.'
+        'GEMINI_API_KEY is not configured on the server. Please set GEMINI_API_KEY or NEWSPILOT_GEMINI_API_KEY in your environment variables.'
       );
     }
 
@@ -126,14 +126,15 @@ export class GeminiService {
    * Check if live Gemini API is configured
    */
   public static isConfigured(): boolean {
-    return !!process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 0;
+    const key = process.env.NEWSPILOT_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    return !!key && key.trim().length > 0;
   }
 
   /**
    * Get configured model name from env or default
    */
   public static getTextModelName(): string {
-    return process.env.GEMINI_TEXT_MODEL || 'gemini-2.5-flash';
+    return process.env.NEWSPILOT_GEMINI_MODEL || process.env.GEMINI_TEXT_MODEL || 'gemini-3.1-flash-lite';
   }
 
   public static getImageModelName(): string {
@@ -332,7 +333,7 @@ Return a valid JSON object with the following exact structure:
     aspectRatio?: '1:1' | '16:9' | '9:16' | '4:5';
   }): Promise<{ imageUrl: string; prompt: string; model: string }> {
     const { prompt, style = 'photorealistic', aspectRatio = '1:1' } = params;
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.NEWSPILOT_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     const model = this.getImageModelName();
 
     // Build optimized visual prompt

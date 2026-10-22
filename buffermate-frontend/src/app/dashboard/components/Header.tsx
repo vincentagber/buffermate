@@ -39,7 +39,7 @@ interface HeaderProps {
 
 export default function Header({
   currentTab = 'command-center',
-  userName = 'Vincent Agber',
+  userName = 'Alex Morgan',
   onOpenCreateModal,
   onOpenSimulatorModal,
   onSignOut,
@@ -55,7 +55,7 @@ export default function Header({
   const supabase = createClient();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [activeUserName, setActiveUserName] = useState(userName || 'Vincent Agber');
+  const [activeUserName, setActiveUserName] = useState(userName || 'Alex Morgan');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [activeRole, setActiveRole] = useState('Workspace Owner · Admin');
   const [searchValue, setSearchValue] = useState('');

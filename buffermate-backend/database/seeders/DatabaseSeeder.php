@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
             $isFacebook = $channel === SocialChannel::FACEBOOK;
             $providerUserId = $isFacebook ? '111006725414026' : '@lumiere.' . $channel->value;
             $token = $isFacebook 
-                ? (env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BS9PTPJ6RZBZCVauuST8ALZCzhZBZAiRcy5ABelhFczZCvi5SOgOlPZAtFsNS7YxjVWiW7941x7GRNgPIZBadAqhKCaEeyWs55ZA46AQ7X8MMWTZBjKeGSIVpfgi8Nl1qcPZCTIDJC1Uj4mW0RVs73ZBmZAKYWtw5Aijj5gjRTunokkMIY01xQNwz4SZBekuXv0k1QAhSHadREVZA9WybsKuCkAuP0EEy7biLQNohBpZCGkn8KHQALSkTiFQG')
+                ? (env('NEWSPILOT_FB_PAGE_ACCESS_TOKEN') ?: env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BS3XuYgflY3SSTYl71cW5KtSyWivQRbbF7Q3ukcARtb98ZA6l2wHYZCD1ri0ltDnAZC1x39sbJaVFEZClEOVEAIbpNc7ZCFQKI1lZCZBJWRSGvIvWlKxhK5w1RE5pIcZCjybdJrRvV1eXxOLAsrAvaZBrLgznTF6kxV9gWwuiZBE4x5HdfnRZA0Kh99qlgprRtuxQlTOFgdXQUZBK1nxmjh359ozvERBtpGgHAcJJHIlV9LjwkwfizaKcQZAuPrUrBtlfba5usf7xSryJZA2RK6oK4o9Lwi2wOqs2UZD')
                 : 'lumiere_token_' . $channel->value;
             $meta = $isFacebook
                 ? [

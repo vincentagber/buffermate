@@ -51,7 +51,7 @@ export class FacebookProvider implements SocialProvider {
 
   public isConfigured(): ProviderConfigStatus {
     const appId = process.env.FACEBOOK_APP_ID;
-    const pageToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const pageToken = process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     const missing: string[] = [];
 
     if (!appId || appId === 'your_facebook_app_id') {
@@ -77,7 +77,7 @@ export class FacebookProvider implements SocialProvider {
   }
 
   public async getPublishStatus(providerPostId: string, accessToken?: string): Promise<PublishStatusResult> {
-    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const token = accessToken || process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     if (!token) {
       return { status: 'failed', errorCode: 'AUTH_REQUIRED', errorMessage: 'Page access token required' };
     }
@@ -109,7 +109,7 @@ export class FacebookProvider implements SocialProvider {
    * Verify Facebook Page connection via Meta Graph API v20.0
    */
   public async verifyPage(pageAccessToken?: string): Promise<{ valid: boolean; pageName: string; pageId: string; error?: string }> {
-    const token = pageAccessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const token = pageAccessToken || process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
 
     if (!token || token.trim().length === 0 || token === 'invalid_token') {
       return {
@@ -166,8 +166,8 @@ export class FacebookProvider implements SocialProvider {
     accessToken: string = '',
     options?: { pageId?: string; pageAccessToken?: string }
   ): Promise<ProviderResult> {
-    const token = options?.pageAccessToken || accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-    const pageId = options?.pageId || process.env.FACEBOOK_PAGE_ID || 'me';
+    const token = options?.pageAccessToken || accessToken || process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const pageId = options?.pageId || process.env.NEWSPILOT_FB_PAGE_ID || process.env.FACEBOOK_PAGE_ID || 'me';
 
     if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid Facebook Page Access Token required.');
@@ -221,7 +221,7 @@ export class FacebookProvider implements SocialProvider {
    * Fetch real-time comments on a Facebook post
    */
   public async fetchComments(postId: string, accessToken?: string): Promise<FacebookComment[]> {
-    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const token = accessToken || process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid Page Token required to read comments.');
     }
@@ -245,7 +245,7 @@ export class FacebookProvider implements SocialProvider {
    * Fetch real-time post engagement & page insights
    */
   public async fetchMetrics(postId: string, accessToken?: string): Promise<FacebookMetrics> {
-    const token = accessToken || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const token = accessToken || process.env.NEWSPILOT_FB_PAGE_ACCESS_TOKEN || process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
     if (!token || token === 'invalid_token') {
       throw new Error('INVALID_CREDENTIALS: Valid token required to fetch Facebook insights.');
     }

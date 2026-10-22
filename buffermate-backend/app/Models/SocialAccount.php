@@ -74,4 +74,45 @@ class SocialAccount extends Model
             return null;
         }
     }
+
+    /**
+     * Check if news automation is enabled for this specific connected account.
+     */
+    public function isNewsAutomationEnabled(): bool
+    {
+        return (bool) ($this->meta['news_automation']['enabled'] ?? false);
+    }
+
+    /**
+     * Get the publishing mode for this account: 'auto_publish' or 'manual_review'.
+     * Defaults to 'manual_review' to guarantee editorial safety.
+     */
+    public function getNewsPublishingMode(): string
+    {
+        return $this->meta['news_automation']['publishing_mode'] ?? 'manual_review';
+    }
+
+    /**
+     * Check if posts to this account require manual review / approval.
+     */
+    public function requiresManualReview(): bool
+    {
+        return $this->getNewsPublishingMode() !== 'auto_publish';
+    }
+
+    /**
+     * Update news automation configuration in meta.
+     */
+    public function setNewsAutomationSettings(bool $enabled, string $mode = 'manual_review', ?string $customInstructions = null): void
+    {
+        $meta = $this->meta ?? [];
+        $meta['news_automation'] = [
+            'enabled' => $enabled,
+            'publishing_mode' => in_array($mode, ['auto_publish', 'manual_review']) ? $mode : 'manual_review',
+            'custom_instructions' => $customInstructions,
+            'updated_at' => now()->toIso8601String(),
+        ];
+        $this->meta = $meta;
+        $this->save();
+    }
 }

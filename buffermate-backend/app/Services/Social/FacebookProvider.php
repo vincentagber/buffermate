@@ -60,8 +60,15 @@ class FacebookProvider implements SocialProviderInterface
 
     public function publish(SocialAccount $account, string $content, array $attachments = []): array
     {
-        $token = $account->access_token ?: env('FACEBOOK_PAGE_ACCESS_TOKEN');
-        $pageId = $account->provider_user_id ?: env('FACEBOOK_PAGE_ID', '111006725414026');
+        $token = $account->access_token 
+            ?: config('services.facebook.page_access_token') 
+            ?: env('NEWSPILOT_FB_PAGE_ACCESS_TOKEN') 
+            ?: env('FACEBOOK_PAGE_ACCESS_TOKEN');
+
+        $pageId = $account->provider_user_id 
+            ?: config('services.facebook.page_id') 
+            ?: env('NEWSPILOT_FB_PAGE_ID') 
+            ?: env('FACEBOOK_PAGE_ID', '111006725414026');
 
         if (!$token || !$pageId) {
             return [
@@ -71,13 +78,35 @@ class FacebookProvider implements SocialProviderInterface
             ];
         }
 
-        $response = Http::post("https://graph.facebook.com/v20.0/{$pageId}/feed", [
-            'message' => $content,
-            'access_token' => $token,
-        ]);
+        // Support photo post if image attachment provided (similar to NewsPilot)
+        $hasImage = false;
+        $imageUrl = null;
+        if (!empty($attachments)) {
+            foreach ($attachments as $att) {
+                if (is_string($att) && preg_match('/\.(jpg|jpeg|png|webp|gif)($|\?)/i', $att)) {
+                    $hasImage = true;
+                    $imageUrl = $att;
+                    break;
+                }
+            }
+        }
+
+        if ($hasImage && $imageUrl) {
+            $response = Http::post("https://graph.facebook.com/v20.0/{$pageId}/photos", [
+                'url' => $imageUrl,
+                'caption' => $content,
+                'access_token' => $token,
+            ]);
+        } else {
+            $payload = [
+                'message' => $content,
+                'access_token' => $token,
+            ];
+            $response = Http::post("https://graph.facebook.com/v20.0/{$pageId}/feed", $payload);
+        }
 
         if ($response->successful()) {
-            $postId = $response->json('id');
+            $postId = $response->json('id') ?? $response->json('post_id');
             return [
                 'success' => true,
                 'external_post_id' => $postId,

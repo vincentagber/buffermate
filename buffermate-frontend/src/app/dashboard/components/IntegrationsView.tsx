@@ -308,6 +308,92 @@ export default function IntegrationsView() {
     }
   };
 
+  // News Automation Handler
+  const handleToggleNewsAutomation = async (
+    channel: ChannelIntegrationState,
+    nextEnabled: boolean
+  ) => {
+    const currentMode = channel.newsAutomation?.publishing_mode || 'manual_review';
+    // Optimistic update
+    setChannels((prev) =>
+      prev.map((c) =>
+        c.provider === channel.provider
+          ? {
+              ...c,
+              newsAutomation: {
+                enabled: nextEnabled,
+                publishing_mode: currentMode,
+              },
+            }
+          : c
+      )
+    );
+
+    try {
+      const res = await fetch('/api/integrations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: channel.provider,
+          action: 'update_news_automation',
+          enabled: nextEnabled,
+          publishing_mode: currentMode,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(
+          `${channel.name} news automation is now ${nextEnabled ? 'Enabled' : 'Disabled'}`
+        );
+      }
+    } catch (err) {
+      showToast('Failed to update news automation settings', 'error');
+    }
+  };
+
+  const handleSetNewsMode = async (
+    channel: ChannelIntegrationState,
+    nextMode: 'auto_publish' | 'manual_review'
+  ) => {
+    // Optimistic update
+    setChannels((prev) =>
+      prev.map((c) =>
+        c.provider === channel.provider
+          ? {
+              ...c,
+              newsAutomation: {
+                enabled: true,
+                publishing_mode: nextMode,
+              },
+            }
+          : c
+      )
+    );
+
+    try {
+      const res = await fetch('/api/integrations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: channel.provider,
+          action: 'update_news_automation',
+          enabled: true,
+          publishing_mode: nextMode,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(
+          `${channel.name} mode switched to ${
+            nextMode === 'auto_publish' ? '⚡ Auto-Publish' : '🛡️ Manual Review'
+          }`
+        );
+      }
+    } catch (err) {
+      showToast('Failed to update publishing mode', 'error');
+    }
+  };
+
   // Webhook Save Handler
   const handleSaveWebhookConfig = async () => {
     if (!selectedChannelForWebhook) return;
@@ -766,6 +852,72 @@ export default function IntegrationsView() {
                           }`}
                         />
                       </button>
+                    </div>
+
+                    {/* News & Trend Pilot Automated Publishing Section */}
+                    <div className="pt-2.5 border-t border-slate-100 space-y-2">
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                          <span className="text-slate-800 font-semibold">News & Trend Pilot</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleToggleNewsAutomation(channel, !channel.newsAutomation?.enabled)
+                          }
+                          className={`w-9 h-5 rounded-full relative transition-colors ${
+                            channel.newsAutomation?.enabled ? 'bg-indigo-600' : 'bg-slate-200'
+                          }`}
+                          title="Toggle automated news publishing for this channel"
+                        >
+                          <span
+                            className={`block w-3.5 h-3.5 rounded-full bg-white transition-transform ${
+                              channel.newsAutomation?.enabled ? 'translate-x-4.5' : 'translate-x-0.5'
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {channel.newsAutomation?.enabled && (
+                        <div className="bg-slate-50 p-2.5 rounded-2xl border border-slate-200/70 space-y-2 animate-fade-in">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="text-slate-500 font-medium">Publishing Mode:</span>
+                            <div className="inline-flex rounded-lg bg-slate-200/70 p-0.5">
+                              <button
+                                type="button"
+                                onClick={() => handleSetNewsMode(channel, 'manual_review')}
+                                className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all ${
+                                  (channel.newsAutomation?.publishing_mode || 'manual_review') ===
+                                  'manual_review'
+                                    ? 'bg-white text-indigo-700 shadow-2xs'
+                                    : 'text-slate-600 hover:text-slate-900'
+                                }`}
+                                title="Drafts to Approval Queue for manual review"
+                              >
+                                🛡️ Review
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSetNewsMode(channel, 'auto_publish')}
+                                className={`px-2 py-0.5 text-[10px] font-semibold rounded-md transition-all ${
+                                  channel.newsAutomation?.publishing_mode === 'auto_publish'
+                                    ? 'bg-indigo-600 text-white shadow-2xs'
+                                    : 'text-slate-600 hover:text-slate-900'
+                                }`}
+                                title="Publish automatically without manual intervention"
+                              >
+                                ⚡ Auto
+                              </button>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-slate-500 leading-tight">
+                            {channel.newsAutomation?.publishing_mode === 'auto_publish'
+                              ? '⚡ Auto: AI drafts & schedules directly to feed.'
+                              : '🛡️ Safe Mode: AI drafts posts to Approval Queue for review.'}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
