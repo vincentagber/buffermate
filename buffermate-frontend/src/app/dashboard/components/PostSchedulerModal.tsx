@@ -246,17 +246,37 @@ export default function PostSchedulerModal({
           </div>
 
           {/* Publishing Channels Selector */}
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                Publishing Channels
-              </label>
-              <span className="text-[11px] font-semibold text-slate-400 font-mono">
-                {selectedChannels.length} of {allChannels.length} selected
-              </span>
+              <div className="flex items-center space-x-2">
+                <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center">
+                  <Share2 className="w-3.5 h-3.5 mr-1.5 text-slate-700" />
+                  Publishing Channels
+                </label>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                  {selectedChannels.length} of {allChannels.length} selected
+                </span>
+              </div>
+              <div className="flex items-center space-x-1.5 text-[11px] font-semibold text-slate-500">
+                <button
+                  type="button"
+                  onClick={() => setSelectedChannels(allChannels.map((c) => c.id))}
+                  className="hover:text-slate-900 px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  Select All
+                </button>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => setSelectedChannels([])}
+                  className="hover:text-slate-900 px-1.5 py-0.5 rounded hover:bg-slate-100 transition-colors cursor-pointer"
+                >
+                  Clear
+                </button>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {allChannels.map((ch) => {
                 const isSelected = selectedChannels.includes(ch.id);
                 return (
@@ -264,15 +284,37 @@ export default function PostSchedulerModal({
                     key={ch.id}
                     type="button"
                     onClick={() => toggleChannel(ch.id)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 shadow-2xs cursor-pointer ${
+                    className={`group relative flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#141416] text-white border border-[#141416]'
-                        : 'bg-slate-50/80 text-slate-600 border border-slate-200/80 hover:bg-slate-100 hover:text-slate-900'
+                        ? ch.id === 'instagram'
+                          ? 'bg-gradient-to-r from-pink-50 via-rose-50 to-purple-50 border-pink-300 text-pink-950 shadow-xs'
+                          : ch.id === 'facebook'
+                          ? 'bg-blue-50/90 border-blue-300 text-blue-950 shadow-xs'
+                          : ch.id === 'whatsapp'
+                          ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 shadow-xs'
+                          : 'bg-slate-900 border-slate-900 text-white shadow-xs'
+                        : 'bg-white text-slate-600 border-slate-200/90 hover:bg-slate-50 hover:border-slate-300'
                     }`}
                   >
-                    <SocialPlatformIcon channel={ch.id} className="w-3.5 h-3.5 shrink-0" />
-                    <span>{ch.label}</span>
-                    {isSelected && <Check className="w-3 h-3 text-emerald-400 ml-0.5" />}
+                    <div className="flex items-center space-x-2 min-w-0">
+                      <div className="relative flex items-center justify-center shrink-0">
+                        <SocialPlatformIcon channel={ch.id} className="w-3.5 h-3.5" />
+                        {isSelected && (
+                          <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-emerald-500 ring-1 ring-white" />
+                        )}
+                      </div>
+                      <span className="truncate text-xs font-bold">{ch.label}</span>
+                    </div>
+
+                    <div
+                      className={`w-4 h-4 rounded-full flex items-center justify-center transition-all shrink-0 ml-1.5 ${
+                        isSelected
+                          ? 'bg-emerald-500 text-white shadow-2xs'
+                          : 'border border-slate-300 group-hover:border-slate-400'
+                      }`}
+                    >
+                      {isSelected && <Check className="w-2.5 h-2.5 stroke-[3]" />}
+                    </div>
                   </button>
                 );
               })}
@@ -282,7 +324,7 @@ export default function PostSchedulerModal({
           {/* AI Autofill Banner */}
           <AiFormBanner
             title="Generate post with AI"
-            description="Speak your idea out loud or paste a rough brief — AI will extract channels, schedule time, and fill the form."
+            description="Speak your idea or paste a brief — AI extracts channels, schedules time & auto-fills."
             buttonText="Generate with AI"
             onOpenModal={() => setShowAiModal(true)}
           />
