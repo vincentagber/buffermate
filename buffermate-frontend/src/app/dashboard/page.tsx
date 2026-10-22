@@ -224,6 +224,13 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('create') === 'true' || urlParams.has('create')) {
+        setIsPostComposerOpen(true);
+      }
+    }
+
     loadDatabaseData();
     fetchRealtimeStats();
 

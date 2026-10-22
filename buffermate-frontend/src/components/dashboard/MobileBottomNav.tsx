@@ -39,10 +39,10 @@ export default function MobileBottomNav({
     },
     {
       label: 'Post',
-      href: '/dashboard/composer',
+      href: '/dashboard?create=true',
       icon: Plus,
       isPrimary: true,
-      active: pathname === '/dashboard/composer',
+      active: false,
     },
     {
       label: 'Analytics',

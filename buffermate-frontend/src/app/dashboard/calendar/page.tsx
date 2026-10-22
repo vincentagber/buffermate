@@ -251,7 +251,7 @@ export default function CalendarPage() {
           </div>
 
           <Link
-            href="/dashboard/composer"
+            href="/dashboard?create=true"
             className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -410,7 +410,7 @@ export default function CalendarPage() {
 
                             <div className="flex items-center space-x-1">
                               <Link
-                                href={`/dashboard/composer?draftId=${post.id}`}
+                                href={`/dashboard?create=true&draftId=${post.id}`}
                                 className="p-1.5 hover:bg-[#FAF6F0] text-slate-500 hover:text-slate-900 rounded-lg transition-colors"
                                 title="Edit in Composer"
                               >
@@ -433,7 +433,7 @@ export default function CalendarPage() {
                 No content matches your current status or channel filter. Click below to craft and schedule a new post.
               </p>
               <Link
-                href="/dashboard/composer"
+                href="/dashboard?create=true"
                 className="mt-4 inline-flex items-center space-x-1.5 px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs cursor-pointer"
               >
                 <Plus className="w-4 h-4" />

@@ -19,7 +19,7 @@ export default function StartPage() {
       title: 'Post Composer & AI Studio',
       description: 'Write, generate AI hooks, preview real-time multi-platform layouts, and schedule.',
       icon: PenTool,
-      href: '/dashboard/composer',
+      href: '/dashboard?create=true',
       badge: 'Interactive Studio',
       color: 'bg-purple-50 text-purple-700 border-purple-200/60',
     },
@@ -68,7 +68,7 @@ export default function StartPage() {
 
           <div className="pt-2 flex flex-wrap gap-3">
             <Link
-              href="/dashboard/composer"
+              href="/dashboard?create=true"
               className="px-5 py-2.5 bg-white hover:bg-slate-100 text-slate-900 rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />

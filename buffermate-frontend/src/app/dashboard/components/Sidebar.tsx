@@ -131,7 +131,8 @@ export default function Sidebar({
 
   const handleItemClick = (tabId: string) => {
     if (tabId === 'composer') {
-      router.push('/dashboard/composer');
+      if (onOpenPostModal) onOpenPostModal();
+      else if (onOpenCreateModal) onOpenCreateModal();
       if (onCloseMobile) onCloseMobile();
       return;
     }

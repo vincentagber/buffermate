@@ -22,13 +22,13 @@ export default function DashboardLayout({
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
-        onOpenCreatePost={() => router.push('/dashboard/composer')}
+        onOpenCreatePost={() => router.push('/dashboard?create=true')}
       />
 
       {/* Mobile Sticky Bottom Nav */}
       <MobileBottomNav
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-        onOpenCreatePost={() => router.push('/dashboard/composer')}
+        onOpenCreatePost={() => router.push('/dashboard?create=true')}
       />
     </div>
   );

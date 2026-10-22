@@ -228,7 +228,7 @@ export function PostCard({ post, onPostUpdated }: PostCardProps) {
                         <div className="flex items-center space-x-2 relative">
                             {post.status === 'draft' ? (
                                 <Link
-                                    href={`/dashboard/composer?draftId=${post.id}`}
+                                    href={`/dashboard?create=true&draftId=${post.id}`}
                                     className="flex items-center px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all"
                                 >
                                     <Edit3 className="w-3.5 h-3.5 mr-1.5" />
