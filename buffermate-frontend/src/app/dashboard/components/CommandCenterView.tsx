@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import { CommandCenterDataContract } from '@/lib/types';
+import { createClient } from '@/lib/supabase/client';
 
 interface CommandCenterViewProps {
   onNavigateTab?: (tab: string) => void;
@@ -43,6 +44,48 @@ export default function CommandCenterView({
   const [showGuardrailsModal, setShowGuardrailsModal] = useState(false);
   const [dryRunRunning, setDryRunRunning] = useState(false);
   const [dryRunResult, setDryRunResult] = useState<any>(null);
+  const [resolvedName, setResolvedName] = useState<string>(userName || 'Vincent Agber');
+  const [greeting, setGreeting] = useState<string>('Good morning');
+  const [workspaceTitle, setWorkspaceTitle] = useState<string>('BufferMate Workspace');
+
+  // Hydration-safe dynamic greeting & authenticated user name resolution
+  useEffect(() => {
+    // 1. Time-of-day greeting (morning, afternoon, evening)
+    const hour = new Date().getHours();
+    const timeGreeting = hour >= 5 && hour < 12 ? 'Good morning' : hour >= 12 && hour < 17 ? 'Good afternoon' : 'Good evening';
+    setGreeting(timeGreeting);
+
+    // 2. Fetch authenticated user from Supabase
+    const supabase = createClient();
+    async function fetchAuthUser() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user?.user_metadata) {
+          const metaName = user.user_metadata.name || user.user_metadata.full_name;
+          if (metaName) setResolvedName(metaName);
+        }
+      } catch (e) {}
+    }
+    fetchAuthUser();
+
+    // 3. Load user profile from localStorage cache
+    try {
+      const cached = localStorage.getItem('buffermate_user_profile');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.fullName) setResolvedName(parsed.fullName);
+        if (parsed.businessName) setWorkspaceTitle(parsed.businessName);
+      }
+    } catch (e) {}
+
+    // 4. Real-time updates from Settings or onboarding
+    const handleProfileUpdate = (e: any) => {
+      if (e.detail?.fullName) setResolvedName(e.detail.fullName);
+      if (e.detail?.businessName) setWorkspaceTitle(e.detail.businessName);
+    };
+    window.addEventListener('user-profile-updated', handleProfileUpdate);
+    return () => window.removeEventListener('user-profile-updated', handleProfileUpdate);
+  }, [userName]);
 
   // Fetch real structured metrics and contract on mount
   useEffect(() => {
@@ -125,13 +168,13 @@ export default function CommandCenterView({
       <div className="space-y-1.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="text-[11px] font-bold tracking-wider text-[#64748B] uppercase">
-            {dayName} · COMMAND CENTER · {dataContract?.workspace?.name || 'NORTHSTAR AGENCY'}
+            {dayName} · COMMAND CENTER · {dataContract?.workspace?.name || workspaceTitle}
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F172A] tracking-tight">
-            Good morning. Here is your marketing summary.
+            Welcome, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600">{resolvedName}</span>! {greeting}. Here is your marketing summary.
           </h1>
           <p className="text-xs sm:text-sm text-[#64748B] max-w-3xl leading-relaxed">
-            Goals, revenue, risks and decisions across Northstar. The crew worked overnight; 4 things need your attention.
+            Goals, revenue, risks and decisions across {workspaceTitle}. The crew worked overnight; 4 things need your attention.
           </p>
         </div>
 
