@@ -371,15 +371,14 @@ export function TasksView() {
     { id: 't6', text: 'Export monthly retention cohort sheet for executive review', done: true, priority: 'Low', due: 'Yesterday', channel: 'Analytics', assignee: 'Alex Morgan' },
   ];
 
-  const [tasks, setTasks] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('buffermate_clinic_tasks');
-        if (saved) return JSON.parse(saved);
-      } catch (e) {}
-    }
-    return defaultTasks;
-  });
+  const [tasks, setTasks] = useState(defaultTasks);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('buffermate_clinic_tasks');
+      if (saved) setTasks(JSON.parse(saved));
+    } catch (e) {}
+  }, []);
 
   const saveTasks = (updated: any) => {
     setTasks(updated);

@@ -55,30 +55,8 @@ export default function Header({
   const supabase = createClient();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [activeUserName, setActiveUserName] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('buffermate_user_profile');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.fullName) return parsed.fullName;
-        }
-      } catch (e) {}
-    }
-    return userName || 'Vincent Agber';
-  });
-  const [avatarUrl, setAvatarUrl] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('buffermate_user_profile');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.avatarUrl) return parsed.avatarUrl;
-        }
-      } catch (e) {}
-    }
-    return '';
-  });
+  const [activeUserName, setActiveUserName] = useState(userName || 'Vincent Agber');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [activeRole, setActiveRole] = useState('Workspace Owner · Admin');
   const [searchValue, setSearchValue] = useState('');
 

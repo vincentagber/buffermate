@@ -89,33 +89,24 @@ export default function Sidebar({
   const router = useRouter();
 
   // Dynamic user profile state synced with Profile & Settings
-  const [profileName, setProfileName] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('buffermate_user_profile');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.fullName) return parsed.fullName;
-        }
-      } catch (e) {}
-    }
-    return 'Vincent Agber';
-  });
-  const [profileAvatar, setProfileAvatar] = useState(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const cached = localStorage.getItem('buffermate_user_profile');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.avatarUrl) return parsed.avatarUrl;
-        }
-      } catch (e) {}
-    }
-    return 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
-  });
+  const [profileName, setProfileName] = useState('Vincent Agber');
+  const [profileAvatar, setProfileAvatar] = useState(
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+  );
   const [profileRole, setProfileRole] = useState('Owner · Administrator');
 
   useEffect(() => {
+    try {
+      const cached = localStorage.getItem('buffermate_user_profile');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.fullName) setProfileName(parsed.fullName);
+        if (parsed.avatarUrl) setProfileAvatar(parsed.avatarUrl);
+        if (parsed.businessName) setProfileRole(`Founder · ${parsed.businessName}`);
+        else if (parsed.niche) setProfileRole(`Lead · ${parsed.niche.split('&')[0].trim()}`);
+      }
+    } catch (e) {}
+
     const handleProfileUpdate = (e: any) => {
       if (e.detail) {
         if (e.detail.fullName) setProfileName(e.detail.fullName);
