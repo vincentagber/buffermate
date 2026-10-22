@@ -178,15 +178,6 @@ export default function CommandPalette({
       tabId: 'content-studio',
       action: () => navigateToTab('content-studio'),
     },
-    {
-      id: 'nav-creative-studio',
-      title: 'Creative Studio',
-      category: 'Engage & AI',
-      subtitle: 'Visual templates, media assets & story layouts',
-      icon: Sparkles,
-      tabId: 'creative-studio',
-      action: () => navigateToTab('creative-studio'),
-    },
 
     // Growth Category
     {

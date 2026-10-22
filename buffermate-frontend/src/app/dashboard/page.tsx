@@ -59,7 +59,6 @@ import FlowAssistModal from './components/FlowAssistModal';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
-import AiAutoPostStudio from './components/AiAutoPostStudio';
 import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
@@ -1596,14 +1595,7 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* =========================================================
-              VIEW: CREATIVE STUDIO
-             ========================================================= */}
-          {currentTab === 'creative-studio' && (
-            <div className="animate-fade-in">
-              <AiAutoPostStudio onSchedulePost={handleSavePost} />
-            </div>
-          )}
+
 
           {/* =========================================================
               VIEW 5: SOCIAL CRM & CAPTURED LEADS
