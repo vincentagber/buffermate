@@ -870,7 +870,7 @@ export function InboxView() {
   };
 
   const handleApplyAiSuggestion = () => {
-    setReplyText(`Hi ${activeMessage.sender.split(' ')[0]}! Thanks for reaching out. We would be thrilled to connect. You can book directly with our executive lead team right here: medspa.os/meet`);
+    setReplyText(`Hi ${activeMessage.sender.split(' ')[0]}! Thanks for reaching out. We would be thrilled to connect. You can book directly with our executive lead team right here: buffermate.ai/meet`);
   };
 
   return (
@@ -1626,8 +1626,8 @@ export function RoiRevenueView() {
           </div>
         </div>
 
-        {/* 5. ROAS Multiplier (White) */}
-        <div className="bg-white rounded-3xl p-5 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
+        {/* 5. ROAS Multiplier (White - spans full width on 2-col mobile) */}
+        <div className="col-span-2 md:col-span-1 bg-white rounded-3xl p-5 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-medium">ROAS Multiplier</span>
             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
@@ -1753,8 +1753,8 @@ export function RoiRevenueView() {
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+          <table className="w-full min-w-[640px] text-left text-xs">
             <thead>
               <tr className="border-b border-slate-100 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
                 <th className="pb-3 pl-1">Client & Clinic</th>
@@ -1981,7 +1981,7 @@ export function ExperimentsView() {
       channel: 'LinkedIn Organization',
       variantA: {
         label: 'Variant A (5 Punchy Slides)',
-        text: '5 crisp slide deck covering the medspa automation workflow.',
+        text: '5 crisp slide deck covering the workflow automation protocol.',
         ctr: '4.9%',
         leads: 82,
         isWinner: false,

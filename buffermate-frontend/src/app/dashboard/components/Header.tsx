@@ -145,7 +145,7 @@ export default function Header({
         {/* Brand indicator on mobile */}
         <div className="md:hidden flex items-center space-x-2">
           <BufferMateLogo className="w-6 h-6" />
-          <span className="font-bold text-sm text-[#0F172A]">Socialyn</span>
+          <span className="font-bold text-sm text-[#0F172A]">BufferMate</span>
         </div>
 
         {/* Sidebar Collapse Toggle Button (Desktop) */}

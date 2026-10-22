@@ -260,8 +260,8 @@ export default function Sidebar({
           </div>
           {!isCollapsed && (
             <div className="flex items-center space-x-1.5">
-              <span className="font-bold text-base tracking-tight text-[#161616]">medspa</span>
-              <span className="text-[10px] text-purple-600 font-bold bg-purple-50 px-1 rounded">OS</span>
+              <span className="font-bold text-base tracking-tight text-[#161616]">buffermate</span>
+              <span className="text-[10px] text-purple-600 font-bold bg-purple-50 px-1 rounded">AI</span>
             </div>
           )}
         </div>

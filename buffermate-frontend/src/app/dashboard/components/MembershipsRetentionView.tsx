@@ -450,9 +450,9 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
       </div>
 
       {/* TOP ROW: BENTO GRID (HERO MRR CARD + 3 TIER CARDS: WHITE, LAVENDER, OBSIDIAN) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-5">
-        {/* Card 1: Monthly Recurring Revenue (Hero Pastel Green Card - 4.5 cols) */}
-        <div className="md:col-span-12 lg:col-span-4 bg-[#EAF6DA] rounded-3xl p-6 border border-[#DCF0C4] shadow-2xs flex flex-col justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 sm:gap-5">
+        {/* Card 1: Monthly Recurring Revenue (Hero Pastel Green Card - 4 cols on xl) */}
+        <div className="md:col-span-2 xl:col-span-4 bg-[#EAF6DA] rounded-3xl p-5 sm:p-6 border border-[#DCF0C4] shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-emerald-950">Monthly recurring revenue</span>
@@ -517,8 +517,8 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
           </div>
         </div>
 
-        {/* Card 2: Silver Tier (Clean White Card - 2.5 cols) */}
-        <div className="md:col-span-4 lg:col-span-2.5 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
+        {/* Card 2: Silver Tier (Clean White Card - 2 cols on xl) */}
+        <div className="md:col-span-1 xl:col-span-2 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div>
             <div className="flex items-center justify-between text-slate-500">
               <div className="flex items-center gap-1.5">
@@ -558,8 +558,8 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
           </div>
         </div>
 
-        {/* Card 3: Gold Tier (HIGHLIGHTED LAVENDER CARD - 2.8 cols) */}
-        <div className="md:col-span-4 lg:col-span-3 bg-[#E9E4FD] rounded-3xl p-5 sm:p-6 border border-[#DDD6FE] shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
+        {/* Card 3: Gold Tier (HIGHLIGHTED LAVENDER CARD - 3 cols on xl) */}
+        <div className="md:col-span-1 xl:col-span-3 bg-[#E9E4FD] rounded-3xl p-5 sm:p-6 border border-[#DDD6FE] shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -605,8 +605,8 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
           </div>
         </div>
 
-        {/* Card 4: Platinum Tier (MIDNIGHT OBSIDIAN VIP CARD - 2.5 cols) */}
-        <div className="md:col-span-4 lg:col-span-2.5 bg-[#161616] text-white rounded-3xl p-5 sm:p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow">
+        {/* Card 4: Platinum Tier (MIDNIGHT OBSIDIAN VIP CARD - 3 cols on xl) */}
+        <div className="md:col-span-2 xl:col-span-3 bg-[#161616] text-white rounded-3xl p-5 sm:p-6 shadow-md flex flex-col justify-between hover:shadow-lg transition-shadow">
           <div>
             <div className="flex items-center justify-between text-slate-300">
               <div className="flex items-center gap-1.5">
@@ -722,8 +722,8 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
             </div>
 
             {/* Table */}
-            <div className="overflow-x-auto mt-4">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto mt-4 -mx-4 sm:mx-0 px-4 sm:px-0">
+              <table className="w-full min-w-[560px] text-left text-xs">
                 <thead>
                   <tr className="text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                     <th className="py-2.5 font-bold">MEMBER</th>
