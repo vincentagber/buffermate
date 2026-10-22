@@ -657,7 +657,7 @@ export default function DashboardPage() {
 
 
           {/* =========================================================
-              VIEW 1: PLATFORM OVERVIEW & CHANNELS (SOHO LUXURY CLINIC DESIGN)
+              VIEW 1: PLATFORM OVERVIEW & CHANNELS (BUFFERMATE LUXURY DESIGN)
              ========================================================= */}
           {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'platform_overview' && (
             <div className="space-y-5 sm:space-y-6 animate-fade-in">
@@ -1128,7 +1128,7 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 2: METRICS & KPI DASHBOARD (SOHO LUXURY CLINIC DESIGN)
+              VIEW 2: METRICS & KPI DASHBOARD (BUFFERMATE LUXURY DESIGN)
              ========================================================= */}
           {(currentTab === 'command-center' || currentTab === 'overview') && dashboardSubView === 'metrics_dashboard' && (
             <div className="space-y-5 sm:space-y-6 animate-fade-in">
@@ -1416,7 +1416,7 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER (SOHO LUXURY CLINIC DESIGN)
+              VIEW 3: POSTS & MULTI-CHANNEL SCHEDULER (BUFFERMATE LUXURY DESIGN)
              ========================================================= */}
           {(currentTab === 'post-manager' || currentTab === 'calendar') && (
             <div className="space-y-5 sm:space-y-6 animate-fade-in relative pb-16">

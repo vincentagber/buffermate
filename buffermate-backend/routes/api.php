@@ -17,6 +17,7 @@ Route::get('/social/callback', [SocialAccountController::class, 'callback']);
 Route::middleware(['tenant.scope'])->group(function () {
     // Auth & Session
     Route::get('/auth/me', [AuthController::class, 'me']);
+    Route::get('/admin/users', [\App\Http\Controllers\Api\UserController::class, 'index']);
 
     // Dashboard Analytics (Real SQL)
     Route::get('/dashboard/stats', [DashboardStatsController::class, 'index']);

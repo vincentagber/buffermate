@@ -291,7 +291,7 @@ export default function ProfileSettingsView() {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Manage your personal creator profile, automation defaults, and security configurations · Soho clinic
+            Manage your personal creator profile, automation defaults, and security configurations
           </p>
         </div>
 

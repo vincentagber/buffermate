@@ -331,7 +331,7 @@ export default function PostSchedulerModal({
               {[
                 { label: 'Drop "PRICE" below 👇', value: 'Drop "PRICE" in the comments to receive instant VIP booking details directly in your DMs! 👇' },
                 { label: 'Comment "GUIDE"', value: 'Comment "GUIDE" and our AI will send you our complimentary 2026 Treatment Playbook right now! 📲' },
-                { label: '#buffermate #clinic', value: '#buffermate #sohoclinic #aestheticmedicine #automations' },
+                { label: '#buffermate #growth', value: '#buffermate #growth #socialmedia #automations' },
               ].map((pill, idx) => (
                 <button
                   key={idx}

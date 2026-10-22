@@ -111,7 +111,7 @@ export default function ReportsView({ onOpenFlowAssist }: ReportsViewProps) {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Reports</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            September 2026 · Soho clinic · compared with August
+            September 2026 · BufferMate Intelligence · compared with August
           </p>
         </div>
 

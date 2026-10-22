@@ -282,13 +282,14 @@ export default function AnalyticsPage() {
             ];
         }
 
-        const count = realPosts.length || stats?.postsCount || 4;
+        const count = realPosts.length || stats?.postsCount || 15;
+        const baseImpressionsCount = count * 8200 + ((stats?.totalContacts || 9) * 350);
         const totalImpressions = selectedPlatform === 'all'
-            ? '124.5K'
-            : (data.metrics[0]?.value || `${(count * 28.4).toFixed(1)}K`);
+            ? `${(baseImpressionsCount / 1000).toFixed(1)}K`
+            : (data.metrics[0]?.value || `${(count * 4.2).toFixed(1)}K`);
 
-        const engagementRate = stats?.responseRate || data.metrics[1]?.value || '4.2%';
-        const newFollowers = stats?.totalContacts ? `${stats.totalContacts.toLocaleString()}` : (data.metrics[2]?.value || '1,203');
+        const engagementRate = stats?.responseRate || data.metrics[1]?.value || '66.7%';
+        const newFollowers = stats?.totalContacts ? `${stats.totalContacts.toLocaleString()}` : (data.metrics[2]?.value || '9');
 
         return [
             { label: data.metrics[0]?.label || 'Total Impressions', value: totalImpressions, change: '+12.5%', trend: 'up' as const, icon: Eye },
@@ -303,15 +304,21 @@ export default function AnalyticsPage() {
         if (realPosts.length > 0) {
             return realPosts.slice(0, 3).map((p) => {
                 const results = p.provider_results || {};
+                const viewsRaw = results.views 
+                    ? (results.views >= 1000 ? `${(results.views / 1000).toFixed(1)}k` : `${results.views}`) 
+                    : '1.2k';
                 return {
                     title: p.content?.slice(0, 75) || 'Untitled Post',
-                    views: results.views ? `${results.views >= 1000 ? `${(results.views / 1000).toFixed(1)}k` : results.views}` : '1.2k views',
+                    views: viewsRaw.replace(/\s*views\s*$/i, ''),
                     rate: results.engagement_rate || '4.5%',
-                    date: p.posted_at ? new Date(p.posted_at).toLocaleDateString([], { month: 'short', day: 'numeric' }) : 'Yesterday',
+                    date: p.posted_at ? new Date(p.posted_at).toLocaleDateString([], { month: 'short', day: 'numeric' }) : '16 Oct',
                 };
             });
         }
-        return data.posts;
+        return data.posts.map(p => ({
+            ...p,
+            views: p.views.replace(/\s*views\s*$/i, '')
+        }));
     }, [realPosts, data.posts]);
 
     const handleSignOut = async () => {
@@ -836,7 +843,7 @@ export default function AnalyticsPage() {
                                             </div>
                                             <div className="flex items-center justify-between text-[11px] text-[#64748B] pt-1 pl-9">
                                                 <span className="flex items-center font-semibold">
-                                                    <Eye className="w-3 h-3 mr-1 text-[#94A3B8]" /> {post.views} views
+                                                    <Eye className="w-3 h-3 mr-1 text-[#94A3B8]" /> {post.views?.replace(/\s*views\s*$/i, '')} views
                                                 </span>
                                                 <span className="font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded-md">
                                                     {post.rate}

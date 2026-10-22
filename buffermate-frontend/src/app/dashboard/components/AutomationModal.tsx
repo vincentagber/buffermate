@@ -132,7 +132,7 @@ export default function AutomationModal({
                 {initialData ? 'Edit Automation Flow' : 'Create Real Automation'}
               </h2>
               <p className="text-[11px] sm:text-xs text-slate-500">
-                Auto-reply to comments & send DMs on keyword match · Soho clinic.
+                Auto-reply to comments & send DMs on keyword match across connected channels.
               </p>
             </div>
           </div>

@@ -148,9 +148,9 @@ export default function CommandPalette({
     },
     {
       id: 'nav-memberships',
-      title: 'Memberships & Retention',
+      title: 'Memberships & Retention (Admin)',
       category: 'Workspace',
-      subtitle: 'VIP client tiers, churn risk radar & rebooking funnels',
+      subtitle: 'Platform registered users, MRR & admin member console',
       icon: Crown,
       shortcut: 'G M',
       tabId: 'memberships',
@@ -371,7 +371,7 @@ export default function CommandPalette({
           </div>
           <span className="font-semibold text-slate-700 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>MedSpa Command · Soho clinic</span>
+            <span>BufferMate Workspace · Multi-Channel Command</span>
           </span>
         </div>
       </div>

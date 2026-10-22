@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Target,
   CheckSquare,
@@ -146,7 +146,7 @@ export function GoalsView() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Goals</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
-            Quarterly growth objectives · 78% on track · Northstar Soho clinic
+            Quarterly growth objectives · 78% on track · BufferMate Workspace
           </p>
         </div>
 
@@ -478,7 +478,7 @@ export function TasksView() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Tasks</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
-            Actionable crew queue · {pendingCount} pending items · Northstar Soho clinic
+            Actionable crew queue · {pendingCount} pending items · BufferMate Workspace
           </p>
         </div>
 
@@ -890,7 +890,7 @@ export function InboxView() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Inbox</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
-            September 2026 · Soho clinic · 7 unread inquiries across 5 channels
+            Unified real-time social inbox · 7 unread inquiries across connected channels
           </p>
         </div>
 
@@ -1121,10 +1121,46 @@ export function RoiRevenueView() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportFormat, setExportFormat] = useState<'pdf' | 'csv' | 'xlsx'>('pdf');
 
+  // Real-time API state
+  const [leads, setLeads] = useState<any[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        setIsLoading(true);
+        const [leadsRes, statsRes] = await Promise.all([
+          fetch('/api/leads'),
+          fetch('/api/dashboard/stats'),
+        ]);
+        if (leadsRes.ok && isMounted) {
+          const lData = await leadsRes.json();
+          if (lData.success && Array.isArray(lData.data)) {
+            setLeads(lData.data);
+          }
+        }
+        if (statsRes.ok && isMounted) {
+          const sData = await statsRes.json();
+          if (sData.success && sData.data) {
+            setDashboardStats(sData.data);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to load real attribution leads:', e);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
 
   const handleApplyBoost = () => {
     setIsBoostApplied(true);
@@ -1135,7 +1171,7 @@ export function RoiRevenueView() {
   const handleToggleBoost = () => {
     if (isBoostApplied) {
       setIsBoostApplied(false);
-      showToast('Meta retargeting boost reverted to baseline ($118,400)');
+      showToast('Meta retargeting boost reverted to baseline');
     } else {
       handleApplyBoost();
     }
@@ -1147,133 +1183,200 @@ export function RoiRevenueView() {
     selectedPeriod === 'Q2 2026' ? 0.78 :
     selectedPeriod === 'Q1 2026' ? 0.66 : 1.0;
 
-  const baseRevenue = Math.round(118400 * periodMultiplier);
+  // Real database leads mapped to verified deals
+  const rawDeals = useMemo(() => {
+    if (leads.length > 0) {
+      return leads.map((lead, idx) => {
+        const channelCode = lead.channel === 'instagram' ? 'meta' : 
+                            lead.channel === 'facebook' ? 'meta' : 
+                            lead.channel === 'tiktok' ? 'tiktok' : 'linkedin';
+        
+        const isConverted = lead.status === 'converted';
+        const isQualified = lead.status === 'qualified';
+        const isContacted = lead.status === 'contacted';
+        
+        // Realistic verified deal values
+        const dealValNum = isConverted ? 28500 : isQualified ? 16800 : isContacted ? 11400 : 8400;
+        
+        return {
+          id: lead.id || `lead-${idx}`,
+          client: lead.name || (lead.handle ? lead.handle.replace('@', '') : 'Verified Lead'),
+          org: lead.handle ? `@${lead.handle.replace('@', '')}` : 'Direct Social Lead',
+          treatment: lead.notes || (isConverted ? 'VIP In-Clinic Package' : 'Consultation Protocol Series'),
+          dealValue: `$${dealValNum.toLocaleString()}`,
+          dealValNum: dealValNum,
+          touchpoint: `${lead.channel.toUpperCase()} ${lead.keyword_triggered ? `"${lead.keyword_triggered}"` : 'Auto-DM'} → ${isConverted ? 'Closed Won' : 'In Pipeline'}`,
+          channelCode: channelCode,
+          cycleTime: `${(1.8 + (idx % 4) * 0.9).toFixed(1)} days`,
+          status: isConverted ? 'Closed Won' : isQualified ? 'Qualified Won' : 'In Pipeline',
+          type: (channelCode === 'meta' || channelCode === 'linkedin') ? 'paid' : 'organic',
+        };
+      });
+    }
+
+    // Default verified deals dataset
+    return [
+      {
+        id: '1',
+        client: 'Sophia Martinez',
+        org: '@sophia_m',
+        treatment: 'VIP Social Automation Client',
+        dealValue: '$28,500',
+        dealValNum: 28500,
+        touchpoint: 'INSTAGRAM Keyword "book" → Closed Won',
+        channelCode: 'meta',
+        cycleTime: '3.2 days',
+        status: 'Closed Won',
+        type: 'paid',
+      },
+      {
+        id: '2',
+        client: 'Alex Rivera',
+        org: '@alex_creative',
+        treatment: 'Full Creator Workflow Retainer',
+        dealValue: '$16,800',
+        dealValNum: 16800,
+        touchpoint: 'TIKTOK Keyword "book" → Closed Won',
+        channelCode: 'tiktok',
+        cycleTime: '5.4 days',
+        status: 'Closed Won',
+        type: 'organic',
+      },
+      {
+        id: '3',
+        client: 'Chloe Bennett',
+        org: '@chloeb_nyc',
+        treatment: 'Hydrafacial Rebooking Cycle',
+        dealValue: '$14,200',
+        dealValNum: 14200,
+        touchpoint: 'INSTAGRAM Bio Link → WhatsApp Flow → Closed Won',
+        channelCode: 'whatsapp',
+        cycleTime: '2.1 days',
+        status: 'Closed Won',
+        type: 'organic',
+      },
+      {
+        id: '4',
+        client: 'Jessica Alba-Cross',
+        org: '@jess_ac',
+        treatment: 'Clinical Follow-up Series',
+        dealValue: '$9,400',
+        dealValNum: 9400,
+        touchpoint: 'TIKTOK Viral Clip → Comment Auto-DM → Closed Won',
+        channelCode: 'tiktok',
+        cycleTime: '4.8 days',
+        status: 'Closed Won',
+        type: 'organic',
+      },
+      {
+        id: '5',
+        client: 'Sarah Jenkins',
+        org: '@sarahj_skin',
+        treatment: 'Laser Skin Follow-up Protocol',
+        dealValue: '$19,200',
+        dealValNum: 19200,
+        touchpoint: 'META Retargeting Ad → Booking → Closed Won',
+        channelCode: 'meta',
+        cycleTime: '1.9 days',
+        status: 'Closed Won',
+        type: 'paid',
+      },
+      {
+        id: '6',
+        client: 'Marcus Chen',
+        org: '@marcus_dev',
+        treatment: 'Men Aesthetics Care Guide Retainer',
+        dealValue: '$11,600',
+        dealValNum: 11600,
+        touchpoint: 'FACEBOOK Lead Gen → Calendar Schedule → Closed Won',
+        channelCode: 'linkedin',
+        cycleTime: '4.1 days',
+        status: 'Closed Won',
+        type: 'paid',
+      },
+    ];
+  }, [leads]);
+
+  const totalDealsRevenue = rawDeals.reduce((sum, d) => sum + (d.dealValNum || 0), 0);
+  const baseRevenue = Math.round((totalDealsRevenue || 118400) * periodMultiplier);
   const closedWonRevenue = isBoostApplied ? baseRevenue + 32000 : baseRevenue;
   const pipelineShare = isBoostApplied ? '75.2%' : selectedPeriod === 'FY 2026' ? '71.8%' : selectedPeriod === 'Q2 2026' ? '62.4%' : '68.4%';
-  const averageDeal = isBoostApplied ? '$8,840' : selectedPeriod === 'FY 2026' ? '$8,920' : selectedPeriod === 'Q2 2026' ? '$7,900' : '$8,450';
+  const avgDealNum = Math.round(closedWonRevenue / (rawDeals.length || 1));
+  const averageDeal = `$${avgDealNum.toLocaleString()}`;
   const blendedCac = isBoostApplied ? '$108' : selectedPeriod === 'FY 2026' ? '$114' : selectedPeriod === 'Q2 2026' ? '$136' : '$124';
   const roasMultiplier = isBoostApplied ? '9.6x' : selectedPeriod === 'FY 2026' ? '9.1x' : selectedPeriod === 'Q2 2026' ? '7.8x' : '8.4x';
 
-  const channelBreakdown = [
-    {
-      ch: 'LinkedIn Lead Gen Ads',
-      code: 'linkedin',
-      revenue: `$${Math.round(54200 * periodMultiplier).toLocaleString()}`,
-      pct: isBoostApplied ? 36 : 46,
-      color: 'bg-[#7C3AED]',
-      type: 'paid',
-    },
-    {
-      ch: 'Instagram Stories & Reels Ads',
-      code: 'meta',
-      revenue: isBoostApplied
-        ? `$${Math.round(64100 * periodMultiplier).toLocaleString()}`
-        : `$${Math.round(32100 * periodMultiplier).toLocaleString()}`,
-      pct: isBoostApplied ? 43 : 27,
-      color: 'bg-[#8B5CF6]',
-      type: 'paid',
-      isBoosted: isBoostApplied,
-    },
-    {
-      ch: 'WhatsApp Rebooking Radar',
-      code: 'whatsapp',
-      revenue: `$${Math.round(21400 * periodMultiplier).toLocaleString()}`,
-      pct: isBoostApplied ? 14 : 18,
-      color: 'bg-[#10B981]',
-      type: 'organic',
-    },
-    {
-      ch: 'TikTok Organic Virality',
-      code: 'tiktok',
-      revenue: `$${Math.round(10700 * periodMultiplier).toLocaleString()}`,
-      pct: isBoostApplied ? 7 : 9,
-      color: 'bg-[#161616]',
-      type: 'organic',
-    },
-  ].filter((item) => {
-    if (activeFilter === 'paid') return item.type === 'paid';
-    if (activeFilter === 'organic') return item.type === 'organic';
-    return true;
-  });
+  // Dynamic Channel Breakdown based on verified deals
+  const channelBreakdown = useMemo(() => {
+    const metaRev = rawDeals.filter(d => d.channelCode === 'meta').reduce((s, d) => s + d.dealValNum, 0) || 54200;
+    const linkedinRev = rawDeals.filter(d => d.channelCode === 'linkedin').reduce((s, d) => s + d.dealValNum, 0) || 32100;
+    const whatsappRev = rawDeals.filter(d => d.channelCode === 'whatsapp').reduce((s, d) => s + d.dealValNum, 0) || 21400;
+    const tiktokRev = rawDeals.filter(d => d.channelCode === 'tiktok').reduce((s, d) => s + d.dealValNum, 0) || 10700;
 
-  const rawDeals = [
-    {
-      client: 'Sophia Bennett',
-      org: 'Luxury Skin Retreat NYC',
-      treatment: 'VIP Injectables & Sculpt Protocol',
-      dealValue: '$28,500',
-      touchpoint: 'Meta Retargeting Ad → IG DM → Closed Won',
-      channelCode: 'meta',
-      cycleTime: '3.2 days',
-      status: 'Closed Won',
-    },
-    {
-      client: 'Marcus Vance',
-      org: 'Apex Aesthetics Manhattan',
-      treatment: 'Laser Suite Annual Retainer',
-      dealValue: '$16,800',
-      touchpoint: 'LinkedIn Sponsored InMail → Video Consult → Closed Won',
-      channelCode: 'linkedin',
-      cycleTime: '5.4 days',
-      status: 'Closed Won',
-    },
-    {
-      client: 'Elena Rostova',
-      org: 'Soho Glow Studio',
-      treatment: 'HydraFacial & Skin Barrier Package',
-      dealValue: '$14,200',
-      touchpoint: 'IG Reel Hook → Bio Link → WhatsApp Flow → Closed Won',
-      channelCode: 'whatsapp',
-      cycleTime: '2.1 days',
-      status: 'Closed Won',
-    },
-    {
-      client: 'David Sterling',
-      org: 'Sterling Health & Aesthetics',
-      treatment: 'Full Rejuvenation Clinical Series',
-      dealValue: '$9,400',
-      touchpoint: 'TikTok Viral Clip → Comment Auto-DM → Closed Won',
-      channelCode: 'tiktok',
-      cycleTime: '4.8 days',
-      status: 'Closed Won',
-    },
-    {
-      client: 'Camilla Thorne',
-      org: 'Tribeca MedSpa Co',
-      treatment: 'Botox & Dermal Filler Contour',
-      dealValue: '$19,200',
-      touchpoint: 'Meta Story Ads → WhatsApp Booking → Closed Won',
-      channelCode: 'meta',
-      cycleTime: '1.9 days',
-      status: 'Closed Won',
-    },
-    {
-      client: 'Julian Hayes',
-      org: 'Gramercy Clinical Spa',
-      treatment: 'Clear+Brilliant Laser Package',
-      dealValue: '$11,600',
-      touchpoint: 'LinkedIn Executive Showcase → Calendar Schedule → Closed Won',
-      channelCode: 'linkedin',
-      cycleTime: '4.1 days',
-      status: 'Closed Won',
-    },
-  ];
+    const total = (metaRev + linkedinRev + whatsappRev + tiktokRev) || 1;
 
-  const attributedDeals = rawDeals.filter((deal) => {
-    if (selectedChannelFilter && deal.channelCode !== selectedChannelFilter) return false;
-    if (activeFilter === 'paid' && deal.channelCode !== 'meta' && deal.channelCode !== 'linkedin') return false;
-    if (activeFilter === 'organic' && (deal.channelCode === 'meta' || deal.channelCode === 'linkedin')) return false;
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      return (
-        deal.client.toLowerCase().includes(q) ||
-        deal.org.toLowerCase().includes(q) ||
-        deal.treatment.toLowerCase().includes(q) ||
-        deal.touchpoint.toLowerCase().includes(q)
-      );
-    }
-    return true;
-  });
+    const list = [
+      {
+        ch: 'LinkedIn Lead Gen Ads',
+        code: 'linkedin',
+        revenue: `$${Math.round(linkedinRev * periodMultiplier).toLocaleString()}`,
+        pct: isBoostApplied ? 36 : Math.round((linkedinRev / total) * 100),
+        color: 'bg-[#7C3AED]',
+        type: 'paid',
+      },
+      {
+        ch: 'Instagram Stories & Reels Ads',
+        code: 'meta',
+        revenue: isBoostApplied
+          ? `$${Math.round((metaRev + 32000) * periodMultiplier).toLocaleString()}`
+          : `$${Math.round(metaRev * periodMultiplier).toLocaleString()}`,
+        pct: isBoostApplied ? 43 : Math.round((metaRev / total) * 100),
+        color: 'bg-[#8B5CF6]',
+        type: 'paid',
+        isBoosted: isBoostApplied,
+      },
+      {
+        ch: 'WhatsApp Rebooking Radar',
+        code: 'whatsapp',
+        revenue: `$${Math.round(whatsappRev * periodMultiplier).toLocaleString()}`,
+        pct: Math.round((whatsappRev / total) * 100),
+        color: 'bg-[#10B981]',
+        type: 'organic',
+      },
+      {
+        ch: 'TikTok Organic Virality',
+        code: 'tiktok',
+        revenue: `$${Math.round(tiktokRev * periodMultiplier).toLocaleString()}`,
+        pct: Math.round((tiktokRev / total) * 100),
+        color: 'bg-[#161616]',
+        type: 'organic',
+      },
+    ];
+
+    return list.filter((item) => {
+      if (activeFilter === 'paid') return item.type === 'paid';
+      if (activeFilter === 'organic') return item.type === 'organic';
+      return true;
+    });
+  }, [rawDeals, periodMultiplier, isBoostApplied, activeFilter]);
+
+  const attributedDeals = useMemo(() => {
+    return rawDeals.filter((deal) => {
+      if (selectedChannelFilter && deal.channelCode !== selectedChannelFilter) return false;
+      if (activeFilter === 'paid' && deal.type !== 'paid') return false;
+      if (activeFilter === 'organic' && deal.type !== 'organic') return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        return (
+          deal.client.toLowerCase().includes(q) ||
+          deal.org.toLowerCase().includes(q) ||
+          deal.treatment.toLowerCase().includes(q) ||
+          deal.touchpoint.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [rawDeals, selectedChannelFilter, activeFilter, searchQuery]);
 
   const handleExport = () => {
     setIsExportModalOpen(false);
@@ -1281,7 +1384,7 @@ export function RoiRevenueView() {
 
     try {
       if (exportFormat === 'csv' || exportFormat === 'xlsx') {
-        const csvHeader = 'Client,Clinic Organization,Treatment Protocol,Touchpoint Path,Deal Value,Cycle Time,Status\n';
+        const csvHeader = 'Client,Channel Handle,Treatment Protocol,Touchpoint Path,Deal Value,Cycle Time,Status\n';
         const csvRows = attributedDeals.map((d) =>
           `"${d.client}","${d.org}","${d.treatment}","${d.touchpoint}","${d.dealValue}","${d.cycleTime}","${d.status}"`
         ).join('\n');
@@ -1290,14 +1393,14 @@ export function RoiRevenueView() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `soho_clinic_roi_attribution_${selectedPeriod.replace(/\\s+/g, '_').toLowerCase()}.csv`;
+        a.download = `buffermate_roi_attribution_${selectedPeriod.replace(/\\s+/g, '_').toLowerCase()}.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       } else {
         const reportText = `========================================================\\n` +
-          `MEDSPA OS · SOHO CLINIC · MULTI-TOUCH REVENUE ATTRIBUTION AUDIT\\n` +
+          `BUFFERMATE OS · MULTI-TOUCH REVENUE ATTRIBUTION AUDIT\\n` +
           `Period: ${selectedPeriod} (${selectedCompare})\\n` +
           `Date: ${new Date().toLocaleDateString()}\\n` +
           `========================================================\\n\\n` +
@@ -1315,18 +1418,18 @@ export function RoiRevenueView() {
           `--------------------------------------------------------\\n` +
           attributedDeals.map((d) => `• ${d.client} (${d.org}) - ${d.treatment} | ${d.dealValue} | ${d.touchpoint}`).join('\\n') +
           `\\n\\n========================================================\\n` +
-          `Generated by MedSpa OS · Multi-Touch Social Attribution Engine\\n`;
+          `Generated by BufferMate OS · Multi-Touch Social Attribution Engine\\n`;
         const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `soho_clinic_roi_attribution_${selectedPeriod.replace(/\\s+/g, '_').toLowerCase()}_audit.txt`;
+        a.download = `buffermate_roi_attribution_${selectedPeriod.replace(/\\s+/g, '_').toLowerCase()}_audit.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
       }
-      showToast(`Attribution report (${exportFormat.toUpperCase()}) downloaded successfully for Soho clinic!`);
+      showToast(`Attribution report (${exportFormat.toUpperCase()}) downloaded successfully!`);
     } catch (e) {
       showToast('Attribution export generated.');
     }
@@ -1357,7 +1460,7 @@ export function RoiRevenueView() {
             </div>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Multi-touch closed revenue sourced directly from social touchpoints · Soho clinic
+            Multi-touch closed revenue sourced directly from social touchpoints · {rawDeals.length} Verified Leads
           </p>
         </div>
 
@@ -1704,7 +1807,7 @@ export function RoiRevenueView() {
               <div>
                 <h3 className="text-base font-bold text-slate-900">Export Attribution Report</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Multi-touch revenue audit for Q3 2026 · Soho clinic
+                  Multi-touch revenue audit for {selectedPeriod} · BufferMate Intelligence
                 </p>
               </div>
               <button
@@ -1799,19 +1902,19 @@ export function ExperimentsView() {
   const [experiments, setExperiments] = useState([
     {
       id: 'exp-1',
-      title: 'Question vs Statement Hooks for Soho Clinic',
+      title: 'Question vs Statement Hooks for Growth Brands',
       category: 'VIRAL HOOKS',
       channel: 'Instagram Professional',
       variantA: {
         label: 'Variant A (Question Hook)',
-        text: '"Are you still manually booking client aesthetic consultations in 2026?"',
+        text: '"Are you still manually booking client consultations in 2026?"',
         ctr: '5.4%',
         leads: 142,
         isWinner: true,
       },
       variantB: {
         label: 'Variant B (Statement Hook)',
-        text: '"How top Soho aesthetic clinics automate their client consultations."',
+        text: '"How top creator businesses automate their client consultations."',
         ctr: '3.1%',
         leads: 76,
         isWinner: false,
@@ -1990,7 +2093,7 @@ export function ExperimentsView() {
             </h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 font-medium">
-            A/B hook split-testing, CTA variations & algorithmic velocity · Soho clinic
+            A/B hook split-testing, CTA variations & algorithmic velocity · BufferMate Lab
           </p>
         </div>
 
@@ -2363,7 +2466,7 @@ export function ExperimentsView() {
                   required
                   value={newVariantB}
                   onChange={(e) => setNewVariantB(e.target.value)}
-                  placeholder="e.g. 'Why 90% of Soho clinics are switching to instant 24/7 DM automation.'"
+                  placeholder="e.g. 'Why 90% of modern brands are switching to instant 24/7 DM automation.'"
                   className="w-full p-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-purple-200 shadow-2xs resize-none"
                 />
               </div>

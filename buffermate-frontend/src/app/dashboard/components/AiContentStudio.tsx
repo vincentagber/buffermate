@@ -567,7 +567,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Content Studio</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5 font-medium">
-            Google Gemini Intelligence · Multi-platform tailored generation · Soho clinic
+            Google Gemini Intelligence · Multi-platform tailored generation · BufferMate Workspace
           </p>
         </div>
 

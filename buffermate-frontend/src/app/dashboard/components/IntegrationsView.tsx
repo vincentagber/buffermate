@@ -452,7 +452,7 @@ export default function IntegrationsView() {
             </div>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Connected accounts for 24/7 automated comment replies, DMs, and real-time multi-platform publishing · Soho clinic
+            Connected accounts for 24/7 automated comment replies, DMs, and real-time multi-platform publishing
           </p>
         </div>
 

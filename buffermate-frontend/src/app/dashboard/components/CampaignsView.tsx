@@ -234,7 +234,7 @@ export default function CampaignsView() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">Campaigns</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-            4 active marketing flights · $10,050 total spend to date · Northstar Soho clinic
+            4 active marketing flights · $10,050 total spend to date · BufferMate Growth
           </p>
         </div>
 

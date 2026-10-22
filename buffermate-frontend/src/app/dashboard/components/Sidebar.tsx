@@ -113,7 +113,7 @@ export default function Sidebar({
     }
     return 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80';
   });
-  const [profileRole, setProfileRole] = useState('Owner · Soho Clinic');
+  const [profileRole, setProfileRole] = useState('Owner · Administrator');
 
   useEffect(() => {
     const handleProfileUpdate = (e: any) => {
@@ -186,8 +186,8 @@ export default function Sidebar({
           alias: ['retention'],
           label: 'Memberships',
           icon: Crown,
-          badge: '412',
-          badgeColor: 'bg-[#EDE9FE] text-[#6D28D9]',
+          badge: 'ADMIN',
+          badgeColor: 'bg-amber-100 text-amber-900 border border-amber-200/80 font-bold text-[9px]',
         },
         {
           id: 'analytics',

@@ -79,7 +79,7 @@ export default function Header({
     }
     return '';
   });
-  const [activeRole, setActiveRole] = useState('Owner · Soho Clinic');
+  const [activeRole, setActiveRole] = useState('Workspace Owner · Admin');
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {

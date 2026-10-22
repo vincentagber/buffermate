@@ -98,7 +98,7 @@ export default function SimulatorModal({
             <div>
               <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">Live Engine Simulator</h2>
               <p className="text-[11px] sm:text-xs text-slate-500">
-                Real server-side keyword detection & automated DM response · Soho clinic.
+                Real server-side keyword detection & automated DM response.
               </p>
             </div>
           </div>
