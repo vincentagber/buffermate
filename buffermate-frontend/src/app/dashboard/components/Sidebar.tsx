@@ -27,7 +27,6 @@ import {
   Plus,
   Crown,
   Sparkles,
-  ChevronDown,
   Building2,
   Check,
   HelpCircle
@@ -89,9 +88,6 @@ export default function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const router = useRouter();
-  const [selectedClinic, setSelectedClinic] = useState('Lumière Aesthetics');
-  const [clinicLocation, setClinicLocation] = useState('Soho, New York');
-  const [isClinicDropdownOpen, setIsClinicDropdownOpen] = useState(false);
 
   // Dynamic user profile state synced with Profile & Settings
   const [profileName, setProfileName] = useState(() => {
@@ -310,53 +306,7 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* Clinic / Workspace Switcher Pill */}
-      {!isCollapsed && (
-        <div className="px-3 pt-3 pb-1 shrink-0 relative">
-          <button
-            onClick={() => setIsClinicDropdownOpen(!isClinicDropdownOpen)}
-            className="w-full p-2 rounded-2xl bg-slate-50 hover:bg-slate-100/80 border border-slate-200/60 flex items-center justify-between text-left transition-all"
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-xl bg-[#EDE9FE] text-[#6D28D9] flex items-center justify-center font-bold text-xs shrink-0">
-                L
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-bold text-slate-900 truncate">{selectedClinic}</p>
-                <p className="text-[10px] text-slate-400 truncate">{clinicLocation}</p>
-              </div>
-            </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          </button>
 
-          {/* Clinic Dropdown */}
-          {isClinicDropdownOpen && (
-            <div className="absolute top-14 left-3 right-3 z-50 bg-white rounded-2xl shadow-xl border border-slate-100 p-2 space-y-1">
-              {[
-                { name: 'Lumière Aesthetics', loc: 'Soho, New York' },
-                { name: 'Lumière Beverly Hills', loc: 'Rodeo Drive, CA' },
-                { name: 'Northstar Flagship', loc: 'Tribeca, New York' },
-              ].map((c, i) => (
-                <div
-                  key={i}
-                  onClick={() => {
-                    setSelectedClinic(c.name);
-                    setClinicLocation(c.loc);
-                    setIsClinicDropdownOpen(false);
-                  }}
-                  className="p-2 rounded-xl hover:bg-slate-50 cursor-pointer flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <p className="font-bold text-slate-900">{c.name}</p>
-                    <p className="text-[10px] text-slate-400">{c.loc}</p>
-                  </div>
-                  {selectedClinic === c.name && <Check className="w-3.5 h-3.5 text-purple-600" />}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Primary Quick CTA: Create Post Button */}
       <div className={`${isCollapsed ? 'px-2 pt-2.5 pb-1 flex justify-center' : 'px-3 pt-2.5 pb-1'} shrink-0`}>
