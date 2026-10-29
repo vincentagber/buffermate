@@ -22,6 +22,7 @@ import { useVoiceRecorder } from '@/lib/hooks/useVoiceRecorder';
 import { ExtractedFormData } from '@/lib/ai/form-schema';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface AiVoiceFormModalProps {
   isOpen: boolean;
@@ -210,38 +211,22 @@ export default function AiVoiceFormModal({
           </button>
         </div>
 
-        {/* Tab Switcher (Voice / Text Pill) */}
+        {/* Tab Switcher (Chevron Stepper) */}
         <div className="px-6 pt-4 pb-2">
-          <div className="bg-slate-100 p-1 rounded-2xl flex items-center">
-            <button
-              type="button"
-              onClick={() => {
-                if (!isRecording && !isProcessing) setActiveTab('voice');
-              }}
-              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
-                activeTab === 'voice'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Mic className="w-4 h-4 text-emerald-600" />
-              <span>Voice</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (!isRecording && !isProcessing) setActiveTab('text');
-              }}
-              className={`flex-1 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all ${
-                activeTab === 'text'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Type className="w-4 h-4 text-slate-600" />
-              <span>Text</span>
-            </button>
-          </div>
+          <ChevronStepper
+            steps={[
+              { id: 'voice', title: 'Voice Input', subtitle: 'Audio Transcription', icon: Mic },
+              { id: 'text', title: 'Raw Brief', subtitle: 'Rough Notes & Prompt', icon: Type },
+            ]}
+            currentStep={activeTab}
+            onChange={(sId) => {
+              if (!isRecording && !isProcessing) setActiveTab(sId as any);
+            }}
+            variant="brand"
+            size="sm"
+            showNumbers={false}
+            showIcons={true}
+          />
         </div>
 
         {/* Modal Body */}

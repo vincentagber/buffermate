@@ -29,6 +29,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface NewsSource {
   publisher: string;
@@ -548,55 +549,35 @@ export default function NewsPilotView({ onOpenComposer }: NewsPilotViewProps) {
         </div>
       </div>
 
-      {/* VIEW SUB-TABS */}
-      <div className="flex border-b border-slate-200/80 space-x-6 text-xs font-semibold">
-        <button
-          type="button"
-          onClick={() => setActiveTab('topics')}
-          className={`pb-3 transition-colors relative flex items-center gap-1.5 ${
-            activeTab === 'topics'
-              ? 'text-indigo-600 border-b-2 border-indigo-600'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Discovered Stories & Trends</span>
-          <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">
-            {topics.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('accounts')}
-          className={`pb-3 transition-colors relative flex items-center gap-1.5 ${
-            activeTab === 'accounts'
-              ? 'text-indigo-600 border-b-2 border-indigo-600'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}
-        >
-          <Share2 className="w-3.5 h-3.5" />
-          <span>Account Rules (Auto vs Review)</span>
-          <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-indigo-50 text-indigo-700 font-bold">
-            {enabledAccountsCount}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('feeds')}
-          className={`pb-3 transition-colors relative flex items-center gap-1.5 ${
-            activeTab === 'feeds'
-              ? 'text-indigo-600 border-b-2 border-indigo-600'
-              : 'text-slate-500 hover:text-slate-900'
-          }`}
-        >
-          <Globe className="w-3.5 h-3.5" />
-          <span>News Feeds & Sources</span>
-          <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-slate-100 text-slate-700">
-            {feeds.length}
-          </span>
-        </button>
+      {/* NEWS PILOT CHEVRON STEPPER NAVIGATION */}
+      <div className="w-full max-w-4xl overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            {
+              id: 'topics',
+              title: 'Discovered Trends',
+              subtitle: 'Realtime Stories',
+              badge: topics.length,
+            },
+            {
+              id: 'accounts',
+              title: 'Account Rules',
+              subtitle: 'Auto vs Review Guard',
+              badge: `${enabledAccountsCount} Active`,
+            },
+            {
+              id: 'feeds',
+              title: 'Sources & Feeds',
+              subtitle: 'RSS, Industry & APIs',
+              badge: feeds.length,
+            },
+          ]}
+          currentStep={activeTab}
+          onChange={(stepId) => setActiveTab(stepId as any)}
+          variant="brand"
+          size="sm"
+          showNumbers={true}
+        />
       </div>
 
       {/* TAB 1: TOPICS FEED */}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { X, Bot, Play, CheckCircle2, MessageSquare, Send, RefreshCw } from 'lucide-react';
 import { SocialAutomation, SocialChannel, ActivityEvent, SocialLead } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface SimulatorModalProps {
   isOpen: boolean;
@@ -108,6 +109,20 @@ export default function SimulatorModal({
           >
             <X className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Reusable Chevron Stepper Component Modal Navigation */}
+        <div className="px-4 sm:px-6 py-2.5 bg-slate-50/60 border-b border-slate-100">
+          <ChevronStepper
+            steps={[
+              { id: 0, title: 'Inbound Trigger', subtitle: 'Channel & Comment' },
+              { id: 1, title: 'Execution Engine', subtitle: 'Keyword Matching' },
+              { id: 2, title: 'Action Verified', subtitle: 'Reply & Private DM' },
+            ]}
+            currentStep={executionResult ? 2 : isProcessing ? 1 : 0}
+            variant="blue"
+            size="sm"
+          />
         </div>
 
         {/* Content (Scrollable) */}

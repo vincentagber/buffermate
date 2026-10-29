@@ -33,6 +33,7 @@ import {
   X,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 import { triggerConfetti } from '@/components/ui/Confetti';
 
 export default function ProfileSettingsView() {
@@ -351,35 +352,30 @@ export default function ProfileSettingsView() {
         </div>
       </div>
 
-      {/* FILTER & SUB-NAV ROW (Capsule Segmented Style) */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Segmented Pill Tabs */}
-        <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-          {[
-            { id: 'all', label: 'All Settings', icon: Sliders },
-            { id: 'profile', label: 'Creator Profile', icon: User },
-            { id: 'billing', label: 'Pro Plans & Billing', icon: Crown },
-            { id: 'timezone', label: 'Timezone & Posting', icon: Globe },
-            { id: 'automations', label: 'Automation Defaults', icon: Zap },
-            { id: 'security', label: 'Security & Auth', icon: Shield },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSettingsTab(tab.id as any)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shrink-0 ${
-                activeSettingsTab === tab.id
-                  ? 'bg-[#161616] text-white shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-              }`}
-            >
-              <tab.icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          ))}
+      {/* CHEVRON STEPPER SETTINGS NAVIGATION */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1">
+        {/* Adopted Reusable Chevron Stepper Component for Settings Sections */}
+        <div className="w-full lg:max-w-3xl overflow-x-auto pb-1">
+          <ChevronStepper
+            steps={[
+              { id: 'all', title: 'All Settings', subtitle: 'Global Config', icon: Sliders },
+              { id: 'profile', title: 'Profile', subtitle: 'Identity & Brand', icon: User },
+              { id: 'billing', title: 'Billing', subtitle: 'Pro & Tiers', icon: Crown },
+              { id: 'timezone', title: 'Timezone', subtitle: 'Schedule Windows', icon: Globe },
+              { id: 'automations', title: 'Automations', subtitle: 'Guardrails & AI', icon: Zap },
+              { id: 'security', title: 'Security', subtitle: 'Access & 2FA', icon: Shield },
+            ]}
+            currentStep={activeSettingsTab}
+            onChange={(stepId) => setActiveSettingsTab(stepId as any)}
+            variant="blue"
+            size="sm"
+            showNumbers={false}
+            showIcons={true}
+          />
         </div>
 
         {/* Status Pill Indicator */}
-        <div className="flex items-center gap-2 overflow-x-auto">
+        <div className="flex items-center gap-2 overflow-x-auto shrink-0">
           <div className="bg-white hover:bg-slate-50 border border-slate-200/80 rounded-full px-3.5 py-1.5 text-xs font-medium text-slate-700 flex items-center gap-2 shadow-2xs transition-colors whitespace-nowrap">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Session: AES-256 Auth Active</span>

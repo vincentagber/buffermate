@@ -20,12 +20,14 @@ import {
 } from 'lucide-react';
 import { BufferMateLogo } from './Sidebar';
 import { createClient } from '@/lib/supabase/client';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface HeaderProps {
   currentTab?: string;
   userName?: string;
   onOpenCreateModal?: () => void;
   onOpenSimulatorModal?: () => void;
+  onOpenPayRunModal?: () => void;
   onSignOut?: () => void;
   isMobileMenuOpen?: boolean;
   setIsMobileMenuOpen?: (open: boolean) => void;
@@ -42,6 +44,7 @@ export default function Header({
   userName = 'Alex Morgan',
   onOpenCreateModal,
   onOpenSimulatorModal,
+  onOpenPayRunModal,
   onSignOut,
   isMobileMenuOpen = false,
   setIsMobileMenuOpen,
@@ -164,8 +167,27 @@ export default function Header({
         )}
       </div>
 
+      {/* Center: Reusable Chevron Stepper Component adopted for Header Page Navigation */}
+      <div className="hidden xl:flex items-center flex-1 max-w-xl mx-3 overflow-x-auto no-scrollbar">
+        <ChevronStepper
+          steps={[
+            { id: 'command-center', title: 'Overview', subtitle: 'Command' },
+            { id: 'campaigns', title: 'Journeys', subtitle: 'Campaigns' },
+            { id: 'analytics', title: 'Analytics', subtitle: 'Live ROI' },
+            { id: 'reports', title: 'Reports', subtitle: 'Clinic KPI' },
+            { id: 'content-studio', title: 'Studio', subtitle: 'AI Engine' },
+          ]}
+          currentStep={currentTab === 'overview' ? 'command-center' : currentTab}
+          onChange={(stepId) => onSelectTab && onSelectTab(String(stepId))}
+          variant="blue"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
+      </div>
+
       {/* Middle: Universal Search Bar matching Reports aesthetic */}
-      <div className="flex-1 max-w-xl mx-3 sm:mx-6">
+      <div className="flex-1 max-w-xs sm:max-w-md mx-2 sm:mx-4">
         <form onSubmit={handleSearchSubmit} className="relative w-full">
           <div
             onClick={onOpenSearch}
@@ -189,6 +211,17 @@ export default function Header({
 
       {/* Right side: Actions, Notifications, Profile */}
       <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        {/* Quick Launch Pay Run Modal */}
+        {onOpenPayRunModal && (
+          <button
+            onClick={onOpenPayRunModal}
+            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-all shadow-2xs"
+            title="Generate Pay Run Cycle (Chevron Stepper)"
+          >
+            <span className="text-xs">⚡</span>
+            <span>Pay Run</span>
+          </button>
+        )}
 
 
         {/* Messages quick toggle */}

@@ -28,6 +28,7 @@ import {
   Info
 } from 'lucide-react';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface ReportsViewProps {
   onOpenFlowAssist?: () => void;
@@ -158,29 +159,24 @@ export default function ReportsView({ onOpenFlowAssist }: ReportsViewProps) {
         </div>
       </div>
 
-      {/* FILTER & SUB-NAV ROW */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Segmented Pill Tabs */}
-        <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-          {[
-            { id: 'overview', label: 'Overview' },
-            { id: 'revenue', label: 'Revenue' },
-            { id: 'retention', label: 'Retention' },
-            { id: 'providers', label: 'Providers' },
-            { id: 'marketing', label: 'Marketing' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-[#161616] text-white shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+      {/* FILTER & SUB-NAV ROW WITH CHEVRON STEPPER */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1">
+        {/* Adopted Reusable Chevron Stepper Component for Reports Sub-Navigation */}
+        <div className="w-full lg:max-w-2xl overflow-x-auto">
+          <ChevronStepper
+            steps={[
+              { id: 'overview', title: 'Overview', subtitle: 'Executive KPI Summary' },
+              { id: 'revenue', title: 'Revenue', subtitle: 'Attribution & MRR' },
+              { id: 'retention', title: 'Retention', subtitle: 'Cohort & LTV' },
+              { id: 'providers', title: 'Providers', subtitle: 'Staff Productivity' },
+              { id: 'marketing', title: 'Marketing', subtitle: 'Campaign ROI' },
+            ]}
+            currentStep={activeTab}
+            onChange={(stepId) => setActiveTab(stepId as any)}
+            variant="blue"
+            size="sm"
+            showNumbers={true}
+          />
         </div>
 
         {/* Dropdown Filters */}

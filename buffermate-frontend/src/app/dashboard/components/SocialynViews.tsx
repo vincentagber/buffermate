@@ -50,6 +50,7 @@ import {
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 // -------------------------------------------------------------
 // 1. GOALS VIEW
@@ -454,27 +455,23 @@ export function GoalsView() {
         </div>
       </div>
 
-      {/* FILTER TABS & QUARTER SELECTOR */}
+      {/* FILTER TABS & QUARTER SELECTOR WITH CHEVRON STEPPER */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-        <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit">
-          {[
-            { id: 'all', label: 'All Goals' },
-            { id: 'revenue', label: 'Revenue' },
-            { id: 'audience', label: 'Audience' },
-            { id: 'product', label: 'Product' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveFilter(tab.id as any)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                activeFilter === tab.id
-                  ? 'bg-[#161616] text-white shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="w-full sm:max-w-md overflow-x-auto pb-1">
+          <ChevronStepper
+            steps={[
+              { id: 'all', title: 'All Targets', subtitle: `${goals.length} Goals` },
+              { id: 'revenue', title: 'Revenue', subtitle: 'MRR & Deals' },
+              { id: 'audience', title: 'Audience', subtitle: 'Reach & Fans' },
+              { id: 'product', title: 'Product', subtitle: 'Features & Ops' },
+            ]}
+            currentStep={activeFilter}
+            onChange={(stepId) => setActiveFilter(stepId as any)}
+            variant="blue"
+            size="sm"
+            showNumbers={false}
+            showIcons={false}
+          />
         </div>
 
         {/* Dropdown for Quarter */}
@@ -1183,26 +1180,22 @@ export function TasksView() {
         </div>
       </div>
 
-      {/* FILTER PILLS */}
-      <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-        {[
-          { id: 'all', label: `All (${tasks.length})` },
-          { id: 'urgent', label: `Urgent (${tasks.filter((t: any) => t.priority === 'Urgent' || t.priority === 'High').length})` },
-          { id: 'today', label: `Due Today (${tasks.filter((t: any) => t.due === 'Today').length})` },
-          { id: 'completed', label: `Completed (${tasks.filter((t: any) => t.done).length})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFilter(tab.id as any)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 ${
-              activeFilter === tab.id
-                ? 'bg-[#161616] text-white shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* FILTER STEPPER FOR TASKS */}
+      <div className="w-full sm:max-w-xl overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            { id: 'all', title: 'All Tasks', subtitle: `${tasks.length} total`, badge: tasks.length },
+            { id: 'urgent', title: 'Urgent', subtitle: 'Priority Action', badge: tasks.filter((t: any) => t.priority === 'Urgent' || t.priority === 'High').length },
+            { id: 'today', title: 'Due Today', subtitle: 'Time Critical', badge: tasks.filter((t: any) => t.due === 'Today').length },
+            { id: 'completed', title: 'Completed', subtitle: 'Finished', badge: tasks.filter((t: any) => t.done).length },
+          ]}
+          currentStep={activeFilter}
+          onChange={(stepId) => setActiveFilter(stepId as any)}
+          variant="blue"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
       </div>
 
       {/* TASKS CARD CONTAINER */}
@@ -1587,27 +1580,23 @@ export function InboxView() {
         </div>
       </div>
 
-      {/* FILTER & SEGMENTED TABS */}
-      <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-        {[
-          { id: 'all', label: 'All Inquiries' },
-          { id: 'instagram', label: 'Instagram' },
-          { id: 'linkedin', label: 'LinkedIn' },
-          { id: 'whatsapp', label: 'WhatsApp' },
-          { id: 'tiktok', label: 'TikTok' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveChannelFilter(tab.id as any)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-              activeChannelFilter === tab.id
-                ? 'bg-[#161616] text-white shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* INBOX CHANNEL FILTER NAVIGATION STEPPER */}
+      <div className="w-full sm:max-w-2xl overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            { id: 'all', title: 'All Inquiries', subtitle: `${messages.length} Active` },
+            { id: 'instagram', title: 'Instagram', subtitle: 'DMs & Comments' },
+            { id: 'linkedin', title: 'LinkedIn', subtitle: 'InMail & Leads' },
+            { id: 'whatsapp', title: 'WhatsApp', subtitle: 'Instant Chat' },
+            { id: 'tiktok', title: 'TikTok', subtitle: 'Video Inquiries' },
+          ]}
+          currentStep={activeChannelFilter}
+          onChange={(stepId) => setActiveChannelFilter(stepId as any)}
+          variant="blue"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
       </div>
 
       {/* 4 BENTO KPI CARDS (Matching Reports Rhythm) */}
@@ -2225,27 +2214,22 @@ export function RoiRevenueView() {
         </div>
       </div>
 
-      {/* FILTER & SUB-NAV ROW (Reports Capsule Segmented Style) */}
+      {/* FILTER & SUB-NAV ROW WITH CHEVRON STEPPER */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
-        {/* Segmented Pill Tabs */}
-        <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-          {[
-            { id: 'all', label: 'All Touchpoints (4)' },
-            { id: 'paid', label: 'Paid Social Ads (2)' },
-            { id: 'organic', label: 'Organic & Viral (2)' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveFilter(tab.id as any)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                activeFilter === tab.id
-                  ? 'bg-[#161616] text-white shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="w-full sm:max-w-xl overflow-x-auto pb-1">
+          <ChevronStepper
+            steps={[
+              { id: 'all', title: 'All Touchpoints', subtitle: 'Paid & Organic', badge: '4' },
+              { id: 'paid', title: 'Paid Social Ads', subtitle: 'Meta & Search', badge: '2' },
+              { id: 'organic', title: 'Organic & Viral', subtitle: 'Posts & Reels', badge: '2' },
+            ]}
+            currentStep={activeFilter}
+            onChange={(stepId) => setActiveFilter(stepId as any)}
+            variant="blue"
+            size="sm"
+            showNumbers={false}
+            showIcons={false}
+          />
         </div>
 
         {/* Interactive Dropdown Filters */}
@@ -3027,25 +3011,21 @@ export function ExperimentsView() {
         </div>
       </div>
 
-      {/* FILTER PILLS */}
-      <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-        {[
-          { id: 'all', label: `All Experiments (${experiments.length})` },
-          { id: 'running', label: `Active Testing (${experiments.filter((e) => e.statusType === 'running').length})` },
-          { id: 'completed', label: `Ready to Deploy (${experiments.filter((e) => e.statusType === 'completed').length})` },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveFilter(tab.id as any)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              activeFilter === tab.id
-                ? 'bg-[#161616] text-white shadow-2xs'
-                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* EXPERIMENTS FILTER NAVIGATION STEPPER */}
+      <div className="w-full sm:max-w-xl overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            { id: 'all', title: 'All Experiments', subtitle: `${experiments.length} Active`, badge: experiments.length },
+            { id: 'running', title: 'Active Testing', subtitle: 'Live Variants', badge: experiments.filter((e) => e.statusType === 'running').length },
+            { id: 'completed', title: 'Ready to Deploy', subtitle: 'Statistically Significant', badge: experiments.filter((e) => e.statusType === 'completed').length },
+          ]}
+          currentStep={activeFilter}
+          onChange={(stepId) => setActiveFilter(stepId as any)}
+          variant="blue"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
       </div>
 
       {/* EXPERIMENTS SELECTOR STRIP */}

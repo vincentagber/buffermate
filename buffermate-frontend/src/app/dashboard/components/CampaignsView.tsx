@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 export interface Campaign {
   id: string;
@@ -263,26 +264,24 @@ export default function CampaignsView() {
         </div>
       </div>
 
-      {/* FILTER & SEGMENTED TABS */}
-      <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit overflow-x-auto">
-        {(['All', 'Running', 'Needs you', 'Scheduled', 'Paused', 'Done'] as const).map((filterKey) => {
-          const isActive = selectedFilter === filterKey;
-          const count = counts[filterKey];
-
-          return (
-            <button
-              key={filterKey}
-              onClick={() => setSelectedFilter(filterKey)}
-              className={`px-3.5 sm:px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                isActive
-                  ? 'bg-[#161616] text-white shadow-2xs'
-                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-              }`}
-            >
-              {filterKey} {count}
-            </button>
-          );
-        })}
+      {/* CAMPAIGN PIPELINE STEPPER NAVIGATION */}
+      <div className="w-full overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            { id: 'All', title: 'All Journeys', badge: counts['All'], subtitle: 'All campaigns' },
+            { id: 'Running', title: 'Running', badge: counts['Running'], subtitle: 'Live ad spend' },
+            { id: 'Needs you', title: 'Needs You', badge: counts['Needs you'], subtitle: 'Action required' },
+            { id: 'Scheduled', title: 'Scheduled', badge: counts['Scheduled'], subtitle: 'Upcoming' },
+            { id: 'Paused', title: 'Paused', badge: counts['Paused'], subtitle: 'On hold' },
+            { id: 'Done', title: 'Done', badge: counts['Done'], subtitle: 'Completed' },
+          ]}
+          currentStep={selectedFilter}
+          onChange={(stepId) => setSelectedFilter(stepId as any)}
+          variant="blue"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
       </div>
 
       {/* BENTO KPI SUMMARY ROW */}

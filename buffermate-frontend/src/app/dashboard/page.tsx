@@ -40,7 +40,8 @@ import {
   Square,
   Check,
   Megaphone,
-  Target
+  Target,
+  DollarSign
 } from 'lucide-react';
 import Sidebar, { BufferMateLogo } from './components/Sidebar';
 import Header from './components/Header';
@@ -59,12 +60,14 @@ import FlowAssistModal from './components/FlowAssistModal';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
+import GeneratePayRunModal from './components/GeneratePayRunModal';
 import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import NewsPilotView from './components/NewsPilotView';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import ChevronStepper from '@/components/ui/ChevronStepper';
 import {
   SocialAutomation,
   ActivityEvent,
@@ -122,6 +125,7 @@ export default function DashboardPage() {
   const [editingAutomation, setEditingAutomation] = useState<SocialAutomation | null>(null);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false);
+  const [isPayRunModalOpen, setIsPayRunModalOpen] = useState(false);
   const [isFlowAssistOpen, setIsFlowAssistOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [composerPrefill, setComposerPrefill] = useState<{ content?: string; channels?: SocialChannel[] } | null>(null);
@@ -498,6 +502,7 @@ export default function DashboardPage() {
         onOpenCreateModal={() => setIsPostComposerOpen(true)}
         onOpenPostModal={() => setIsPostComposerOpen(true)}
         onOpenSimulatorModal={() => setIsSimulatorOpen(true)}
+        onOpenPayRunModal={() => setIsPayRunModalOpen(true)}
         onSignOut={handleSignOut}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
@@ -523,40 +528,42 @@ export default function DashboardPage() {
       <main className={`pt-16 min-h-screen pb-16 transition-all duration-300 ${isSidebarCollapsed ? 'md:pl-20' : 'md:pl-64'}`}>
         <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
           
-          {/* Sub Navigation / View Switcher when in 'command-center' or 'overview' */}
+          {/* Sub Navigation with Chevron Stepper Component */}
           {(currentTab === 'command-center' || currentTab === 'overview') && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
-              <div className="inline-flex bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs self-start w-full sm:w-auto overflow-x-auto">
-                <button
-                  onClick={() => {
-                    setCurrentTab('command-center');
-                    setDashboardSubView('command_center');
-                  }}
-                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
-                    dashboardSubView === 'command_center'
-                      ? 'bg-[#161616] text-white shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-                  }`}
-                >
-                  Command Center
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrentTab('command-center');
-                    setDashboardSubView('metrics_dashboard');
-                  }}
-                  className={`flex-1 sm:flex-initial px-4 py-1.5 rounded-full text-xs font-semibold transition-all text-center whitespace-nowrap ${
-                    dashboardSubView === 'metrics_dashboard'
-                      ? 'bg-[#161616] text-white shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-                  }`}
-                >
-                  KPI Dashboard
-                </button>
+              <div className="w-full sm:max-w-md overflow-x-auto pb-1">
+                <ChevronStepper
+                  steps={[
+                    {
+                      id: 'command_center',
+                      title: 'Command Center',
+                      subtitle: 'Live Feed & Pipeline',
+                    },
+                    {
+                      id: 'metrics_dashboard',
+                      title: 'KPI Dashboard',
+                      subtitle: 'Attribution & Metrics',
+                    },
+                  ]}
+                  currentStep={dashboardSubView}
+                  onChange={(stepId) => setDashboardSubView(stepId as any)}
+                  variant="blue"
+                  size="sm"
+                  showNumbers={false}
+                  showIcons={false}
+                />
               </div>
 
               {/* Quick Jump Buttons */}
-              <div className="flex items-center space-x-2 self-end sm:self-auto">
+              <div className="flex items-center space-x-2 self-end sm:self-auto flex-wrap gap-y-2">
+                <button
+                  onClick={() => setIsPayRunModalOpen(true)}
+                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Open Generate Pay Run Cycle (Chevron Stepper Wizard)"
+                >
+                  <DollarSign className="w-3.5 h-3.5 text-blue-100" />
+                  <span>Pay Run Cycle</span>
+                </button>
                 <button
                   onClick={() => setIsPostComposerOpen(true)}
                   className="px-3.5 py-1.5 bg-[#161616] hover:bg-black text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
@@ -1680,6 +1687,14 @@ export default function DashboardPage() {
         onSavePost={handleSavePost}
         initialContent={composerPrefill?.content}
         initialChannels={composerPrefill?.channels}
+      />
+
+      <GeneratePayRunModal
+        isOpen={isPayRunModalOpen}
+        onClose={() => setIsPayRunModalOpen(false)}
+        onSuccess={(data) => {
+          showToast(`Pay run cycle "${data.cycleTitle}" authorized successfully! 🚀`);
+        }}
       />
 
       <FlowAssistModal

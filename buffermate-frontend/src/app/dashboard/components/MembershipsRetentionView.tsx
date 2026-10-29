@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import { createClient } from '@/lib/supabase/client';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 const supabase = createClient();
 
@@ -656,58 +657,26 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
         {/* Left Column (65%): Members Management Table */}
         <div className="lg:col-span-8 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/70 shadow-2xs flex flex-col justify-between">
           <div>
-            {/* Header Filter Pills */}
+            {/* Header Filter Navigation with Chevron Stepper */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-1 overflow-x-auto">
-                <span className="text-base font-bold text-[#161616] mr-2">Members</span>
-
-                <button
-                  onClick={() => setActiveFilter('all')}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                    activeFilter === 'all'
-                      ? 'bg-[#161616] text-white'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  All {users.length}
-                </button>
-
-                <button
-                  onClick={() => setActiveFilter('active')}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${
-                    activeFilter === 'active'
-                      ? 'bg-emerald-600 text-white'
-                      : 'text-emerald-700 hover:bg-emerald-50'
-                  }`}
-                >
-                  <span>Active</span>
-                  <span className="font-bold">{kpis.activeUsers}</span>
-                </button>
-
-                <button
-                  onClick={() => setActiveFilter('pro')}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                    activeFilter === 'pro'
-                      ? 'bg-[#161616] text-white'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  Pro Paid {kpis.proSubscribers}
-                </button>
-
-                <button
-                  onClick={() => setActiveFilter('free')}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
-                    activeFilter === 'free'
-                      ? 'bg-[#161616] text-white'
-                      : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  Starter Free {tierStats.freeCount}
-                </button>
+              <div className="w-full sm:max-w-xl overflow-x-auto pb-1">
+                <ChevronStepper
+                  steps={[
+                    { id: 'all', title: 'All Members', badge: users.length, subtitle: 'Complete Roster' },
+                    { id: 'active', title: 'Active', badge: kpis.activeUsers, subtitle: 'Engaged' },
+                    { id: 'pro', title: 'Pro Paid', badge: kpis.proSubscribers, subtitle: 'MRR Tier' },
+                    { id: 'free', title: 'Starter Free', badge: tierStats.freeCount, subtitle: 'Conversion' },
+                  ]}
+                  currentStep={activeFilter}
+                  onChange={(stepId) => setActiveFilter(stepId as any)}
+                  variant="blue"
+                  size="sm"
+                  showNumbers={false}
+                  showIcons={false}
+                />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
                 <button
                   onClick={handleRefresh}
                   className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-100"

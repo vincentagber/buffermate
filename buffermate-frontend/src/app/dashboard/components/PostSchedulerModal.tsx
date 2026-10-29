@@ -24,6 +24,7 @@ import { Post, SocialChannel } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import AiVoiceFormModal from '@/components/ai/AiVoiceFormModal';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 import { ExtractedFormData } from '@/lib/ai/form-schema';
 
@@ -66,6 +67,7 @@ export default function PostSchedulerModal({
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAiModal, setShowAiModal] = useState(false);
+  const [modalStep, setModalStep] = useState<number>(0);
 
   const handleApplyAiData = (data: ExtractedFormData) => {
     if (data.content) setContent(data.content);
@@ -253,6 +255,21 @@ export default function PostSchedulerModal({
                 <X className="w-4 h-4" />
               </button>
             </div>
+          </div>
+
+          {/* Reusable Chevron Stepper Component Header Navigation */}
+          <div className="w-full pb-1">
+            <ChevronStepper
+              steps={[
+                { id: 0, title: 'Channels & Target', subtitle: `${selectedChannels.length} Channels` },
+                { id: 1, title: 'Content & Media', subtitle: 'Copy, Media, AI' },
+                { id: 2, title: 'Schedule & Publish', subtitle: 'Time & Dispatch' },
+              ]}
+              currentStep={modalStep}
+              onChange={(sId) => setModalStep(Number(sId))}
+              variant="blue"
+              size="sm"
+            />
           </div>
 
           {/* Publishing Channels Selector */}

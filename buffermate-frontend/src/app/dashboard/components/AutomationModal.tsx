@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { X, Bot, Sparkles, MessageCircle, Instagram, Facebook, AtSign, Check, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { SocialAutomation, SocialChannel } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface AutomationModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ export default function AutomationModal({
   );
   const [linkUrl, setLinkUrl] = useState(initialData?.link_url || 'https://buffermate.ai/deal');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [stepperStep, setStepperStep] = useState<number>(0);
 
   const addKeyword = () => {
     if (keywordInput.trim() && !keywords.includes(keywordInput.trim().toLowerCase())) {
@@ -142,6 +144,21 @@ export default function AutomationModal({
           >
             <X className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Reusable Chevron Stepper Component Modal Navigation */}
+        <div className="px-4 sm:px-6 py-2.5 bg-slate-50/60 border-b border-slate-100">
+          <ChevronStepper
+            steps={[
+              { id: 0, title: 'Trigger & Platform', subtitle: 'Channel & Type' },
+              { id: 1, title: 'Keyword Rules', subtitle: 'Match Triggers' },
+              { id: 2, title: 'DM & Response', subtitle: 'Action Payload' },
+            ]}
+            currentStep={stepperStep}
+            onChange={(sId) => setStepperStep(Number(sId))}
+            variant="blue"
+            size="sm"
+          />
         </div>
 
         {/* Form Body (Scrollable) */}

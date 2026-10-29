@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { parseLocalToUtcIso } from '@/lib/utils/timezone';
+import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 
 interface GeneratedPlatformVariant {
   platform: string;
@@ -73,6 +74,7 @@ interface BulkPostItem {
 export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (post: any) => void }) {
   // Mode selection: Single Studio vs Bulk Campaign
   const [activeTab, setActiveTab] = useState<'studio' | 'bulk' | 'ideas'>('studio');
+  const [studioStep, setStudioStep] = useState<number>(0);
 
   // Studio Form State
   const [topic, setTopic] = useState('Why modern businesses need automated social marketing in 2026');
@@ -595,28 +597,20 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
         </div>
       </div>
 
-      {/* FILTER & SEGMENTED TABS */}
-      <div className="flex items-center gap-1 bg-white/80 p-1 rounded-full border border-slate-200/60 shadow-2xs w-fit">
-        <button
-          onClick={() => setActiveTab('studio')}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            activeTab === 'studio'
-              ? 'bg-[#161616] text-white shadow-2xs'
-              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-          }`}
-        >
-          Post Studio
-        </button>
-        <button
-          onClick={() => setActiveTab('bulk')}
-          className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            activeTab === 'bulk'
-              ? 'bg-[#161616] text-white shadow-2xs'
-              : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100/70'
-          }`}
-        >
-          Bulk 30-Day Campaign
-        </button>
+      {/* STUDIO MODE NAVIGATION STEPPER */}
+      <div className="w-full max-w-xl overflow-x-auto pb-1">
+        <ChevronStepper
+          steps={[
+            { id: 'studio', title: 'Post Studio', subtitle: 'Single Multi-Channel' },
+            { id: 'bulk', title: 'Bulk 30-Day Campaign', subtitle: 'Autonomous AI Calendar' },
+          ]}
+          currentStep={activeTab}
+          onChange={(stepId) => setActiveTab(stepId as any)}
+          variant="purple"
+          size="sm"
+          showNumbers={false}
+          showIcons={false}
+        />
       </div>
 
       {/* 4 BENTO KPI CARDS */}
@@ -694,7 +688,23 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
 
       {activeTab === 'studio' ? (
         /* ==================== 1. SINGLE POST STUDIO ==================== */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="space-y-4">
+          {/* Reusable Chevron Stepper for Studio Lifecycle */}
+          <div className="w-full bg-white/70 p-2 rounded-3xl border border-slate-200/60 shadow-2xs">
+            <ChevronStepper
+              steps={[
+                { id: 0, title: 'Prompt & Strategy', subtitle: 'Target, Tone & Niche' },
+                { id: 1, title: 'Multi-Platform Engine', subtitle: 'AI Copy & Creative' },
+                { id: 2, title: 'Review & Schedule', subtitle: 'Direct Live Queuing' },
+              ]}
+              currentStep={studioStep}
+              onChange={(stepId) => setStudioStep(Number(stepId))}
+              variant="purple"
+              size="md"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Column: Generator Form (5 Cols) */}
           <div className="lg:col-span-5 bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/70 shadow-2xs space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -1096,6 +1106,7 @@ export default function AiContentStudio({ onSchedulePost }: { onSchedulePost?: (
               </div>
             </div>
           </div>
+        </div>
         </div>
       ) : (
         /* ==================== 2. BULK CAMPAIGN GENERATOR (30-DAY) ==================== */
