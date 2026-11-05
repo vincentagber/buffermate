@@ -128,5 +128,14 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::get('/jira/projects/{projectId}/reports/summary', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'summary']);
     Route::get('/jira/projects/{projectId}/reports/burndown', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'burndown']);
     Route::get('/jira/projects/{projectId}/reports/velocity', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'velocity']);
+
+    // Social Inbox & Jira Service Management Queues
+    Route::get('/inbox/conversations', [\App\Http\Controllers\Api\SocialInboxController::class, 'index']);
+    Route::post('/inbox/conversations', [\App\Http\Controllers\Api\SocialInboxController::class, 'store']);
+    Route::get('/inbox/conversations/{id}', [\App\Http\Controllers\Api\SocialInboxController::class, 'show']);
+    Route::patch('/inbox/conversations/{id}', [\App\Http\Controllers\Api\SocialInboxController::class, 'update']);
+    Route::post('/inbox/conversations/{id}/reply', [\App\Http\Controllers\Api\SocialInboxController::class, 'reply']);
+    Route::post('/inbox/conversations/{id}/convert-to-jira', [\App\Http\Controllers\Api\SocialInboxController::class, 'convertToJira']);
+    Route::get('/inbox/stats', [\App\Http\Controllers\Api\SocialInboxController::class, 'stats']);
 });
 
