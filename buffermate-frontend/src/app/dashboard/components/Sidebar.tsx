@@ -14,7 +14,6 @@ import {
   BarChart3,
   TrendingUp,
   Compass,
-  FlaskConical,
   DollarSign,
   Settings,
   LogOut,
@@ -217,12 +216,6 @@ export default function Sidebar({
           badgeColor: 'bg-[#0F172A] text-white',
         },
         {
-          id: 'content-studio',
-          alias: ['ai-autopilot'],
-          label: 'Content studio',
-          icon: PenTool,
-        },
-        {
           id: 'news-pilot',
           alias: ['news-discovery', 'news-automation'],
           label: 'News Pilot',
@@ -239,11 +232,6 @@ export default function Sidebar({
           id: 'roi-revenue',
           label: 'ROI & revenue',
           icon: DollarSign,
-        },
-        {
-          id: 'experiments',
-          label: 'Experiments',
-          icon: FlaskConical,
         },
       ],
     },

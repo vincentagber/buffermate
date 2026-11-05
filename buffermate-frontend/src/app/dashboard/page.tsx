@@ -57,7 +57,6 @@ import {
   TasksView,
   InboxView,
   RoiRevenueView,
-  ExperimentsView,
 } from './components/SocialynViews';
 import ReportsView from './components/ReportsView';
 import MembershipsRetentionView from './components/MembershipsRetentionView';
@@ -66,7 +65,6 @@ import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
 import GeneratePayRunModal from './components/GeneratePayRunModal';
-import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import NewsPilotView from './components/NewsPilotView';
@@ -744,13 +742,6 @@ export default function DashboardPage() {
                 >
                   <Megaphone className="w-3.5 h-3.5 text-purple-600" />
                   <span>Campaigns</span>
-                </button>
-                <button
-                  onClick={() => setCurrentTab('content-studio')}
-                  className="px-3.5 py-1.5 bg-[#EDE9FE] border border-[#DDD6FE] hover:bg-[#DDD6FE] rounded-full text-xs font-bold text-purple-900 transition-colors flex items-center space-x-1.5 shadow-2xs"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-700" />
-                  <span>AI Studio</span>
                 </button>
               </div>
             </div>
@@ -1654,17 +1645,6 @@ export default function DashboardPage() {
             </div>
           )}
           {/* =========================================================
-              VIEW 4: AI CONTENT STUDIO & AUTOMATION
-             ========================================================= */}
-          {(currentTab === 'ai-autopilot' || currentTab === 'content-studio') && (
-            <div className="animate-fade-in">
-              <AiContentStudio onSchedulePost={handleSavePost} />
-            </div>
-          )}
-
-
-
-          {/* =========================================================
               VIEW 5: SOCIAL CRM & CAPTURED LEADS
              ========================================================= */}
           {currentTab === 'social-crm' && (
@@ -2184,11 +2164,6 @@ export default function DashboardPage() {
               </div>
             );
           })()}
-
-          {/* =========================================================
-              VIEW: EXPERIMENTS
-             ========================================================= */}
-          {currentTab === 'experiments' && <ExperimentsView />}
 
           {/* =========================================================
               VIEW: ROI & REVENUE

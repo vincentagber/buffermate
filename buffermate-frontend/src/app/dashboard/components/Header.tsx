@@ -273,7 +273,6 @@ export default function Header({
             { id: 'campaigns', title: 'Journeys', subtitle: 'Campaigns' },
             { id: 'analytics', title: 'Analytics', subtitle: 'Live ROI' },
             { id: 'reports', title: 'Reports', subtitle: 'Clinic KPI' },
-            { id: 'content-studio', title: 'Studio', subtitle: 'AI Engine' },
           ]}
           currentStep={currentTab === 'overview' ? 'command-center' : currentTab}
           onChange={(stepId) => onSelectTab && onSelectTab(String(stepId))}

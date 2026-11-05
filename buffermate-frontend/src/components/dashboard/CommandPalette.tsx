@@ -25,7 +25,6 @@ import {
   MessageSquare,
   DollarSign,
   Compass,
-  FlaskConical,
   Radio,
   Layers,
   User,
@@ -168,16 +167,6 @@ export default function CommandPalette({
       tabId: 'inbox',
       action: () => navigateToTab('inbox'),
     },
-    {
-      id: 'nav-content-studio',
-      title: 'Content Studio',
-      category: 'Engage & AI',
-      subtitle: 'AI copywriter, viral hook studio & caption generator',
-      icon: PenTool,
-      shortcut: 'G C',
-      tabId: 'content-studio',
-      action: () => navigateToTab('content-studio'),
-    },
 
     // Growth Category
     {
@@ -188,15 +177,6 @@ export default function CommandPalette({
       icon: DollarSign,
       tabId: 'roi-revenue',
       action: () => navigateToTab('roi-revenue'),
-    },
-    {
-      id: 'nav-experiments',
-      title: 'Growth Experiments',
-      category: 'Growth',
-      subtitle: 'A/B hook testing, split traffic & algorithmic velocity',
-      icon: FlaskConical,
-      tabId: 'experiments',
-      action: () => navigateToTab('experiments'),
     },
 
     // Settings Category
