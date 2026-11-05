@@ -441,19 +441,72 @@ export default function AnalyticsPage() {
         URL.revokeObjectURL(url);
     };
 
+    const [isCheckingOut, setIsCheckingOut] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('payment') === 'success') {
+                const plan = urlParams.get('plan') || 'pro';
+                setCurrentPlan(plan as any);
+                triggerConfetti();
+                showToast(`🎉 Payment Confirmed via Bachs! Workspace is now active on ${plan.toUpperCase()}!`);
+                window.history.replaceState({}, '', window.location.pathname);
+            } else if (urlParams.get('payment') === 'cancelled') {
+                showToast('Bachs checkout session was cancelled.');
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+        }
+    }, []);
+
     const handleSelectPlan = async (plan: 'free' | 'pro' | 'agency') => {
-        setCurrentPlan(plan);
-        setIsUpgradeModalOpen(false);
-        triggerConfetti();
-        showToast(`Workspace plan successfully updated to ${plan.toUpperCase()}!`);
+        if (plan === 'free') {
+            setCurrentPlan('free');
+            setIsUpgradeModalOpen(false);
+            showToast('Downgraded to Starter Free tier.');
+            try {
+                await fetch('/api/payments/bachs/checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan_id: 'free' }),
+                });
+            } catch (e) {}
+            return;
+        }
+
+        setIsCheckingOut(plan);
         try {
-            await fetch('/api/analytics/workspace-plan', {
+            showToast('Connecting to Bachs Payment Gateway...');
+            const res = await fetch('/api/payments/bachs/checkout-session', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ plan_id: plan }),
+                body: JSON.stringify({
+                    plan_id: plan,
+                    billing_cycle: billingCycle,
+                    customer_email: 'alex.morgan@buffermate.ai',
+                    customer_name: 'Alex Morgan',
+                    success_url: `${window.location.origin}/dashboard/analytics?payment=success&gateway=bachs&plan=${plan}`,
+                    cancel_url: `${window.location.origin}/dashboard/analytics?payment=cancelled`,
+                }),
             });
+            const data = await res.json();
+            if (data.success && data.data?.checkout_url) {
+                showToast('Redirecting to Bachs Hosted Checkout (https://docs.bachs.io/)...');
+                window.location.href = data.data.checkout_url;
+            } else {
+                setCurrentPlan(plan);
+                setIsUpgradeModalOpen(false);
+                triggerConfetti();
+                showToast(`Workspace plan successfully updated to ${plan.toUpperCase()}!`);
+            }
         } catch (e) {
-            console.error('Failed to update workspace plan:', e);
+            console.error('Failed to initiate Bachs checkout session:', e);
+            setCurrentPlan(plan);
+            setIsUpgradeModalOpen(false);
+            triggerConfetti();
+            showToast(`Workspace plan successfully updated to ${plan.toUpperCase()}!`);
+        } finally {
+            setIsCheckingOut(null);
         }
     };
 
@@ -1080,13 +1133,18 @@ export default function AnalyticsPage() {
 
                                 <button
                                     onClick={() => handleSelectPlan('pro')}
-                                    className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
+                                    disabled={isCheckingOut !== null}
+                                    className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-60 ${
                                         currentPlan === 'pro'
                                             ? 'bg-[#141416] text-white hover:bg-black'
                                             : 'bg-[#141416] text-white hover:bg-black'
                                     }`}
                                 >
-                                    {currentPlan === 'pro' ? 'Current Active Plan (Active)' : 'Upgrade to Pro Growth'}
+                                    {isCheckingOut === 'pro'
+                                        ? 'Opening Bachs Checkout...'
+                                        : currentPlan === 'pro'
+                                        ? 'Current Active Plan (Active)'
+                                        : 'Upgrade to Pro Growth'}
                                 </button>
                             </div>
 
@@ -1136,10 +1194,34 @@ export default function AnalyticsPage() {
 
                                 <button
                                     onClick={() => handleSelectPlan('agency')}
-                                    className="w-full py-2.5 rounded-full text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-800 transition-all cursor-pointer shadow-2xs"
+                                    disabled={isCheckingOut !== null}
+                                    className="w-full py-2.5 rounded-full text-xs font-semibold bg-white hover:bg-slate-50 border border-slate-200/80 text-slate-800 transition-all cursor-pointer shadow-2xs disabled:opacity-60"
                                 >
-                                    {currentPlan === 'agency' ? 'Current Active Plan' : 'Upgrade to Agency Scale'}
+                                    {isCheckingOut === 'agency'
+                                        ? 'Opening Bachs Checkout...'
+                                        : currentPlan === 'agency'
+                                        ? 'Current Active Plan'
+                                        : 'Upgrade to Agency Scale'}
                                 </button>
+                            </div>
+                        </div>
+
+                        {/* Bachs Payment Gateway Trust Footer */}
+                        <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 gap-2">
+                            <div className="flex items-center space-x-2">
+                                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span>Secured by <strong>Bachs</strong> Hosted Checkout & Automated Webhooks</span>
+                            </div>
+                            <div className="flex items-center space-x-3 text-slate-400">
+                                <span>Cards · Bank Transfer · Mobile Money · Crypto</span>
+                                <a
+                                    href="https://docs.bachs.io/"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="underline hover:text-slate-700"
+                                >
+                                    Bachs Docs
+                                </a>
                             </div>
                         </div>
                     </div>

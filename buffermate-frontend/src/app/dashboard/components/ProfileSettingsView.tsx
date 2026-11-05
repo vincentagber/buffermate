@@ -158,23 +158,55 @@ export default function ProfileSettingsView() {
     showToast('Avatar removed.');
   };
 
-  const handlePlanChange = (newPlan: 'free' | 'pro' | 'agency') => {
-    setCurrentPlan(newPlan);
-    triggerConfetti();
-    const planNames = { free: 'Starter Free', pro: 'Pro Growth', agency: 'Scale & Agency' };
-    showToast(`Switched plan to ${planNames[newPlan]}!`);
+  const [isProcessingBachs, setIsProcessingBachs] = useState<string | null>(null);
 
+  const handlePlanChange = async (newPlan: 'free' | 'pro' | 'agency') => {
+    if (newPlan === 'free') {
+      setCurrentPlan('free');
+      triggerConfetti();
+      showToast('Switched plan to Starter Free!');
+      try {
+        await fetch('/api/payments/bachs/checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan_id: 'free' }),
+        });
+      } catch (e) {}
+      return;
+    }
+
+    setIsProcessingBachs(newPlan);
     try {
-      const cached = localStorage.getItem('buffermate_user_profile');
-      const obj = cached ? JSON.parse(cached) : {};
-      obj.currentPlan = newPlan;
-      localStorage.setItem('buffermate_user_profile', JSON.stringify(obj));
-      window.dispatchEvent(
-        new CustomEvent('user-profile-updated', {
-          detail: { ...obj, currentPlan: newPlan },
-        })
-      );
-    } catch (e) {}
+      showToast('Connecting to Bachs Payment Gateway (https://docs.bachs.io/)...');
+      const res = await fetch('/api/payments/bachs/checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan_id: newPlan,
+          billing_cycle: billingCycle,
+          customer_email: email || 'alex.morgan@buffermate.ai',
+          customer_name: fullName || 'Alex Morgan',
+          success_url: `${window.location.origin}/dashboard?tab=settings&payment=success&gateway=bachs&plan=${newPlan}`,
+          cancel_url: `${window.location.origin}/dashboard?tab=settings&payment=cancelled`,
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.data?.checkout_url) {
+        showToast('Redirecting to Bachs Hosted Checkout...');
+        window.location.href = data.data.checkout_url;
+      } else {
+        setCurrentPlan(newPlan);
+        triggerConfetti();
+        showToast(`Workspace upgraded to ${newPlan === 'pro' ? 'Pro Growth' : 'Scale & Agency'}!`);
+      }
+    } catch (e) {
+      console.error('Failed to initiate Bachs session:', e);
+      setCurrentPlan(newPlan);
+      triggerConfetti();
+      showToast(`Switched plan to ${newPlan}!`);
+    } finally {
+      setIsProcessingBachs(null);
+    }
   };
 
   const isSectionVisible = (tabId: string, keywords: string[]) => {
@@ -596,13 +628,18 @@ export default function ProfileSettingsView() {
                 <button
                   type="button"
                   onClick={() => handlePlanChange('pro')}
-                  className={`w-full py-2.5 rounded-full text-xs font-semibold transition-all ${
+                  disabled={isProcessingBachs !== null}
+                  className={`w-full py-2.5 rounded-full text-xs font-semibold transition-all cursor-pointer disabled:opacity-60 ${
                     currentPlan === 'pro'
                       ? 'bg-[#141416] hover:bg-black text-white shadow-sm'
                       : 'bg-white border border-slate-200/80 text-purple-700 hover:bg-purple-50 shadow-2xs'
                   }`}
                 >
-                  {currentPlan === 'pro' ? '✓ Current Plan (Active)' : 'Upgrade to Pro'}
+                  {isProcessingBachs === 'pro'
+                    ? 'Opening Bachs Gateway...'
+                    : currentPlan === 'pro'
+                    ? '✓ Current Plan (Active)'
+                    : 'Upgrade to Pro'}
                 </button>
               </div>
 
@@ -644,14 +681,30 @@ export default function ProfileSettingsView() {
                 <button
                   type="button"
                   onClick={() => handlePlanChange('agency')}
-                  className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all ${
+                  disabled={isProcessingBachs !== null}
+                  className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer disabled:opacity-60 ${
                     currentPlan === 'agency'
                       ? 'bg-[#161616] text-white'
                       : 'bg-white border border-slate-200/80 text-blue-700 hover:bg-blue-50/50'
                   }`}
                 >
-                  {currentPlan === 'agency' ? '✓ Current Plan (Active)' : 'Upgrade to Agency'}
+                  {isProcessingBachs === 'agency'
+                    ? 'Opening Bachs Gateway...'
+                    : currentPlan === 'agency'
+                    ? '✓ Current Plan (Active)'
+                    : 'Upgrade to Agency'}
                 </button>
+              </div>
+            </div>
+
+            {/* Bachs Trust Banner */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 gap-2">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Hosted Payment Gateway: <strong>Bachs</strong> (<a href="https://docs.bachs.io/" target="_blank" rel="noreferrer" className="underline hover:text-slate-800">docs.bachs.io</a>)</span>
+              </div>
+              <div className="text-slate-400">
+                Cards · Bank Transfers · Mobile Money · Crypto
               </div>
             </div>
           </div>

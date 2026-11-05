@@ -160,5 +160,14 @@ Route::middleware(['tenant.scope'])->group(function () {
     // Real-Time Analytics & Audience Intelligence
     Route::get('/analytics/audience', [\App\Http\Controllers\Api\AudienceAnalyticsController::class, 'index']);
     Route::post('/analytics/workspace-plan', [\App\Http\Controllers\Api\AudienceAnalyticsController::class, 'updatePlan']);
+
+    // Bachs Payment Gateway (https://docs.bachs.io/)
+    Route::post('/payments/bachs/checkout-session', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'createCheckoutSession']);
+    Route::get('/payments/bachs/session/{sessionId}', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'getSession']);
+    Route::get('/payments/bachs/plans', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'getPlans']);
 });
+
+// Bachs Public Webhook Receiver (https://docs.bachs.io/guides/webhooks/overview)
+Route::post('/webhooks/bachs', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'handleWebhook']);
+
 
