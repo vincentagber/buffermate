@@ -44,3 +44,4 @@ class BachsPayment extends Model
         return $this->belongsTo(Workspace::class, 'workspace_id');
     }
 }
+

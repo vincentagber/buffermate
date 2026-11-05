@@ -235,8 +235,8 @@ export default function PostSchedulerModal({
 
   return createPortal(
     <>
-      <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-3 md:p-6">
-        <div className="relative w-full max-w-5xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col lg:flex-row h-[94dvh] sm:h-auto sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+      <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col items-center justify-end sm:justify-center p-0 sm:p-3 md:p-6">
+        <div className="relative w-full max-w-5xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto my-0 sm:my-auto flex flex-col lg:flex-row h-[94dvh] sm:h-auto sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
           {/* Mobile Swipe Dismiss Handle */}
         <div className="lg:hidden pt-2.5 pb-1 flex justify-center w-full bg-white shrink-0">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full cursor-pointer" onClick={onClose} />

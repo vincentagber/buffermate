@@ -155,3 +155,4 @@ class BachsPaymentController extends Controller
         ]);
     }
 }
+
