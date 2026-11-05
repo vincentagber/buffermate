@@ -293,3 +293,4 @@ export default function PricingCards({ showTitle = true }: PricingCardsProps) {
     </div>
   );
 }
+
