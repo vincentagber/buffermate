@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Zap,
   Play,
@@ -52,6 +53,11 @@ export default function JiraAutomationsView({ project }: JiraAutomationsViewProp
   const [isBuilderOpen, setIsBuilderOpen] = useState(false);
   const [testingRuleId, setTestingRuleId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // New Rule Form State
   const [ruleName, setRuleName] = useState('');
@@ -402,8 +408,8 @@ export default function JiraAutomationsView({ project }: JiraAutomationsViewProp
       )}
 
       {/* New Automation Rule Builder Modal */}
-      {isBuilderOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-4">
+      {isBuilderOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-4">
           <div className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col max-h-[94dvh] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/70">
               <div className="flex items-center space-x-2.5">
@@ -539,7 +545,8 @@ export default function JiraAutomationsView({ project }: JiraAutomationsViewProp
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

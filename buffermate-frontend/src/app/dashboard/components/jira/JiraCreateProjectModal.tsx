@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, FolderGit2, Check, Sparkles, Layers, CheckSquare } from 'lucide-react';
 import { JiraProject, ProjectTemplate } from './types';
 
@@ -23,8 +24,13 @@ export default function JiraCreateProjectModal({
   const [lead, setLead] = useState('Alex Morgan');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleNameChange = (val: string) => {
     setName(val);
@@ -76,8 +82,8 @@ export default function JiraCreateProjectModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-4 md:p-6">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-4 md:p-6">
       <div className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col max-h-[94dvh] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
         {/* Header */}
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
@@ -235,7 +241,8 @@ export default function JiraCreateProjectModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

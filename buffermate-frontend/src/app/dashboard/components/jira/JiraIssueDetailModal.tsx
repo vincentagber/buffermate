@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   Check,
@@ -73,6 +74,11 @@ export default function JiraIssueDetailModal({
   const [isUploadingAttachment, setIsUploadingAttachment] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editCommentText, setEditCommentText] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!issueIdOrKey) return;
@@ -390,8 +396,10 @@ export default function JiraIssueDetailModal({
   const completedSubtasks = subtasks.filter((s) => s.status === 'done').length;
   const subtaskPct = subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-3 md:p-6">
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-3 md:p-6">
       <div className="relative w-full max-w-5xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col h-[94dvh] sm:h-auto sm:max-h-[calc(100dvh-3rem)] overflow-hidden">
         {/* Top Header Bar */}
         <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/70">
@@ -1156,7 +1164,8 @@ export default function JiraIssueDetailModal({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

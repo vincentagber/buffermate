@@ -296,6 +296,7 @@ export default function Sidebar({
         {isCollapsed ? (
           <button
             onClick={() => {
+              if (onCloseMobile) onCloseMobile();
               if (onOpenPostModal) onOpenPostModal();
               else if (onOpenCreateModal) onOpenCreateModal();
             }}
@@ -307,6 +308,7 @@ export default function Sidebar({
         ) : (
           <button
             onClick={() => {
+              if (onCloseMobile) onCloseMobile();
               if (onOpenPostModal) onOpenPostModal();
               else if (onOpenCreateModal) onOpenCreateModal();
             }}

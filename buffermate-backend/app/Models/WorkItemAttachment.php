@@ -26,3 +26,4 @@ class WorkItemAttachment extends Model
         return $this->belongsTo(WorkItem::class);
     }
 }
+

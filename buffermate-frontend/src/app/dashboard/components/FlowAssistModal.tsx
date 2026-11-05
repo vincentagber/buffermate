@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Sparkles,
   Send,
@@ -94,7 +95,12 @@ export default function FlowAssistModal({
     },
   ]);
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const toggleClient = (id: string) => {
     setClients(clients.map((c) => (c.id === id ? { ...c, selected: !c.selected } : c)));
@@ -111,8 +117,8 @@ export default function FlowAssistModal({
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
       <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
         <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-2xl border border-slate-100 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
           {/* Header */}
@@ -212,6 +218,7 @@ export default function FlowAssistModal({
         </div>
       </div>
     </div>
-  </div>
+  </div>,
+  document.body
 );
 }

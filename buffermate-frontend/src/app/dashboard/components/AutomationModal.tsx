@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Bot, Sparkles, MessageCircle, Instagram, Facebook, AtSign, Check, Plus, Trash2, RefreshCw } from 'lucide-react';
 import { SocialAutomation, SocialChannel } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
@@ -118,10 +119,15 @@ export default function AutomationModal({
     { id: 'whatsapp', name: 'WhatsApp' },
   ];
 
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
       <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
         <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
           {/* Header */}
@@ -340,6 +346,7 @@ export default function AutomationModal({
         </form>
       </div>
     </div>
-  </div>
+  </div>,
+  document.body
 );
 }

@@ -233,8 +233,8 @@ export default function JiraProjectHub() {
           })}
         </div>
 
-        {projects.length > 1 && (
-          <div className="flex items-center space-x-2 shrink-0">
+        <div className="flex items-center space-x-2 shrink-0">
+          {projects.length > 1 && (
             <select
               value={selectedProject?.id}
               onChange={(e) => {
@@ -249,8 +249,18 @@ export default function JiraProjectHub() {
                 </option>
               ))}
             </select>
-          </div>
-        )}
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsCreateProjectOpen(true)}
+            className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
+            title="Create New Project"
+          >
+            <Plus className="w-3.5 h-3.5 text-emerald-400" />
+            <span>New Project</span>
+          </button>
+        </div>
       </div>
 
       {/* Tab Views */}

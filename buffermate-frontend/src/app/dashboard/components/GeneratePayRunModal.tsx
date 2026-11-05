@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronRight, CheckCircle2, ShieldCheck, DollarSign, Calendar, Users, FileSpreadsheet } from 'lucide-react';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
 import { triggerConfetti } from '@/components/ui/Confetti';
@@ -29,8 +30,13 @@ export default function GeneratePayRunModal({
   const [payStructure, setPayStructure] = useState('Standard Salaried + Bonus Tier');
   const [includeAllowances, setIncludeAllowances] = useState(true);
   const [includeStatutory, setIncludeStatutory] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const steps: ChevronStepItem[] = [
     {
@@ -76,8 +82,8 @@ export default function GeneratePayRunModal({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in">
       <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
         <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
           {/* Modal Header */}
@@ -292,7 +298,8 @@ export default function GeneratePayRunModal({
         </div>
       </div>
     </div>
-  </div>
+  </div>,
+  document.body
 );
 }
 

@@ -172,3 +172,4 @@ class JiraAutomationController extends Controller
         ]);
     }
 }
+
