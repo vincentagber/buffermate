@@ -204,20 +204,41 @@ export default function AnalyticsPage() {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
     const [currentPlan, setCurrentPlan] = useState<'free' | 'pro' | 'agency'>('pro');
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+    const showToast = (msg: string) => {
+        setToastMessage(msg);
+        setTimeout(() => setToastMessage(null), 3500);
+    };
 
     // Real database & Laravel metrics state
     const [stats, setStats] = useState<any>(null);
     const [realPosts, setRealPosts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [audienceData, setAudienceData] = useState<any>(null);
 
     const loadAnalyticsData = async () => {
         try {
-            // 1. Fetch real aggregated analytics from Laravel backend
-            const statsRes = await fetch('/api/dashboard/stats');
+            // 1. Fetch real aggregated analytics & audience intelligence from Laravel backend
+            const [statsRes, audienceRes] = await Promise.all([
+                fetch('/api/dashboard/stats'),
+                fetch(`/api/analytics/audience?channel=${selectedPlatform}&timeframe=${timeframe}D`),
+            ]);
+
             if (statsRes.ok) {
                 const body = await statsRes.json();
                 if (body.success && body.data) {
                     setStats(body.data);
+                }
+            }
+
+            if (audienceRes.ok) {
+                const aBody = await audienceRes.json();
+                if (aBody.success && aBody.data) {
+                    setAudienceData(aBody.data);
+                    if (aBody.data.active_plan) {
+                        setCurrentPlan(aBody.data.active_plan);
+                    }
                 }
             }
 
@@ -262,7 +283,7 @@ export default function AnalyticsPage() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [selectedPlatform, timeframe]);
 
     const activeOption = PLATFORM_OPTIONS.find((p) => p.id === selectedPlatform) || PLATFORM_OPTIONS[0];
     const data = ANALYTICS_BY_PLATFORM[selectedPlatform] || ANALYTICS_BY_PLATFORM.all;
@@ -273,6 +294,18 @@ export default function AnalyticsPage() {
 
     // Compute dynamic metrics reflecting real database metrics
     const currentMetrics = useMemo(() => {
+        if (audienceData?.metrics && Array.isArray(audienceData.metrics)) {
+            const icons = [Eye, MousePointerClick, Users, Clock];
+            return audienceData.metrics.map((m: any, i: number) => ({
+                label: m.label,
+                value: m.value,
+                change: m.change,
+                trend: (m.trend || (m.change?.startsWith('+') ? 'up' : 'down')) as 'up' | 'down',
+                sub: m.sub,
+                icon: icons[i] || Eye,
+            }));
+        }
+
         if (!isChannelConnected) {
             return [
                 { label: 'Total Impressions', value: '0', sub: 'Channel unconfigured', icon: Eye },
@@ -297,10 +330,19 @@ export default function AnalyticsPage() {
             { label: data.metrics[2]?.label || 'New Followers', value: newFollowers, change: '-2.1%', trend: 'down' as const, icon: Users },
             { label: 'Best Time to Post', value: data.metrics[3]?.value || '10:00 AM', sub: data.metrics[3]?.sub || 'Wednesdays', icon: Clock },
         ];
-    }, [isChannelConnected, selectedPlatform, stats, realPosts, data.metrics]);
+    }, [audienceData, isChannelConnected, selectedPlatform, stats, realPosts, data.metrics]);
 
     // Format top performing posts from real database
     const displayedPosts = useMemo(() => {
+        if (audienceData?.top_posts && Array.isArray(audienceData.top_posts) && audienceData.top_posts.length > 0) {
+            return audienceData.top_posts.map((p: any) => ({
+                title: p.title,
+                views: p.views?.replace(/\s*views\s*$/i, ''),
+                rate: p.rate,
+                date: p.date,
+            }));
+        }
+
         if (realPosts.length > 0) {
             return realPosts.slice(0, 3).map((p) => {
                 const results = p.provider_results || {};
@@ -319,7 +361,7 @@ export default function AnalyticsPage() {
             ...p,
             views: p.views.replace(/\s*views\s*$/i, '')
         }));
-    }, [realPosts, data.posts]);
+    }, [audienceData, realPosts, data.posts]);
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
@@ -328,6 +370,15 @@ export default function AnalyticsPage() {
 
     // Format chart data for Recharts
     const chartData = useMemo(() => {
+        if (audienceData?.chart_data && Array.isArray(audienceData.chart_data)) {
+            return audienceData.chart_data.map((c: any) => ({
+                name: c.name,
+                impressions: c.impressions,
+                engagements: c.engagement,
+                reach: c.reach,
+            }));
+        }
+
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return data.chartValues.map((val, idx) => {
             const impressions = Math.round(val * 125);
@@ -339,7 +390,7 @@ export default function AnalyticsPage() {
                 reach: Math.round(impressions * 0.78),
             };
         });
-    }, [data.chartValues]);
+    }, [audienceData, data.chartValues]);
 
     const handleDownloadCSV = () => {
         const lines: string[] = [];
@@ -363,7 +414,7 @@ export default function AnalyticsPage() {
         // Section 2: Engagement Growth Breakdown
         lines.push('"Section","Monthly Engagement Growth"');
         lines.push('"Month","Estimated Impressions","Estimated Reach","Estimated Engagements"');
-        chartData.forEach((row) => {
+        chartData.forEach((row: any) => {
             lines.push(`"${row.name}","${row.impressions}","${row.reach}","${row.engagements}"`);
         });
         lines.push('');
@@ -390,10 +441,20 @@ export default function AnalyticsPage() {
         URL.revokeObjectURL(url);
     };
 
-    const handleSelectPlan = (plan: 'free' | 'pro' | 'agency') => {
+    const handleSelectPlan = async (plan: 'free' | 'pro' | 'agency') => {
         setCurrentPlan(plan);
         setIsUpgradeModalOpen(false);
         triggerConfetti();
+        showToast(`Workspace plan successfully updated to ${plan.toUpperCase()}!`);
+        try {
+            await fetch('/api/analytics/workspace-plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ plan_id: plan }),
+            });
+        } catch (e) {
+            console.error('Failed to update workspace plan:', e);
+        }
     };
 
     return (
@@ -628,7 +689,7 @@ export default function AnalyticsPage() {
 
                     {/* Key Metrics */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {currentMetrics.map((metric, i) => (
+                        {currentMetrics.map((metric: any, i: number) => (
                             <div key={i} className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="w-9 h-9 rounded-2xl bg-slate-50 text-slate-700 border border-slate-100 flex items-center justify-center">
@@ -828,7 +889,7 @@ export default function AnalyticsPage() {
                                     <span className="text-xs font-semibold text-slate-500">{displayedPosts.length} posts</span>
                                 </div>
                                 <div className="space-y-3">
-                                    {displayedPosts.map((post, i) => (
+                                    {displayedPosts.map((post: any, i: number) => (
                                         <div
                                             key={i}
                                             className="p-3.5 rounded-2xl bg-slate-50/70 border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all cursor-pointer group space-y-1.5"
@@ -1234,6 +1295,13 @@ export default function AnalyticsPage() {
                             </button>
                         </div>
                     </div>
+                </div>
+            )}
+            {/* Toast Notification */}
+            {toastMessage && (
+                <div className="fixed bottom-6 right-6 z-50 bg-[#141416] text-white px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-semibold flex items-center space-x-2 animate-bounce">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>{toastMessage}</span>
                 </div>
             )}
         </div>

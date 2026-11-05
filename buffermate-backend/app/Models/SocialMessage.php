@@ -27,3 +27,4 @@ class SocialMessage extends Model
         return $this->belongsTo(SocialConversation::class, 'conversation_id');
     }
 }
+

@@ -53,3 +53,4 @@ class SocialConversation extends Model
         return $this->belongsTo(WorkItem::class, 'work_item_id');
     }
 }
+

@@ -333,7 +333,7 @@ export default function JiraProjectHub() {
       )}
 
       {/* Issue Detail Modal */}
-      {selectedProject && selectedIssueIdOrKey && (
+      {selectedIssueIdOrKey && (
         <JiraIssueDetailModal
           issueIdOrKey={selectedIssueIdOrKey}
           onClose={() => setSelectedIssueIdOrKey(null)}

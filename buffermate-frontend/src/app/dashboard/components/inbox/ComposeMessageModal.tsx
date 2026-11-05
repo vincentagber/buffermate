@@ -87,41 +87,40 @@ export default function ComposeMessageModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
-      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
-          {/* Header */}
-          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-200/60 shadow-2xs font-bold">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-slate-900 tracking-tight">Compose Outbound Message</h2>
-                <p className="text-xs text-slate-500">Dispatch direct communication across social channels</p>
-              </div>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-4 md:p-6">
+      <div className="relative w-full max-w-xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col max-h-[94dvh] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-200/60 shadow-2xs font-bold">
+              <MessageSquare className="w-5 h-5" />
             </div>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 tracking-tight">Compose Outbound Message</h2>
+              <p className="text-xs text-slate-500">Dispatch direct communication across social channels</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0 flex-1">
-            {error && (
-              <div className="p-3 bg-rose-50 text-rose-700 text-xs rounded-xl border border-rose-200 flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0 flex-1 pb-10">
+          {error && (
+            <div className="p-3 bg-rose-50 text-rose-700 text-xs rounded-xl border border-rose-200 flex items-center space-x-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
 
-            {/* Channel Selector */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Delivery Channel</label>
-              <div className="grid grid-cols-4 gap-2">
+          {/* Channel Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 block">Delivery Channel</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {[
                   { id: 'instagram', label: 'Instagram' },
                   { id: 'linkedin', label: 'LinkedIn' },
@@ -251,6 +250,6 @@ export default function ComposeMessageModal({
           </form>
         </div>
       </div>
-    </div>
   );
 }
+

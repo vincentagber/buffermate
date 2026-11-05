@@ -297,3 +297,4 @@ class SocialInboxSeeder extends Seeder
         }
     }
 }
+

@@ -21,7 +21,9 @@ import {
   Edit3,
   Eye,
   EyeOff,
-  AtSign
+  AtSign,
+  Layers,
+  FileText
 } from 'lucide-react';
 import { JiraIssue, JiraProject, IssueStatus, IssuePriority, IssueType } from './types';
 import { IssueTypeIcon, IssuePriorityIcon, IssueStatusBadge } from './JiraIssueIcons';
@@ -32,7 +34,7 @@ interface JiraIssueDetailModalProps {
   onClose: () => void;
   onIssueUpdated: (updated: JiraIssue) => void;
   onIssueDeleted: (deletedId: string) => void;
-  project: JiraProject;
+  project?: JiraProject | null;
   availableIssues?: JiraIssue[];
 }
 
@@ -47,6 +49,7 @@ export default function JiraIssueDetailModal({
   const [issue, setIssue] = useState<JiraIssue | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
+  const [mobileSection, setMobileSection] = useState<'overview' | 'details'>('overview');
   const [newComment, setNewComment] = useState('');
   const [newSubtaskTitle, setNewSubtaskTitle] = useState('');
   const [isAddingSubtask, setIsAddingSubtask] = useState(false);
@@ -177,10 +180,11 @@ export default function JiraIssueDetailModal({
 
   const handleAddSubtask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!issue || !newSubtaskTitle.trim()) return;
+    const projectId = project?.id || (issue as any)?.project_id || (issue as any)?.project?.id;
+    if (!issue || !newSubtaskTitle.trim() || !projectId) return;
 
     try {
-      const res = await fetch(`/api/jira/projects/${project.id}/issues`, {
+      const res = await fetch(`/api/jira/projects/${projectId}/issues`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -279,43 +283,80 @@ export default function JiraIssueDetailModal({
   const subtaskPct = subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
-      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="relative w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
-          {/* Top Header Bar */}
-          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
-            <div className="flex items-center space-x-2 min-w-0">
-              <span className="text-xs font-bold text-slate-400 font-mono shrink-0">
-                {project.key}
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col justify-end sm:justify-center p-0 sm:p-3 md:p-6">
+      <div className="relative w-full max-w-5xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-0 sm:my-auto flex flex-col h-[94dvh] sm:h-auto sm:max-h-[calc(100dvh-3rem)] overflow-hidden">
+        {/* Top Header Bar */}
+        <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/70">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
+            <span className="text-xs font-bold text-slate-400 font-mono shrink-0">
+              {project?.key || (issue as any)?.project?.key || 'BM'}
+            </span>
+            <span className="text-slate-300 shrink-0">/</span>
+            <div className="flex items-center space-x-1.5 px-2 sm:px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-mono font-bold shrink-0">
+              <IssueTypeIcon type={issue?.type || 'task'} className="w-3.5 h-3.5" />
+              <span>{issue?.key || issueIdOrKey}</span>
+            </div>
+            {issue?.resolution && (
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                Resolved
               </span>
-              <span className="text-slate-300 shrink-0">/</span>
-              <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-mono font-bold shrink-0">
-                <IssueTypeIcon type={issue?.type || 'task'} className="w-3.5 h-3.5" />
-                <span>{issue?.key || issueIdOrKey}</span>
-              </div>
-              {issue?.resolution && (
-                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                  Resolved
+            )}
+          </div>
+
+          <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
+            <button
+              onClick={handleDeleteIssue}
+              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all cursor-pointer"
+              title="Delete issue"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Tab Switcher on screens < lg */}
+        {issue && !isLoading && (
+          <div className="lg:hidden flex items-center border-b border-slate-100 bg-slate-50/90 px-3 sm:px-4 py-2 gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => setMobileSection('overview')}
+              className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+                mobileSection === 'overview'
+                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/80'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5 text-blue-600" />
+              <span>Overview & Comments</span>
+              {(issue.comments?.length ?? 0) > 0 && (
+                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-700 font-mono">
+                  {issue.comments?.length}
                 </span>
               )}
-            </div>
-
-            <div className="flex items-center space-x-2 shrink-0">
-              <button
-                onClick={handleDeleteIssue}
-                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all cursor-pointer"
-                title="Delete issue"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileSection('details')}
+              className={`flex-1 py-1.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+                mobileSection === 'details'
+                  ? 'bg-white text-slate-900 shadow-2xs border border-slate-200/80'
+                  : 'text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <Layers className="w-3.5 h-3.5 text-purple-600" />
+              <span>Status & Details</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-blue-50 text-blue-700 font-bold uppercase font-mono">
+                {issue.status}
+              </span>
+            </button>
           </div>
+        )}
 
         {/* Modal Body: 2-Column Responsive Layout */}
         {isLoading || !issue ? (
@@ -323,7 +364,9 @@ export default function JiraIssueDetailModal({
         ) : (
           <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
             {/* Left Content Area */}
-            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
+            <div className={`flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6 pb-14 ${
+              mobileSection === 'details' ? 'hidden lg:block' : 'block'
+            }`}>
               {/* Title Section */}
               <div className="space-y-1">
                 {isEditingTitle ? (
@@ -694,7 +737,9 @@ export default function JiraIssueDetailModal({
             </div>
 
             {/* Right Details Panel */}
-            <div className="w-full lg:w-80 xl:w-96 shrink-0 bg-slate-50/80 border-t lg:border-t-0 lg:border-l border-slate-200/80 p-4 sm:p-6 space-y-5 overflow-y-auto min-h-0">
+            <div className={`w-full lg:w-80 xl:w-96 shrink-0 bg-slate-50/80 border-t lg:border-t-0 lg:border-l border-slate-200/80 p-4 sm:p-6 space-y-5 overflow-y-auto min-h-0 pb-20 ${
+              mobileSection === 'overview' ? 'hidden lg:block' : 'block'
+            }`}>
               {/* Status Selector */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -864,7 +909,6 @@ export default function JiraIssueDetailModal({
         )}
       </div>
     </div>
-  </div>
-);
+  );
 }
 

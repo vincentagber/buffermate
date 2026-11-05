@@ -137,5 +137,13 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/inbox/conversations/{id}/reply', [\App\Http\Controllers\Api\SocialInboxController::class, 'reply']);
     Route::post('/inbox/conversations/{id}/convert-to-jira', [\App\Http\Controllers\Api\SocialInboxController::class, 'convertToJira']);
     Route::get('/inbox/stats', [\App\Http\Controllers\Api\SocialInboxController::class, 'stats']);
+
+    // Real-Time Clinic Intelligence & Executive Reports
+    Route::get('/reports/clinic-kpi', [\App\Http\Controllers\Api\ClinicReportController::class, 'index']);
+    Route::post('/reports/apply-utilization-lift', [\App\Http\Controllers\Api\ClinicReportController::class, 'applyUtilizationLift']);
+
+    // Real-Time Analytics & Audience Intelligence
+    Route::get('/analytics/audience', [\App\Http\Controllers\Api\AudienceAnalyticsController::class, 'index']);
+    Route::post('/analytics/workspace-plan', [\App\Http\Controllers\Api\AudienceAnalyticsController::class, 'updatePlan']);
 });
 

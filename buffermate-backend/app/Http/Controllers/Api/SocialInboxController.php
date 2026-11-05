@@ -319,3 +319,4 @@ class SocialInboxController extends Controller
         ]);
     }
 }
+

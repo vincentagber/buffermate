@@ -18,6 +18,7 @@ import {
   AlertCircle,
   Tag,
   ChevronDown,
+  ChevronLeft,
   RefreshCw,
   SlidersHorizontal,
 } from 'lucide-react';
@@ -87,6 +88,7 @@ export default function InboxView() {
   const [activeQueue, setActiveQueue] = useState<'all' | 'unassigned' | 'assigned_to_me' | 'waiting_support' | 'resolved'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [mobileInboxView, setMobileInboxView] = useState<'list' | 'thread'>('list');
 
   // Composer & reply states
   const [replyMode, setReplyMode] = useState<'public' | 'internal'>('public');
@@ -179,6 +181,7 @@ export default function InboxView() {
 
   const loadConversationDetails = async (id: string) => {
     try {
+      setMobileInboxView('thread');
       const res = await fetch(`/api/inbox/conversations/${id}`);
       const data = await res.json();
       if (data.success && data.data) {
@@ -573,7 +576,9 @@ export default function InboxView() {
       {/* SPLIT VIEW (40/60) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Column (Conversations List, 5 Cols) */}
-        <div className="lg:col-span-5 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/70 shadow-2xs space-y-3 flex flex-col h-[640px]">
+        <div className={`lg:col-span-5 bg-white rounded-3xl p-4 sm:p-5 border border-slate-200/70 shadow-2xs space-y-3 flex flex-col h-[640px] ${
+          mobileInboxView === 'thread' ? 'hidden lg:flex' : 'flex'
+        }`}>
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
             <div className="flex items-center space-x-2">
               <span className="text-xs font-bold text-slate-900">Direct Conversations</span>
@@ -672,13 +677,24 @@ export default function InboxView() {
         </div>
 
         {/* Right Column (Active Thread & Jira Controls, 7 Cols) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/70 shadow-2xs flex flex-col justify-between h-[640px]">
+        <div className={`lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/70 shadow-2xs flex flex-col justify-between h-[640px] ${
+          mobileInboxView === 'list' ? 'hidden lg:flex' : 'flex'
+        }`}>
           {activeConversation ? (
             <div className="flex flex-col h-full min-h-0">
               {/* Thread Header: Customer info & Jira controls */}
               <div className="pb-4 border-b border-slate-100 shrink-0 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setMobileInboxView('list')}
+                      className="lg:hidden p-1.5 -ml-1 text-slate-500 hover:text-slate-900 rounded-xl hover:bg-slate-100 flex items-center gap-1 text-xs font-semibold cursor-pointer shrink-0 border border-slate-200"
+                      title="Back to conversations"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      <span>Back</span>
+                    </button>
                     <img
                       src={activeConversation.sender_avatar}
                       alt={activeConversation.sender_name}
@@ -934,3 +950,4 @@ export default function InboxView() {
     </div>
   );
 }
+
