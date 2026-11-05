@@ -106,3 +106,4 @@ class SettingsControllerTest extends TestCase
         $this->assertEquals('starter', $workspace->plan_id);
     }
 }
+

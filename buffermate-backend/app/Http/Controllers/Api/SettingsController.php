@@ -336,3 +336,4 @@ class SettingsController extends Controller
         return $invoices;
     }
 }
+

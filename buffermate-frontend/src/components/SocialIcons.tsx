@@ -96,6 +96,8 @@ export function TwitterIcon({ className = 'w-4 h-4', size, ...props }: IconProps
   );
 }
 
+export const XIcon = TwitterIcon;
+
 export function LinkedInIcon({ className = 'w-4 h-4', size, ...props }: IconProps) {
   return (
     <svg
