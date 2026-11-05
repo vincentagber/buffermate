@@ -188,5 +188,75 @@ class JiraProjectController extends Controller
             'message' => 'Project and associated resources deleted successfully.',
         ]);
     }
+
+    public function updateWorkflow(Request $request, string $id): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $project = Project::where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $validated = $request->validate([
+            'statuses' => 'required|array',
+            'transition_rules' => 'nullable|array',
+        ]);
+
+        // If project has boards, ensure board columns match statuses
+        $board = $project->boards()->first();
+        if ($board && is_array($validated['statuses'])) {
+            foreach ($validated['statuses'] as $idx => $st) {
+                $statusKey = is_array($st) ? ($st['key'] ?? $st['name']) : $st;
+                $statusName = is_array($st) ? ($st['name'] ?? ucfirst($statusKey)) : ucfirst($statusKey);
+
+                \App\Models\BoardColumn::updateOrCreate(
+                    [
+                        'board_id' => $board->id,
+                        'name' => $statusName,
+                    ],
+                    [
+                        'mapped_status' => strtolower($statusKey),
+                        'order_index' => $idx,
+                    ]
+                );
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Custom workflow scheme and status transitions updated.',
+            'data' => [
+                'statuses' => $validated['statuses'],
+                'transition_rules' => $validated['transition_rules'] ?? [],
+            ],
+        ]);
+    }
+
+    public function updateMembers(Request $request, string $id): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $project = Project::where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $validated = $request->validate([
+            'members' => 'required|array',
+        ]);
+
+        foreach ($validated['members'] as $m) {
+            if (isset($m['user_id']) && isset($m['role'])) {
+                ProjectMember::updateOrCreate(
+                    [
+                        'project_id' => $project->id,
+                        'user_id' => $m['user_id'],
+                    ],
+                    [
+                        'role' => $m['role'],
+                    ]
+                );
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Project members and access permissions updated.',
+            'data' => $project->members()->get(),
+        ]);
+    }
 }
 

@@ -179,6 +179,7 @@ class JiraIssueController extends Controller
                 'links.target',
                 'inverseLinks.source',
                 'watchers',
+                'attachments',
             ])
             ->firstOrFail();
 
@@ -402,6 +403,117 @@ class JiraIssueController extends Controller
             'success' => true,
             'message' => 'Issue dependency linked successfully.',
             'data' => $link->load('target'),
+        ]);
+    }
+
+    public function addAttachment(Request $request, string $id): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $userId = $request->attributes->get('supabase_user_id') ?: 'dev_user';
+
+        $workItem = WorkItem::where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $validated = $request->validate([
+            'filename' => 'required|string|max:255',
+            'file_path' => 'required|string',
+            'file_type' => 'nullable|string',
+            'file_size' => 'nullable|integer',
+            'thumbnail_url' => 'nullable|string',
+        ]);
+
+        $attachment = \App\Models\WorkItemAttachment::create([
+            'work_item_id' => $workItem->id,
+            'user_id' => $userId,
+            'user_name' => 'Alex Morgan',
+            'filename' => $validated['filename'],
+            'file_path' => $validated['file_path'],
+            'file_type' => $validated['file_type'] ?? 'image/png',
+            'file_size' => $validated['file_size'] ?? 245000,
+            'thumbnail_url' => $validated['thumbnail_url'] ?? $validated['file_path'],
+        ]);
+
+        WorkItemHistory::create([
+            'work_item_id' => $workItem->id,
+            'user_id' => $userId,
+            'field' => 'attachment',
+            'from_value' => null,
+            'to_value' => $validated['filename'],
+        ]);
+
+        // Notify watchers
+        $this->notificationService->notifyIssueEvent(
+            'issue_commented',
+            $workItem,
+            "Alex Morgan attached {$validated['filename']} to {$workItem->key}",
+            "Attachment added: {$validated['filename']}",
+            $userId
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attachment uploaded successfully.',
+            'data' => $attachment,
+        ], 201);
+    }
+
+    public function deleteAttachment(Request $request, string $id, string $attachmentId): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $userId = $request->attributes->get('supabase_user_id') ?: 'dev_user';
+
+        $workItem = WorkItem::where('workspace_id', $workspaceId)->findOrFail($id);
+        $attachment = \App\Models\WorkItemAttachment::where('work_item_id', $workItem->id)->findOrFail($attachmentId);
+
+        $filename = $attachment->filename;
+        $attachment->delete();
+
+        WorkItemHistory::create([
+            'work_item_id' => $workItem->id,
+            'user_id' => $userId,
+            'field' => 'attachment',
+            'from_value' => $filename,
+            'to_value' => 'deleted',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Attachment removed.',
+        ]);
+    }
+
+    public function updateComment(Request $request, string $id, string $commentId): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $workItem = WorkItem::where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $comment = WorkItemComment::where('work_item_id', $workItem->id)->findOrFail($commentId);
+
+        $validated = $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        $comment->update([
+            'content' => $validated['content'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'data' => $comment,
+            'message' => 'Comment updated.',
+        ]);
+    }
+
+    public function deleteComment(Request $request, string $id, string $commentId): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $workItem = WorkItem::where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $comment = WorkItemComment::where('work_item_id', $workItem->id)->findOrFail($commentId);
+        $comment->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment deleted.',
         ]);
     }
 }

@@ -235,3 +235,4 @@ class ClinicReportController extends Controller
         ]);
     }
 }
+

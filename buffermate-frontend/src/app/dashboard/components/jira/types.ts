@@ -77,6 +77,7 @@ export interface JiraIssue {
   comments?: JiraComment[];
   history?: JiraHistory[];
   links?: JiraLink[];
+  attachments?: JiraAttachment[];
   parent?: JiraIssue | null;
   sprint?: JiraSprint | null;
 }
@@ -106,6 +107,19 @@ export interface JiraLink {
   target_work_item_id: string;
   relationship: 'blocks' | 'is_blocked_by' | 'relates_to' | 'duplicates';
   target?: JiraIssue;
+}
+
+export interface JiraAttachment {
+  id: string;
+  work_item_id: string;
+  user_id: string;
+  user_name?: string;
+  filename: string;
+  file_path: string;
+  file_type: string;
+  file_size: number;
+  thumbnail_url?: string;
+  created_at: string;
 }
 
 export interface JiraBoard {

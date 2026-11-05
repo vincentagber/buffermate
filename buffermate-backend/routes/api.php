@@ -98,6 +98,8 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/jira/projects', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'store']);
     Route::get('/jira/projects/{idOrKey}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'show']);
     Route::put('/jira/projects/{id}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'update']);
+    Route::put('/jira/projects/{id}/workflow', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'updateWorkflow']);
+    Route::put('/jira/projects/{id}/members', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'updateMembers']);
     Route::delete('/jira/projects/{id}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'destroy']);
 
     Route::get('/jira/projects/{projectId}/issues', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'index']);
@@ -106,9 +108,20 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::patch('/jira/issues/{id}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'update']);
     Route::delete('/jira/issues/{id}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'destroy']);
     Route::post('/jira/issues/{id}/comments', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'storeComment']);
+    Route::put('/jira/issues/{id}/comments/{commentId}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'updateComment']);
+    Route::delete('/jira/issues/{id}/comments/{commentId}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'deleteComment']);
+    Route::post('/jira/issues/{id}/attachments', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'addAttachment']);
+    Route::delete('/jira/issues/{id}/attachments/{attachmentId}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'deleteAttachment']);
     Route::post('/jira/issues/{id}/links', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'linkIssue']);
     Route::get('/jira/issues/{id}/watchers', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'getWatchers']);
     Route::post('/jira/issues/{id}/watchers/toggle', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'toggleWatcher']);
+
+    // Jira Automation Engine API
+    Route::get('/jira/projects/{projectId}/automations', [\App\Http\Controllers\Api\Jira\JiraAutomationController::class, 'index']);
+    Route::post('/jira/projects/{projectId}/automations', [\App\Http\Controllers\Api\Jira\JiraAutomationController::class, 'store']);
+    Route::patch('/jira/projects/{projectId}/automations/{ruleId}/toggle', [\App\Http\Controllers\Api\Jira\JiraAutomationController::class, 'toggle']);
+    Route::post('/jira/projects/{projectId}/automations/{ruleId}/test', [\App\Http\Controllers\Api\Jira\JiraAutomationController::class, 'testRun']);
+    Route::delete('/jira/projects/{projectId}/automations/{ruleId}', [\App\Http\Controllers\Api\Jira\JiraAutomationController::class, 'destroy']);
 
     // Jira Notifications API
     Route::get('/jira/notifications', [\App\Http\Controllers\Api\Jira\JiraNotificationController::class, 'index']);
@@ -128,6 +141,8 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::get('/jira/projects/{projectId}/reports/summary', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'summary']);
     Route::get('/jira/projects/{projectId}/reports/burndown', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'burndown']);
     Route::get('/jira/projects/{projectId}/reports/velocity', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'velocity']);
+    Route::get('/jira/projects/{projectId}/reports/cfd', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'cumulativeFlow']);
+    Route::get('/jira/projects/{projectId}/reports/epics', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'epicReport']);
 
     // Social Inbox & Jira Service Management Queues
     Route::get('/inbox/conversations', [\App\Http\Controllers\Api\SocialInboxController::class, 'index']);

@@ -99,5 +99,10 @@ class WorkItem extends Model
     {
         return $this->hasMany(WorkItemWatcher::class);
     }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(WorkItemAttachment::class)->orderBy('created_at', 'desc');
+    }
 }
 
