@@ -112,9 +112,10 @@ export default function FlowAssistModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-2xl w-full shadow-2xl border border-slate-100 flex flex-col max-h-[90vh] animate-scale-up">
-        {/* Header */}
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
+        <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-7 shadow-2xl border border-slate-100 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+          {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full bg-[#EAF6DA] text-[#46731B] flex items-center justify-center">
@@ -136,7 +137,7 @@ export default function FlowAssistModal({
         </div>
 
         {/* Client List */}
-        <div className="overflow-y-auto py-4 space-y-3 flex-1 pr-1">
+        <div className="overflow-y-auto min-h-0 py-4 space-y-3 flex-1 pr-1">
           {clients.map((c) => (
             <div
               key={c.id}
@@ -211,5 +212,6 @@ export default function FlowAssistModal({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

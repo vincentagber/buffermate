@@ -164,14 +164,24 @@ export default function Header({
     setShowNotifications(false);
 
     if (item.data?.issue_key || item.work_item_id) {
+      const issueKey = item.data?.issue_key || item.work_item_id;
+      try {
+        sessionStorage.setItem('buffermate_pending_open_issue', issueKey);
+        window.history.pushState(null, '', '/dashboard?tab=tasks');
+      } catch {}
       if (onSelectTab) onSelectTab('tasks');
-      window.dispatchEvent(
-        new CustomEvent('open-jira-issue', {
-          detail: { issueIdOrKey: item.data?.issue_key || item.work_item_id },
-        })
-      );
+      setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent('open-jira-issue', {
+            detail: { issueIdOrKey: issueKey },
+          })
+        );
+      }, 60);
     } else if (item.sprint_id) {
       if (onSelectTab) onSelectTab('tasks');
+      try {
+        window.history.pushState(null, '', '/dashboard?tab=tasks');
+      } catch {}
     }
   };
 
@@ -385,7 +395,7 @@ export default function Header({
               </div>
 
               {/* Notification Items List */}
-              <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
+              <div className="divide-y divide-slate-100 max-h-[min(380px,calc(100dvh-180px))] overflow-y-auto">
                 {isLoadingNotifs && notifications.length === 0 ? (
                   <div className="p-8 text-center text-xs text-slate-400">Loading notifications...</div>
                 ) : notifications.length === 0 ? (

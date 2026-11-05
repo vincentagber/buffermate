@@ -77,10 +77,11 @@ export default function JiraCreateProjectModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200/80 overflow-hidden my-auto animate-slide-up">
-        {/* Header */}
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
+        <div className="relative w-full max-w-lg bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+          {/* Header */}
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs font-bold">
               <FolderGit2 className="w-5 h-5" />
@@ -99,7 +100,7 @@ export default function JiraCreateProjectModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto min-h-0 flex-1">
           {error && (
             <div className="p-3 bg-rose-50 text-rose-700 text-xs rounded-xl border border-rose-200">
               {error}
@@ -236,6 +237,7 @@ export default function JiraCreateProjectModal({
         </form>
       </div>
     </div>
-  );
+  </div>
+);
 }
 

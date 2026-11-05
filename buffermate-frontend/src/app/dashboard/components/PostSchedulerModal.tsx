@@ -228,15 +228,16 @@ export default function PostSchedulerModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90dvh] flex flex-col md:flex-row shadow-2xl border border-slate-200/80 overflow-hidden my-auto animate-slide-up">
-        {/* Mobile Swipe Dismiss Handle */}
-        <div className="md:hidden pt-2.5 pb-1 flex justify-center w-full bg-white">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
+        <div className="relative w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col lg:flex-row max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+          {/* Mobile Swipe Dismiss Handle */}
+        <div className="lg:hidden pt-2.5 pb-1 flex justify-center w-full bg-white shrink-0">
           <div className="w-12 h-1.5 bg-slate-300 rounded-full cursor-pointer" onClick={onClose} />
         </div>
 
         {/* Left Form */}
-        <div className="p-5 sm:p-7 md:w-3/5 space-y-5 border-b md:border-b-0 md:border-r border-slate-100 overflow-y-auto flex-1">
+        <div className="p-4 sm:p-6 lg:w-3/5 space-y-4 sm:space-y-5 border-b lg:border-b-0 lg:border-r border-slate-100 overflow-y-auto min-h-0 flex-1">
           {/* Header */}
           <div className="flex items-center justify-between pb-1 border-b border-slate-100">
             <div className="flex items-center space-x-3">
@@ -582,7 +583,7 @@ export default function PostSchedulerModal({
         </div>
 
         {/* Right Preview */}
-        <div className="p-5 sm:p-7 md:w-2/5 bg-slate-50/70 flex flex-col justify-between overflow-y-auto border-t md:border-t-0 md:border-l border-slate-100">
+        <div className="p-4 sm:p-6 lg:w-2/5 bg-slate-50/70 flex flex-col justify-between overflow-y-auto min-h-0 border-t lg:border-t-0 lg:border-l border-slate-100">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Live Preview</span>
@@ -673,8 +674,9 @@ export default function PostSchedulerModal({
           </div>
         </div>
       </div>
+    </div>
 
-      {/* AI Voice & Rough Draft Autofill Modal */}
+    {/* AI Voice & Rough Draft Autofill Modal */}
       {showAiModal && (
         <AiVoiceFormModal
           isOpen={showAiModal}

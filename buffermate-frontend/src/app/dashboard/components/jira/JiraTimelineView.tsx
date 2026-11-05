@@ -83,10 +83,11 @@ export default function JiraTimelineView({
         </div>
       </div>
 
-      {/* Timeline Gantt Grid */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xs overflow-hidden">
-        {/* Days Header */}
-        <div className="flex border-b border-slate-200/80 bg-slate-50/70 text-[10px] font-mono text-slate-500">
+      {/* Timeline Gantt Grid with responsive horizontal scroll */}
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-2xs overflow-x-auto">
+        <div className="min-w-[800px]">
+          {/* Days Header */}
+          <div className="flex border-b border-slate-200/80 bg-slate-50/70 text-[10px] font-mono text-slate-500">
           <div className="w-1/3 min-w-[220px] p-3 font-bold border-r border-slate-200/60 uppercase tracking-wider text-slate-700">
             Work Item ({filteredIssues.length})
           </div>
@@ -154,6 +155,7 @@ export default function JiraTimelineView({
               No items matching timeline criteria.
             </div>
           )}
+        </div>
         </div>
       </div>
     </div>

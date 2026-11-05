@@ -46,6 +46,14 @@ export default function JiraProjectHub() {
   useEffect(() => {
     fetchProjects();
 
+    try {
+      const pending = sessionStorage.getItem('buffermate_pending_open_issue');
+      if (pending) {
+        setSelectedIssueIdOrKey(pending);
+        sessionStorage.removeItem('buffermate_pending_open_issue');
+      }
+    } catch {}
+
     const handleOpenIssue = (e: any) => {
       if (e.detail?.issueIdOrKey) {
         setSelectedIssueIdOrKey(e.detail.issueIdOrKey);
@@ -194,9 +202,9 @@ export default function JiraProjectHub() {
 
   return (
     <div className="space-y-5 animate-fade-in pb-16">
-      {/* Sub-Tabs Navigation */}
+      {/* Sub-Tabs Navigation - Mobile touch-scrolling & responsive layout */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-2">
-        <div className="flex items-center overflow-x-auto gap-2 scrollbar-none">
+        <div className="flex items-center overflow-x-auto gap-1.5 sm:gap-2 scrollbar-none pb-1 -mx-2 px-2 sm:mx-0 sm:px-0">
           {[
             { id: 'board', label: 'Active Board', icon: CheckSquare },
             { id: 'backlog', label: 'Backlog & Sprints', icon: Layers },

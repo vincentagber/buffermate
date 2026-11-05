@@ -142,7 +142,7 @@ export default function JiraBacklogView({
         <span className="font-mono font-bold text-slate-500 group-hover:text-blue-600 transition-colors">
           {issue.key}
         </span>
-        <span className={`font-semibold truncate max-w-sm sm:max-w-md ${issue.status === 'done' ? 'line-through text-slate-400' : 'text-slate-800'}`}>
+        <span className={`font-semibold truncate max-w-[120px] xs:max-w-[180px] sm:max-w-xs md:max-w-md ${issue.status === 'done' ? 'line-through text-slate-400' : 'text-slate-800'}`}>
           {issue.title}
         </span>
       </div>

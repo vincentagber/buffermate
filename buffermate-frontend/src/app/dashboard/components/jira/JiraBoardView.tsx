@@ -150,8 +150,8 @@ export default function JiraBoardView({
         </div>
       </div>
 
-      {/* Board Columns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+      {/* Board Columns Grid - Fully responsive on mobile, tablet, and desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 items-start">
         {columns.map((col) => {
           const colCards = filteredIssues.filter((i) => i.status === col.mapped_status);
           const isOverWip = col.wip_limit && colCards.length > col.wip_limit;
@@ -164,7 +164,7 @@ export default function JiraBoardView({
               onDragOver={(e) => handleDragOver(e, col.mapped_status)}
               onDragLeave={() => setDragOverColStatus(null)}
               onDrop={(e) => handleDrop(e, col.mapped_status)}
-              className={`bg-slate-100/70 rounded-3xl p-3 sm:p-3.5 border transition-all flex flex-col min-h-[500px] ${
+              className={`bg-slate-100/70 rounded-2xl sm:rounded-3xl p-3 sm:p-3.5 border transition-all flex flex-col min-h-[360px] sm:min-h-[480px] ${
                 isDragOver
                   ? 'border-blue-500 bg-blue-50/40 ring-2 ring-blue-500/20'
                   : 'border-slate-200/70'

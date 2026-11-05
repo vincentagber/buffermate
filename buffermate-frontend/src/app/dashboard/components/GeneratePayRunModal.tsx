@@ -77,15 +77,16 @@ export default function GeneratePayRunModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in font-sans">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-2xl overflow-hidden animate-scale-up flex flex-col">
-        {/* Modal Header */}
-        <div className="p-6 pb-4 border-b border-slate-100 flex items-start justify-between">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
+        <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+          {/* Modal Header */}
+        <div className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 flex items-start justify-between shrink-0">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
               Generate Pay Run Cycle
             </h2>
-            <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p className="text-xs text-slate-500 mt-0.5 sm:mt-1 leading-relaxed">
               Automated computation of basic pay, allowances, statutory PAYE, loan deductions, and PF.
             </p>
           </div>
@@ -99,7 +100,7 @@ export default function GeneratePayRunModal({
         </div>
 
         {/* Reusable Chevron Stepper Component Header */}
-        <div className="px-6 py-4 bg-slate-50/50 border-b border-slate-100">
+        <div className="px-4 sm:px-6 py-3 sm:py-4 bg-slate-50/50 border-b border-slate-100 shrink-0 overflow-x-auto">
           <ChevronStepper
             steps={steps}
             currentStep={activeStep}
@@ -110,7 +111,7 @@ export default function GeneratePayRunModal({
         </div>
 
         {/* Modal Body / Active Step View */}
-        <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
           {activeStep === 0 && (
             <div className="space-y-4 animate-fade-in">
               <div className="space-y-1.5">
@@ -291,6 +292,7 @@ export default function GeneratePayRunModal({
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
 

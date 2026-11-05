@@ -279,50 +279,51 @@ export default function JiraIssueDetailModal({
   const subtaskPct = subtasks.length > 0 ? Math.round((completedSubtasks / subtasks.length) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92dvh] flex flex-col shadow-2xl border border-slate-200/80 overflow-hidden my-auto animate-slide-up">
-        {/* Top Header Bar */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
-          <div className="flex items-center space-x-2">
-            <span className="text-xs font-bold text-slate-400 font-mono">
-              {project.key}
-            </span>
-            <span className="text-slate-300">/</span>
-            <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-mono font-bold">
-              <IssueTypeIcon type={issue?.type || 'task'} className="w-3.5 h-3.5" />
-              <span>{issue?.key || issueIdOrKey}</span>
-            </div>
-            {issue?.resolution && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Resolved
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
+      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
+        <div className="relative w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+          {/* Top Header Bar */}
+          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
+            <div className="flex items-center space-x-2 min-w-0">
+              <span className="text-xs font-bold text-slate-400 font-mono shrink-0">
+                {project.key}
               </span>
-            )}
+              <span className="text-slate-300 shrink-0">/</span>
+              <div className="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 text-xs font-mono font-bold shrink-0">
+                <IssueTypeIcon type={issue?.type || 'task'} className="w-3.5 h-3.5" />
+                <span>{issue?.key || issueIdOrKey}</span>
+              </div>
+              {issue?.resolution && (
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  Resolved
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-2 shrink-0">
+              <button
+                onClick={handleDeleteIssue}
+                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all cursor-pointer"
+                title="Delete issue"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleDeleteIssue}
-              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all cursor-pointer"
-              title="Delete issue"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Modal Body: 2-Column Jira Layout */}
+        {/* Modal Body: 2-Column Responsive Layout */}
         {isLoading || !issue ? (
           <div className="p-16 text-center text-xs text-slate-400">Loading issue details...</div>
         ) : (
-          <div className="flex-1 flex flex-col md:flex-row overflow-y-auto">
-            {/* Left Content Area (65%) */}
-            <div className="p-6 md:w-2/3 space-y-6 overflow-y-auto border-b md:border-b-0 md:border-r border-slate-100">
+          <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+            {/* Left Content Area */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
               {/* Title Section */}
               <div className="space-y-1">
                 {isEditingTitle ? (
@@ -692,8 +693,8 @@ export default function JiraIssueDetailModal({
               </div>
             </div>
 
-            {/* Right Details Panel (35%) */}
-            <div className="p-6 md:w-1/3 bg-slate-50/60 space-y-5 overflow-y-auto">
+            {/* Right Details Panel */}
+            <div className="w-full lg:w-80 xl:w-96 shrink-0 bg-slate-50/80 border-t lg:border-t-0 lg:border-l border-slate-200/80 p-4 sm:p-6 space-y-5 overflow-y-auto min-h-0">
               {/* Status Selector */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
@@ -863,6 +864,7 @@ export default function JiraIssueDetailModal({
         )}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
