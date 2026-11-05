@@ -147,7 +147,7 @@ class BachsPaymentController extends Controller
             'success' => true,
             'gateway' => [
                 'provider' => 'bachs',
-                'environment' => str_contains(config('bachs.api_base_url'), 'sandbox') ? 'sandbox' : 'production',
+                'environment' => str_starts_with(config('bachs.api_key'), 'sk_live_') ? 'production' : 'sandbox',
                 'docs_url' => 'https://docs.bachs.io/',
             ],
             'current_plan' => $workspace?->plan_id ?: 'pro',

@@ -18,7 +18,15 @@ class BachsPaymentService
     public function __construct()
     {
         $this->apiKey = config('bachs.api_key', 'bachs_test_key_sandbox');
-        $this->baseUrl = rtrim(config('bachs.api_base_url', 'https://sandbox-api.bachs.io/v1'), '/');
+        $configuredUrl = config('bachs.api_base_url');
+
+        // Automatically route sk_live_ keys to the live production endpoint
+        if (str_starts_with($this->apiKey, 'sk_live_')) {
+            $this->baseUrl = 'https://api.bachs.io/v1';
+        } else {
+            $this->baseUrl = rtrim($configuredUrl ?: 'https://sandbox-api.bachs.io/v1', '/');
+        }
+
         $this->webhookSecret = config('bachs.webhook_secret', 'whsec_bachs_sandbox_secret');
     }
 
