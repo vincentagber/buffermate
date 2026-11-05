@@ -105,9 +105,23 @@ export default function JiraCreateIssueModal({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col items-center justify-end sm:justify-center p-0 sm:p-4 md:p-6">
-      <div className="relative w-full max-w-xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto my-0 sm:my-auto flex flex-col max-h-[94dvh] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
-        {/* Header */}
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="min-h-full flex items-center justify-center p-3 sm:p-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div
+          className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto flex flex-col max-h-[92dvh] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/50">
           <div className="flex items-center space-x-2">
             <span className="px-2.5 py-1 rounded-lg text-xs font-bold font-mono bg-blue-50 text-blue-700 border border-blue-200">
@@ -307,6 +321,7 @@ export default function JiraCreateIssueModal({
             </button>
           </div>
         </form>
+      </div>
       </div>
     </div>,
     document.body

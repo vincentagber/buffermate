@@ -399,9 +399,23 @@ export default function JiraIssueDetailModal({
   if (!mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col items-center justify-end sm:justify-center p-0 sm:p-3 md:p-6">
-      <div className="relative w-full max-w-5xl bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto my-0 sm:my-auto flex flex-col h-[94dvh] sm:h-auto sm:max-h-[calc(100dvh-3rem)] overflow-hidden">
-        {/* Top Header Bar */}
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="min-h-full flex items-center justify-center p-3 sm:p-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div
+          className="relative w-full max-w-5xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto flex flex-col h-auto max-h-[92dvh] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Top Header Bar */}
         <div className="px-4 sm:px-6 py-3 sm:py-3.5 border-b border-slate-100 flex items-center justify-between shrink-0 bg-slate-50/70">
           <div className="flex items-center space-x-1.5 sm:space-x-2 min-w-0">
             <span className="text-xs font-bold text-slate-400 font-mono shrink-0">
@@ -1163,6 +1177,7 @@ export default function JiraIssueDetailModal({
             </div>
           </div>
         )}
+      </div>
       </div>
     </div>,
     document.body

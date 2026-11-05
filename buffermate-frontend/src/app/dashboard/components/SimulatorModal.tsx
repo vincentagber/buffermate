@@ -94,9 +94,22 @@ export default function SimulatorModal({
   ];
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/50 backdrop-blur-xs font-sans animate-fade-in">
-      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div
+          className="relative w-full max-w-xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-200/80 mx-auto my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
         <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between shrink-0 bg-white">
           <div className="flex items-center space-x-3">

@@ -83,9 +83,22 @@ export default function GeneratePayRunModal({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in">
-      <div className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6">
-        <div className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden">
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-xs font-sans animate-fade-in"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="flex min-h-full items-center justify-center p-2 sm:p-4 md:p-6"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div
+          className="relative w-full max-w-2xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-slate-100 mx-auto my-auto flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3.5rem)] overflow-hidden"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Modal Header */}
         <div className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 flex items-start justify-between shrink-0">
           <div>
