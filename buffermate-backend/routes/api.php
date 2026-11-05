@@ -165,6 +165,13 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/payments/bachs/checkout-session', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'createCheckoutSession']);
     Route::get('/payments/bachs/session/{sessionId}', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'getSession']);
     Route::get('/payments/bachs/plans', [\App\Http\Controllers\Api\Payment\BachsPaymentController::class, 'getPlans']);
+
+    // Workspace & Creator Settings API
+    Route::get('/settings', [\App\Http\Controllers\Api\SettingsController::class, 'getSettings']);
+    Route::post('/settings', [\App\Http\Controllers\Api\SettingsController::class, 'updateSettings']);
+    Route::get('/settings/invoices', [\App\Http\Controllers\Api\SettingsController::class, 'getInvoices']);
+    Route::post('/settings/cancel-subscription', [\App\Http\Controllers\Api\SettingsController::class, 'cancelSubscription']);
+    Route::post('/settings/send-password-reset', [\App\Http\Controllers\Api\SettingsController::class, 'sendPasswordReset']);
 });
 
 // Bachs Public Webhook Receiver (https://docs.bachs.io/guides/webhooks/overview)

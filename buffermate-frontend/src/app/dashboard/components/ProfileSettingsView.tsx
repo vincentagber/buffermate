@@ -31,10 +31,32 @@ import {
   ShieldCheck,
   Activity,
   X,
+  FileText,
+  Download,
+  AlertTriangle,
+  Receipt,
+  Play,
+  VolumeX,
+  HelpCircle,
+  Hash,
+  Languages,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import ChevronStepper from '@/components/ui/ChevronStepper';
 import { triggerConfetti } from '@/components/ui/Confetti';
+
+interface InvoiceItem {
+  id: string;
+  session_id?: string;
+  date: string;
+  plan: string;
+  billing_cycle: string;
+  amount: string;
+  currency: string;
+  gateway: string;
+  status: string;
+  customer_email?: string;
+}
 
 export default function ProfileSettingsView() {
   const supabase = createClient();
@@ -52,7 +74,7 @@ export default function ProfileSettingsView() {
 
   // Automation & Preference fields
   const [timezone, setTimezone] = useState('Africa/Lagos (UTC+1)');
-  const [defaultDelay, setDefaultDelay] = useState('instant');
+  const [defaultDelay, setDefaultDelay] = useState('15s');
   const [defaultLink, setDefaultLink] = useState('https://buffermate.ai/special-offer');
   const [dmRateLimit, setDmRateLimit] = useState('250');
   const [aiTone, setAiTone] = useState('viral');
@@ -60,7 +82,7 @@ export default function ProfileSettingsView() {
   const [soundEffects, setSoundEffects] = useState(true);
   const [leadNotifications, setLeadNotifications] = useState(true);
 
-  // AI Content Generator Preferences
+  // Google Gemini AI Content & Brand Guidelines
   const [defaultLanguage, setDefaultLanguage] = useState('English');
   const [defaultContentLength, setDefaultContentLength] = useState<'short' | 'medium' | 'long'>('medium');
   const [defaultCta, setDefaultCta] = useState('Drop a comment below or DM "SCALE" for the blueprint!');
@@ -68,11 +90,14 @@ export default function ProfileSettingsView() {
   const [brandKeywords, setBrandKeywords] = useState('growth, automation, lead conversion, ROI');
   const [wordsToAvoid, setWordsToAvoid] = useState('cheap, freebie, guarantee, spam');
   const [preferredHashtags, setPreferredHashtags] = useState('#buffermate, #growth, #automation, #socialmarketing');
-  const [defaultPlatforms, setDefaultPlatforms] = useState<string[]>(['facebook', 'instagram', 'linkedin', 'x', 'tiktok']);
 
   // Subscription state
   const [currentPlan, setCurrentPlan] = useState<'free' | 'pro' | 'agency'>('pro');
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('annual');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>('active');
+  const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
+  const [isCancellingSub, setIsCancellingSub] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,48 +107,109 @@ export default function ProfileSettingsView() {
   const [isSaving, setIsSaving] = useState(false);
   const [activeSettingsTab, setActiveSettingsTab] = useState<'all' | 'profile' | 'billing' | 'timezone' | 'automations' | 'security'>('all');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isProcessingBachs, setIsProcessingBachs] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Play audio alert preview using Web Audio API
+  const playNotificationSound = () => {
+    try {
+      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12); // A5
+
+      gain.gain.setValueAtTime(0.25, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + 0.35);
+      showToast('🔔 Audio chime test played successfully!');
+    } catch (e) {
+      console.error('Audio play error:', e);
+    }
+  };
+
   useEffect(() => {
     async function loadUserProfile() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setEmail(user.email || 'demo@buffermate.app');
-          const meta = user.user_metadata || {};
-          if (meta.name) setFullName(meta.name);
-          if (meta.handle) setHandle(meta.handle);
-          if (meta.phone) setPhone(meta.phone);
-          if (meta.bio) setBio(meta.bio);
-          if (meta.niche) setNiche(meta.niche);
-          if (meta.business_name) setBusinessName(meta.business_name);
-          if (meta.avatar_url) setAvatarUrl(meta.avatar_url);
-          if (meta.timezone) setTimezone(meta.timezone);
-          if (meta.default_link) setDefaultLink(meta.default_link);
-          if (meta.default_delay) setDefaultDelay(meta.default_delay);
-          if (meta.ai_tone) setAiTone(meta.ai_tone);
-        } else {
-          // Check local storage for persistent profile in demo mode
-          const cached = localStorage.getItem('buffermate_user_profile') || localStorage.getItem('socialflow_user_profile');
-          if (cached) {
-            try {
-              const data = JSON.parse(cached);
-              if (data.fullName) setFullName(data.fullName);
-              if (data.handle) setHandle(data.handle);
-              if (data.phone) setPhone(data.phone);
-              if (data.bio) setBio(data.bio);
-              if (data.niche) setNiche(data.niche);
-              if (data.businessName) setBusinessName(data.businessName);
-              if (data.avatarUrl) setAvatarUrl(data.avatarUrl);
-            } catch (e) {}
+        setLoading(true);
+
+        // 1. Fetch persistent settings from Laravel Backend API
+        const res = await fetch('/api/settings');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            const d = json.data;
+            if (d.profile) {
+              if (d.profile.display_name) setFullName(d.profile.display_name);
+              if (d.profile.handle) setHandle(d.profile.handle);
+              if (d.profile.email) setEmail(d.profile.email);
+              if (d.profile.phone) setPhone(d.profile.phone);
+              if (d.profile.business_name) setBusinessName(d.profile.business_name);
+              if (d.profile.niche) setNiche(d.profile.niche);
+              if (d.profile.bio) setBio(d.profile.bio);
+              if (d.profile.avatar_url) setAvatarUrl(d.profile.avatar_url);
+            }
+            if (d.automations) {
+              if (d.automations.default_link) setDefaultLink(d.automations.default_link);
+              if (d.automations.auto_reply_delay) setDefaultDelay(d.automations.auto_reply_delay);
+              if (d.automations.ai_tone) setAiTone(d.automations.ai_tone);
+              if (d.automations.daily_dm_limit) setDmRateLimit(String(d.automations.daily_dm_limit));
+            }
+            if (d.ai_guidelines) {
+              if (d.ai_guidelines.default_language) setDefaultLanguage(d.ai_guidelines.default_language);
+              if (d.ai_guidelines.default_content_length) setDefaultContentLength(d.ai_guidelines.default_content_length);
+              if (d.ai_guidelines.target_audience) setTargetAudience(d.ai_guidelines.target_audience);
+              if (d.ai_guidelines.default_cta) setDefaultCta(d.ai_guidelines.default_cta);
+              if (d.ai_guidelines.brand_keywords) setBrandKeywords(d.ai_guidelines.brand_keywords);
+              if (d.ai_guidelines.words_to_avoid) setWordsToAvoid(d.ai_guidelines.words_to_avoid);
+              if (d.ai_guidelines.preferred_hashtags) setPreferredHashtags(d.ai_guidelines.preferred_hashtags);
+            }
+            if (d.notifications) {
+              if (d.notifications.timezone) setTimezone(d.notifications.timezone);
+              if (d.notifications.audio_alerts !== undefined) setSoundEffects(Boolean(d.notifications.audio_alerts));
+              if (d.notifications.email_digest !== undefined) setEmailAlerts(Boolean(d.notifications.email_digest));
+              if (d.notifications.in_app_notifications !== undefined) setLeadNotifications(Boolean(d.notifications.in_app_notifications));
+            }
+            if (d.subscription) {
+              const pId = d.subscription.plan_id;
+              if (pId === 'agency') setCurrentPlan('agency');
+              else if (pId === 'free' || pId === 'starter') setCurrentPlan('free');
+              else setCurrentPlan('pro');
+
+              if (d.subscription.billing_cycle === 'monthly') setBillingCycle('monthly');
+              else setBillingCycle('annual');
+
+              if (d.subscription.status) setSubscriptionStatus(d.subscription.status);
+            }
+            if (Array.isArray(d.invoices)) {
+              setInvoices(d.invoices);
+            }
           }
         }
+
+        // 2. Fallback / supplementary check from Supabase Auth User
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          if (user.email && !email) setEmail(user.email);
+          const meta = user.user_metadata || {};
+          if (meta.name && !fullName) setFullName(meta.name);
+          if (meta.handle && !handle) setHandle(meta.handle);
+        }
       } catch (err) {
-        console.error('Error loading profile:', err);
+        console.error('Error loading settings:', err);
       } finally {
         setLoading(false);
       }
@@ -147,7 +233,7 @@ export default function ProfileSettingsView() {
         const base64 = uploadEvent.target.result as string;
         setAvatarUrl(base64);
         setIsUploadingAvatar(false);
-        showToast('Avatar updated! Click Save Profile to apply.');
+        showToast('Avatar photo updated! Click Save All Settings to commit.');
       }
     };
     reader.readAsDataURL(file);
@@ -158,19 +244,13 @@ export default function ProfileSettingsView() {
     showToast('Avatar removed.');
   };
 
-  const [isProcessingBachs, setIsProcessingBachs] = useState<string | null>(null);
-
   const handlePlanChange = async (newPlan: 'free' | 'pro' | 'agency') => {
     if (newPlan === 'free') {
       setCurrentPlan('free');
       triggerConfetti();
       showToast('Switched plan to Starter Free!');
       try {
-        await fetch('/api/payments/bachs/checkout-session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan_id: 'free' }),
-        });
+        await fetch('/api/settings/cancel-subscription', { method: 'POST' });
       } catch (e) {}
       return;
     }
@@ -183,8 +263,8 @@ export default function ProfileSettingsView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           plan_id: newPlan,
-          billing_cycle: billingCycle,
-          customer_email: email || 'alex.morgan@buffermate.ai',
+          billing_cycle: billingCycle === 'annual' ? 'yearly' : 'monthly',
+          customer_email: email || 'vincentagber74@gmail.com',
           customer_name: fullName || 'Alex Morgan',
           success_url: `${window.location.origin}/dashboard?tab=settings&payment=success&gateway=bachs&plan=${newPlan}`,
           cancel_url: `${window.location.origin}/dashboard?tab=settings&payment=cancelled`,
@@ -209,6 +289,92 @@ export default function ProfileSettingsView() {
     }
   };
 
+  const handleCancelSubscription = async () => {
+    setIsCancellingSub(true);
+    try {
+      const res = await fetch('/api/settings/cancel-subscription', { method: 'POST' });
+      const json = await res.json();
+      if (json.success) {
+        setCurrentPlan('free');
+        setSubscriptionStatus('cancelled');
+        setShowCancelModal(false);
+        showToast('Your subscription has been cancelled and downgraded to Starter Free.');
+      }
+    } catch (e) {
+      showToast('Failed to cancel subscription.');
+    } finally {
+      setIsCancellingSub(false);
+    }
+  };
+
+  const handleDownloadReceipt = (invoice: InvoiceItem) => {
+    const receiptWindow = window.open('', '_blank');
+    if (!receiptWindow) return;
+    receiptWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Receipt ${invoice.id} - BufferMate AI</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #1e293b; max-width: 650px; margin: 0 auto; background: #fff; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; }
+            .badge { background: #dcfce7; color: #15803d; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: bold; border: 1px solid #bbf7d0; }
+            .table { width: 100%; border-collapse: collapse; margin-top: 30px; }
+            .table th { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; text-transform: uppercase; color: #64748b; }
+            .table td { padding: 14px 10px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+            .total { text-align: right; margin-top: 30px; font-size: 18px; font-weight: bold; color: #0f172a; }
+            .footer { margin-top: 50px; font-size: 11px; color: #94a3b8; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <h2 style="margin:0 0 4px 0; color:#0f172a; font-size: 20px;">BufferMate AI Inc.</h2>
+              <p style="margin:0; font-size:12px; color:#64748b;">Autonomous Social Engagement & Funnels</p>
+            </div>
+            <span class="badge">PAID · BACHS HOSTED</span>
+          </div>
+          <div style="margin-top: 24px; display: flex; justify-content: space-between; font-size: 12px; line-height: 1.6;">
+            <div>
+              <strong style="color:#0f172a;">Billed To:</strong><br>
+              ${fullName || 'Alex Morgan'}<br>
+              ${email || 'vincentagber74@gmail.com'}<br>
+              ${businessName || 'BufferMate Media LLC'}
+            </div>
+            <div style="text-align: right;">
+              <strong style="color:#0f172a;">Invoice #:</strong> ${invoice.id}<br>
+              <strong>Date:</strong> ${invoice.date}<br>
+              <strong>Payment Gateway:</strong> Bachs Checkout (${invoice.currency || 'USD'})
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Interval</th>
+                <th style="text-align: right;">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>${invoice.plan}</strong><br><span style="font-size:11px; color:#64748b;">Unlimited channels, autonomous DM bots & AI viral engine</span></td>
+                <td>${invoice.billing_cycle}</td>
+                <td style="text-align: right; font-weight: bold;">${invoice.amount}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="total">Total Paid: ${invoice.amount} ${invoice.currency || 'USD'}</div>
+          <div class="footer">
+            Processed securely via Bachs Payment Gateway (docs.bachs.io)<br>
+            Thank you for building with BufferMate AI.
+          </div>
+          <script>window.print();</script>
+        </body>
+      </html>
+    `);
+    receiptWindow.document.close();
+  };
+
   const isSectionVisible = (tabId: string, keywords: string[]) => {
     if (activeSettingsTab !== 'all' && activeSettingsTab !== tabId) return false;
     if (!searchQuery.trim()) return true;
@@ -220,38 +386,76 @@ export default function ProfileSettingsView() {
     if (e && e.preventDefault) e.preventDefault();
     setIsSaving(true);
 
-    const profileData = {
-      name: fullName,
-      handle,
-      phone,
-      bio,
-      niche,
-      business_name: businessName,
-      avatar_url: avatarUrl,
-      timezone,
-      default_link: defaultLink,
-      default_delay: defaultDelay,
-      dm_rate_limit: dmRateLimit,
-      ai_tone: aiTone,
-      email_alerts: emailAlerts,
-      sound_effects: soundEffects,
-      lead_notifications: leadNotifications,
-      current_plan: currentPlan,
-      billing_cycle: billingCycle,
+    const payload = {
+      profile: {
+        display_name: fullName,
+        handle,
+        email,
+        phone,
+        business_name: businessName,
+        niche,
+        bio,
+        avatar_url: avatarUrl,
+      },
+      automations: {
+        default_link: defaultLink,
+        auto_reply_delay: defaultDelay,
+        ai_tone: aiTone,
+        daily_dm_limit: parseInt(dmRateLimit, 10) || 250,
+      },
+      ai_guidelines: {
+        default_language: defaultLanguage,
+        default_content_length: defaultContentLength,
+        target_audience: targetAudience,
+        default_cta: defaultCta,
+        brand_keywords: brandKeywords,
+        words_to_avoid: wordsToAvoid,
+        preferred_hashtags: preferredHashtags,
+      },
+      notifications: {
+        timezone,
+        audio_alerts: soundEffects,
+        email_digest: emailAlerts,
+        in_app_notifications: leadNotifications,
+      },
+      subscription: {
+        plan_id: currentPlan,
+        billing_cycle: billingCycle === 'annual' ? 'yearly' : 'monthly',
+      },
     };
 
     try {
-      // 1. Update Supabase Auth user metadata
-      await supabase.auth.updateUser({
-        data: profileData,
+      // 1. Persist to Laravel Backend Database
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
 
-      // 2. Cache in localStorage for immediate sync across views
+      // 2. Also update Supabase Auth User metadata
+      await supabase.auth.updateUser({
+        data: {
+          name: fullName,
+          handle,
+          phone,
+          bio,
+          niche,
+          business_name: businessName,
+          avatar_url: avatarUrl,
+          timezone,
+          default_link: defaultLink,
+          default_delay: defaultDelay,
+          ai_tone: aiTone,
+        },
+      });
+
+      // 3. Cache in localStorage for immediate sync across tabs
       localStorage.setItem(
         'buffermate_user_profile',
         JSON.stringify({
           fullName,
           handle,
+          email,
           phone,
           bio,
           niche,
@@ -263,7 +467,7 @@ export default function ProfileSettingsView() {
         })
       );
 
-      // 3. Dispatch window event for Header & Sidebar sync
+      // 4. Dispatch window event for Header & Sidebar real-time sync
       if (typeof window !== 'undefined') {
         window.dispatchEvent(
           new CustomEvent('user-profile-updated', {
@@ -281,7 +485,7 @@ export default function ProfileSettingsView() {
       }
 
       triggerConfetti();
-      showToast('Profile & preferences saved successfully to database! 🎉');
+      showToast('All settings and brand guidelines saved successfully! 🎉');
     } catch (err) {
       console.error('Save profile error:', err);
       showToast('Settings saved locally.');
@@ -292,12 +496,18 @@ export default function ProfileSettingsView() {
 
   const handleSendResetPassword = async () => {
     try {
+      await fetch('/api/settings/send-password-reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
       if (email) {
         await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/dashboard/settings`,
+          redirectTo: `${window.location.origin}/dashboard?tab=settings`,
         });
       }
-      showToast('Password reset link sent to your registered email!');
+      showToast(`A secure password reset link has been dispatched to ${email}!`);
     } catch (err) {
       showToast('Password reset instructions dispatched.');
     }
@@ -307,76 +517,72 @@ export default function ProfileSettingsView() {
     <div className="space-y-6 font-sans text-slate-900 pb-16 animate-fade-in max-w-7xl mx-auto">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-[#161616] text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm animate-bounce-short">
-          <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+        <div className="fixed top-5 right-5 z-[150] bg-[#161616] text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm animate-fade-in border border-slate-700">
+          <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
             <Check className="w-3.5 h-3.5" />
           </div>
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* TOP HEADER: Context & Global Utility (Reports Style) */}
+      {/* TOP HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#161616]">
-              Profile & Account Settings
-            </h1>
+          <div className="flex items-center space-x-2">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+              Workspace Settings
+            </span>
+            <span className="text-slate-400">·</span>
+            <span className="text-xs text-slate-500 font-mono">Real-Time Sync Active</span>
           </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 mt-1">
+            Profile & Account Settings
+          </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Manage your personal creator profile, automation defaults, and security configurations
+            Manage your personal creator profile, automation defaults, AI content rules, and Bachs billing configuration.
           </p>
         </div>
 
-        {/* Search, Notifications & Save Button */}
-        <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
-          <div className="relative flex-1 sm:w-64">
+        {/* Global Search & Action Bar */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className="relative min-w-[220px] flex-1 sm:flex-initial">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search settings, keys..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-14 py-2 bg-white rounded-full border border-slate-200/80 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 shadow-2xs transition-all"
+              placeholder="Search settings..."
+              className="w-full pl-9 pr-8 py-2 rounded-full border border-slate-200/80 bg-white text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-200 shadow-2xs"
             />
             {searchQuery ? (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5"
-                title="Clear"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             ) : (
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-mono">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
                 ⌘K
               </span>
             )}
           </div>
 
           <button
-            onClick={() => showToast('Profile data is verified')}
-            className="w-9 h-9 rounded-full bg-white border border-slate-200/80 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 shadow-2xs transition-colors shrink-0"
-            title="Profile Status"
-          >
-            <ShieldCheck className="w-4 h-4" />
-          </button>
-
-          <button
             type="button"
             onClick={handleSaveProfile}
             disabled={isSaving}
-            className="bg-[#141416] hover:bg-black disabled:opacity-50 text-white text-xs font-semibold px-5 py-2.5 rounded-full flex items-center gap-2 shadow-sm transition-all shrink-0 hover:scale-[1.02] active:scale-[0.98]"
+            className="px-5 py-2.5 bg-[#141416] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs sm:text-sm font-semibold shadow-xs transition-all flex items-center space-x-2 cursor-pointer"
           >
             {isSaving ? (
               <>
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                <RefreshCw className="w-4 h-4 animate-spin" />
                 <span>Saving...</span>
               </>
             ) : (
               <>
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-4 h-4" />
                 <span>Save All Settings</span>
               </>
             )}
@@ -386,16 +592,15 @@ export default function ProfileSettingsView() {
 
       {/* CHEVRON STEPPER SETTINGS NAVIGATION */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pt-1">
-        {/* Adopted Reusable Chevron Stepper Component for Settings Sections */}
         <div className="w-full lg:max-w-3xl overflow-x-auto pb-1">
           <ChevronStepper
             steps={[
               { id: 'all', title: 'All Settings', subtitle: 'Global Config', icon: Sliders },
               { id: 'profile', title: 'Profile', subtitle: 'Identity & Brand', icon: User },
-              { id: 'billing', title: 'Billing', subtitle: 'Pro & Tiers', icon: Crown },
+              { id: 'billing', title: 'Billing', subtitle: 'Pro & Invoices', icon: Crown },
               { id: 'timezone', title: 'Timezone', subtitle: 'Schedule Windows', icon: Globe },
               { id: 'automations', title: 'Automations', subtitle: 'Guardrails & AI', icon: Zap },
-              { id: 'security', title: 'Security', subtitle: 'Access & 2FA', icon: Shield },
+              { id: 'security', title: 'Security', subtitle: 'Access & Auth', icon: Shield },
             ]}
             currentStep={activeSettingsTab}
             onChange={(stepId) => setActiveSettingsTab(stepId as any)}
@@ -409,15 +614,15 @@ export default function ProfileSettingsView() {
         {/* Status Pill Indicator */}
         <div className="flex items-center gap-2 overflow-x-auto shrink-0">
           <div className="bg-white hover:bg-slate-50 border border-slate-200/80 rounded-full px-3.5 py-1.5 text-xs font-medium text-slate-700 flex items-center gap-2 shadow-2xs transition-colors whitespace-nowrap">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Session: AES-256 Auth Active</span>
           </div>
         </div>
       </div>
 
-      {/* BENTO KPI ROW (4 CARDS: Matching Reports Color Rhythm) */}
+      {/* BENTO KPI ROW */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4">
-        {/* 1. Subscription Tier (Lavender #E9E4FD) */}
+        {/* 1. Subscription Tier */}
         <div className="bg-[#E9E4FD] rounded-3xl p-5 border border-purple-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div className="flex items-center justify-between text-slate-700 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-purple-900">Workspace Tier</span>
@@ -435,7 +640,7 @@ export default function ProfileSettingsView() {
           </div>
         </div>
 
-        {/* 2. DM Rate Limit Guard (Matcha / Sage Green #EAF6DA) */}
+        {/* 2. DM Rate Limit Guard */}
         <div className="bg-[#EAF6DA] rounded-3xl p-5 border border-emerald-200/60 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div className="flex items-center justify-between text-slate-700 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-emerald-900">DM Safety Limit</span>
@@ -451,7 +656,7 @@ export default function ProfileSettingsView() {
           </div>
         </div>
 
-        {/* 3. Primary Posting Timezone (White) */}
+        {/* 3. Primary Posting Timezone */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-medium">Posting Timezone</span>
@@ -460,14 +665,16 @@ export default function ProfileSettingsView() {
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold tracking-tight text-[#161616] truncate">Africa/Lagos</div>
-            <div className="flex items-center gap-1 mt-1 text-xs text-slate-500 font-medium">
-              <span>West Africa Time (UTC+1)</span>
+            <div className="text-xl sm:text-2xl font-bold tracking-tight text-[#161616] truncate">
+              {timezone.split(' ')[0]}
+            </div>
+            <div className="flex items-center gap-1 mt-1 text-xs text-slate-500 font-medium truncate">
+              <span>{timezone.includes('UTC') ? timezone.slice(timezone.indexOf('(')) : 'Standard Time'}</span>
             </div>
           </div>
         </div>
 
-        {/* 4. Security & Encryption (White) */}
+        {/* 4. Security & Encryption */}
         <div className="bg-white rounded-3xl p-5 border border-slate-200/70 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-medium">Security Standard</span>
@@ -487,7 +694,7 @@ export default function ProfileSettingsView() {
 
       <form onSubmit={handleSaveProfile} className="space-y-6">
         {/* Pro Plans & Subscription Tier Management */}
-        {isSectionVisible('billing', ['pro', 'plans', 'billing', 'subscription', 'pricing', 'starter', 'free', 'annual', 'monthly', 'agency', 'tier', 'workspace tier']) && (
+        {isSectionVisible('billing', ['pro', 'plans', 'billing', 'subscription', 'pricing', 'starter', 'free', 'annual', 'monthly', 'agency', 'tier', 'workspace tier', 'invoices', 'receipts']) && (
           <div className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
               <div className="flex items-center space-x-3.5">
@@ -507,12 +714,12 @@ export default function ProfileSettingsView() {
                 </div>
               </div>
 
-              {/* Billing Toggle (Rounded Pills) */}
+              {/* Billing Toggle */}
               <div className="flex items-center space-x-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/60 self-start sm:self-auto">
                 <button
                   type="button"
                   onClick={() => setBillingCycle('monthly')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                     billingCycle === 'monthly' ? 'bg-white shadow-2xs text-slate-900' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -521,7 +728,7 @@ export default function ProfileSettingsView() {
                 <button
                   type="button"
                   onClick={() => setBillingCycle('annual')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center space-x-1.5 ${
                     billingCycle === 'annual' ? 'bg-[#161616] text-white shadow-2xs' : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -533,35 +740,39 @@ export default function ProfileSettingsView() {
               </div>
             </div>
 
-            {/* Pricing Cards (Clean Squircles) */}
+            {/* Pricing Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {/* Free Tier */}
-              <div className={`p-6 rounded-3xl border flex flex-col justify-between space-y-5 transition-all ${
-                currentPlan === 'free'
-                  ? 'bg-purple-50/30 border-2 border-[#161616] shadow-sm'
-                  : 'bg-slate-50/70 border-slate-200/70 hover:bg-slate-50'
-              }`}>
+              <div
+                className={`p-6 rounded-3xl border flex flex-col justify-between space-y-5 transition-all ${
+                  currentPlan === 'free'
+                    ? 'bg-purple-50/30 border-2 border-[#161616] shadow-sm'
+                    : 'bg-slate-50/70 border-slate-200/70 hover:bg-slate-50'
+                }`}
+              >
                 <div>
-                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">Starter Free</span>
+                  <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                    Starter Free
+                  </span>
                   <div className="flex items-baseline space-x-1">
                     <span className="text-3xl font-bold tracking-tight text-slate-900">$0</span>
                     <span className="text-xs text-slate-400">/ forever</span>
                   </div>
                   <ul className="space-y-2.5 text-xs text-slate-600 mt-4">
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>3 Social Channels</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>10 Posts per channel</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>Basic 7-day Analytics</span>
@@ -571,27 +782,31 @@ export default function ProfileSettingsView() {
                 <button
                   type="button"
                   onClick={() => handlePlanChange('free')}
-                  className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all ${
+                  className={`w-full py-2.5 rounded-full text-xs font-semibold shadow-2xs transition-all cursor-pointer ${
                     currentPlan === 'free'
                       ? 'bg-[#161616] text-white'
                       : 'bg-white border border-slate-200/80 text-slate-700 hover:bg-slate-100'
                   }`}
                 >
-                  {currentPlan === 'free' ? '✓ Current Plan (Active)' : 'Select Free'}
+                  {currentPlan === 'free' ? '✓ Current Plan (Active)' : 'Downgrade to Free'}
                 </button>
               </div>
 
               {/* Pro Growth (Hero Highlight) */}
-              <div className={`p-6 rounded-3xl flex flex-col justify-between space-y-5 relative transition-all ${
-                currentPlan === 'pro'
-                  ? 'bg-white border-2 border-[#161616] shadow-sm'
-                  : 'bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50'
-              }`}>
+              <div
+                className={`p-6 rounded-3xl flex flex-col justify-between space-y-5 relative transition-all ${
+                  currentPlan === 'pro'
+                    ? 'bg-white border-2 border-[#161616] shadow-sm'
+                    : 'bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50'
+                }`}
+              >
                 <div className="absolute -top-3 right-5 px-3 py-1 bg-[#161616] text-white text-[10px] font-bold rounded-full tracking-wider uppercase">
                   POPULAR
                 </div>
                 <div>
-                  <span className="text-xs font-semibold text-purple-700 uppercase tracking-wider block mb-1">Pro Growth</span>
+                  <span className="text-xs font-semibold text-purple-700 uppercase tracking-wider block mb-1">
+                    Pro Growth
+                  </span>
                   <div className="flex items-baseline space-x-1">
                     <span className="text-3xl font-bold tracking-tight text-slate-900">
                       ${billingCycle === 'annual' ? '23' : '29'}
@@ -600,25 +815,25 @@ export default function ProfileSettingsView() {
                   </div>
                   <ul className="space-y-2.5 text-xs text-slate-700 mt-4">
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span className="font-semibold text-slate-900">Unlimited Social Channels</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>Unlimited Scheduled Queue</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>AI Viral Script Studio (GPT-4)</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>24/7 Comment Keyword Auto-DMs</span>
@@ -636,7 +851,7 @@ export default function ProfileSettingsView() {
                   }`}
                 >
                   {isProcessingBachs === 'pro'
-                    ? 'Opening Bachs Gateway...'
+                    ? 'Connecting to Bachs...'
                     : currentPlan === 'pro'
                     ? '✓ Current Plan (Active)'
                     : 'Upgrade to Pro'}
@@ -644,13 +859,17 @@ export default function ProfileSettingsView() {
               </div>
 
               {/* Scale / Agency */}
-              <div className={`p-6 rounded-3xl flex flex-col justify-between space-y-5 relative transition-all ${
-                currentPlan === 'agency'
-                  ? 'bg-blue-50/30 border-2 border-[#161616] shadow-sm'
-                  : 'bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50'
-              }`}>
+              <div
+                className={`p-6 rounded-3xl flex flex-col justify-between space-y-5 relative transition-all ${
+                  currentPlan === 'agency'
+                    ? 'bg-blue-50/30 border-2 border-[#161616] shadow-sm'
+                    : 'bg-slate-50/70 border border-slate-200/70 hover:bg-slate-50'
+                }`}
+              >
                 <div>
-                  <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block mb-1">Scale & Agency</span>
+                  <span className="text-xs font-semibold text-blue-700 uppercase tracking-wider block mb-1">
+                    Scale & Agency
+                  </span>
                   <div className="flex items-baseline space-x-1">
                     <span className="text-3xl font-bold tracking-tight text-slate-900">
                       ${billingCycle === 'annual' ? '63' : '79'}
@@ -659,22 +878,22 @@ export default function ProfileSettingsView() {
                   </div>
                   <ul className="space-y-2.5 text-xs text-slate-600 mt-4">
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>10 Team Member Seats</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
                       <span>White-label PDF Reports</span>
                     </li>
                     <li className="flex items-center space-x-2">
-                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5" />
                       </div>
-                      <span>Custom Webhook Lead Sync</span>
+                      <span>Custom Webhook Lead Sync & CRM API</span>
                     </li>
                   </ul>
                 </div>
@@ -689,10 +908,10 @@ export default function ProfileSettingsView() {
                   }`}
                 >
                   {isProcessingBachs === 'agency'
-                    ? 'Opening Bachs Gateway...'
+                    ? 'Connecting to Bachs...'
                     : currentPlan === 'agency'
                     ? '✓ Current Plan (Active)'
-                    : 'Upgrade to Agency'}
+                    : 'Upgrade to Agency Scale'}
                 </button>
               </div>
             </div>
@@ -701,10 +920,105 @@ export default function ProfileSettingsView() {
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 gap-2">
               <div className="flex items-center space-x-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Hosted Payment Gateway: <strong>Bachs</strong> (<a href="https://docs.bachs.io/" target="_blank" rel="noreferrer" className="underline hover:text-slate-800">docs.bachs.io</a>)</span>
+                <span>
+                  Hosted Payment Gateway: <strong>Bachs</strong> (
+                  <a href="https://docs.bachs.io/" target="_blank" rel="noreferrer" className="underline hover:text-slate-800">
+                    docs.bachs.io
+                  </a>
+                  )
+                </span>
               </div>
               <div className="text-slate-400">
                 Cards · Bank Transfers · Mobile Money · Crypto
+              </div>
+            </div>
+
+            {/* REVERSE-ENGINEERED JIRA BILLING HISTORY & INVOICES */}
+            <div className="pt-6 border-t border-slate-100 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    <Receipt className="w-4 h-4 text-purple-600" />
+                    <span>Invoices & Billing History (Bachs Ledger)</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Download official payment receipts, view transaction hashes, and review past invoices.
+                  </p>
+                </div>
+                {currentPlan !== 'free' && (
+                  <button
+                    type="button"
+                    onClick={() => setShowCancelModal(true)}
+                    className="text-xs text-rose-600 hover:text-rose-700 hover:underline font-semibold cursor-pointer"
+                  >
+                    Cancel Subscription
+                  </button>
+                )}
+              </div>
+
+              {/* Invoices Table */}
+              <div className="border border-slate-200/80 rounded-2xl overflow-hidden shadow-2xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-slate-50/80 border-b border-slate-200/80 text-slate-500 uppercase tracking-wider font-semibold">
+                      <tr>
+                        <th className="py-3 px-4">Invoice #</th>
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4">Plan / Description</th>
+                        <th className="py-3 px-4">Amount</th>
+                        <th className="py-3 px-4">Gateway</th>
+                        <th className="py-3 px-4">Status</th>
+                        <th className="py-3 px-4 text-right">Receipt</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 bg-white">
+                      {invoices.length > 0 ? (
+                        invoices.map((inv) => (
+                          <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
+                            <td className="py-3.5 px-4 font-mono font-bold text-slate-900">
+                              <div className="flex items-center gap-2">
+                                <FileText className="w-3.5 h-3.5 text-slate-400" />
+                                <span>{inv.id}</span>
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-slate-600">{inv.date}</td>
+                            <td className="py-3.5 px-4 font-medium text-slate-900">
+                              {inv.plan} <span className="text-[10px] text-slate-400">({inv.billing_cycle})</span>
+                            </td>
+                            <td className="py-3.5 px-4 font-bold text-slate-900">{inv.amount}</td>
+                            <td className="py-3.5 px-4">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                {inv.gateway}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <Check className="w-2.5 h-2.5" />
+                                <span>{inv.status}</span>
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => handleDownloadReceipt(inv)}
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer inline-flex items-center gap-1 shadow-2xs"
+                              >
+                                <Download className="w-3 h-3" />
+                                <span>PDF Receipt</span>
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={7} className="py-6 text-center text-slate-400 text-xs">
+                            No billing history records found yet.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -774,7 +1088,7 @@ export default function ProfileSettingsView() {
                     <button
                       type="button"
                       onClick={handleRemoveAvatar}
-                      className="px-4 py-2 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200/80 rounded-full text-xs font-semibold transition-colors flex items-center space-x-1"
+                      className="px-4 py-2 bg-white hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200/80 rounded-full text-xs font-semibold transition-colors flex items-center space-x-1 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                       <span>Remove</span>
@@ -868,7 +1182,7 @@ export default function ProfileSettingsView() {
                   <option value="Content Creator / Influencer">Content Creator / Influencer</option>
                   <option value="E-Commerce & Digital Products">E-Commerce & Digital Products</option>
                   <option value="Agency & B2B Consulting">Agency & B2B Consulting</option>
-                  <option value="Coaching & Courses">Coaching & Online Education</option>
+                  <option value="Coaching & Online Education">Coaching & Online Education</option>
                   <option value="Real Estate & Local Business">Real Estate & Local Business</option>
                 </select>
               </div>
@@ -1223,18 +1537,49 @@ export default function ProfileSettingsView() {
               <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100">
                 <div className="space-y-0.5">
                   <p className="text-xs font-bold text-slate-900">Live Lead & DM Audio Alerts</p>
-                  <p className="text-[11px] text-slate-500">Play sound when a follower triggers a keyword</p>
+                  <p className="text-[11px] text-slate-500">Play chime when a follower triggers a DM lead magnet or auto-reply</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={playNotificationSound}
+                    className="px-2.5 py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-[11px] font-semibold flex items-center space-x-1 shadow-2xs transition-colors cursor-pointer"
+                    title="Test audio chime"
+                  >
+                    <Volume2 className="w-3 h-3 text-purple-600" />
+                    <span>Test Sound</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSoundEffects(!soundEffects)}
+                    className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${
+                      soundEffects ? 'bg-[#161616]' : 'bg-slate-200'
+                    }`}
+                  >
+                    <span
+                      className={`block w-4 h-4 rounded-full bg-white transition-transform ${
+                        soundEffects ? 'translate-x-5' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100">
+                <div className="space-y-0.5">
+                  <p className="text-xs font-bold text-slate-900">Email Lead Summaries & Digests</p>
+                  <p className="text-[11px] text-slate-500">Receive daily email digest of all captured social leads and analytics</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setSoundEffects(!soundEffects)}
-                  className={`w-10 h-6 rounded-full relative transition-colors ${
-                    soundEffects ? 'bg-[#161616]' : 'bg-slate-200'
+                  onClick={() => setEmailAlerts(!emailAlerts)}
+                  className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${
+                    emailAlerts ? 'bg-[#161616]' : 'bg-slate-200'
                   }`}
                 >
                   <span
                     className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                      soundEffects ? 'translate-x-5' : 'translate-x-1'
+                      emailAlerts ? 'translate-x-5' : 'translate-x-1'
                     }`}
                   />
                 </button>
@@ -1242,19 +1587,19 @@ export default function ProfileSettingsView() {
 
               <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/70 border border-slate-100">
                 <div className="space-y-0.5">
-                  <p className="text-xs font-bold text-slate-900">Email Lead Summaries</p>
-                  <p className="text-[11px] text-slate-500">Receive daily email digest of all captured social leads</p>
+                  <p className="text-xs font-bold text-slate-900">In-App Notification Badges</p>
+                  <p className="text-[11px] text-slate-500">Display counter badges in header and sidebar for task updates</p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setEmailAlerts(!emailAlerts)}
-                  className={`w-10 h-6 rounded-full relative transition-colors ${
-                    emailAlerts ? 'bg-[#161616]' : 'bg-slate-200'
+                  onClick={() => setLeadNotifications(!leadNotifications)}
+                  className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${
+                    leadNotifications ? 'bg-[#161616]' : 'bg-slate-200'
                   }`}
                 >
                   <span
                     className={`block w-4 h-4 rounded-full bg-white transition-transform ${
-                      emailAlerts ? 'translate-x-5' : 'translate-x-1'
+                      leadNotifications ? 'translate-x-5' : 'translate-x-1'
                     }`}
                   />
                 </button>
@@ -1282,13 +1627,13 @@ export default function ProfileSettingsView() {
               <div>
                 <p className="text-xs font-bold text-slate-900">Password & Credentials</p>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Change your account password securely via email authentication.
+                  Change your account password securely via email verification link.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleSendResetPassword}
-                className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/80 rounded-full text-xs font-semibold shadow-2xs transition-colors shrink-0"
+                className="px-4 py-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200/80 rounded-full text-xs font-semibold shadow-2xs transition-colors shrink-0 cursor-pointer"
               >
                 Send Password Reset Email
               </button>
@@ -1298,7 +1643,7 @@ export default function ProfileSettingsView() {
 
         {/* Empty Search State */}
         {searchQuery.trim() &&
-          !isSectionVisible('billing', ['pro', 'plans', 'billing', 'subscription', 'pricing', 'starter', 'free', 'annual', 'monthly', 'agency', 'tier', 'workspace tier']) &&
+          !isSectionVisible('billing', ['pro', 'plans', 'billing', 'subscription', 'pricing', 'starter', 'free', 'annual', 'monthly', 'agency', 'tier', 'workspace tier', 'invoices', 'receipts']) &&
           !isSectionVisible('profile', ['profile', 'creator', 'avatar', 'name', 'handle', 'alex morgan', 'email', 'phone', 'business', 'entity', 'industry', 'niche', 'bio', 'headline']) &&
           !isSectionVisible('automations', ['automation', 'funnel', 'dm', 'rules', 'link', 'destination', 'delay', 'voice', 'tone', 'rate', 'limit', 'safety']) &&
           !isSectionVisible('automations', ['gemini', 'ai', 'content', 'brand', 'guidelines', 'language', 'length', 'persona', 'cta', 'keywords', 'avoid', 'hashtags', 'negative filter']) &&
@@ -1315,7 +1660,7 @@ export default function ProfileSettingsView() {
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="mt-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition-all inline-flex items-center gap-1.5"
+                className="mt-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-full text-xs font-semibold transition-all inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>Clear search</span>
@@ -1328,12 +1673,12 @@ export default function ProfileSettingsView() {
           <button
             type="submit"
             disabled={isSaving}
-            className="px-6 py-3 bg-[#141416] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs sm:text-sm font-semibold shadow-md transition-all flex items-center space-x-2 hover:scale-[1.01]"
+            className="px-6 py-3 bg-[#141416] hover:bg-black disabled:opacity-50 text-white rounded-full text-xs sm:text-sm font-semibold shadow-md transition-all flex items-center space-x-2 cursor-pointer hover:scale-[1.01]"
           >
             {isSaving ? (
               <>
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Saving to Supabase...</span>
+                <span>Saving to Database...</span>
               </>
             ) : (
               <>
@@ -1344,6 +1689,47 @@ export default function ProfileSettingsView() {
           </button>
         </div>
       </form>
+
+      {/* Cancel Subscription Confirmation Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-[160] overflow-y-auto bg-black/60 backdrop-blur-xs font-sans animate-fade-in flex flex-col items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 space-y-4">
+            <div className="flex items-center space-x-3 text-rose-600">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 flex items-center justify-center border border-rose-200">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900">Cancel Subscription?</h3>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Are you sure you want to cancel your active paid plan? You will lose unlimited channels, AI auto-pilot publishing, and 24/7 automated comment lead bots. Your workspace will revert to <strong>Starter Free</strong>.
+            </p>
+            <div className="flex items-center justify-end space-x-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowCancelModal(false)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold cursor-pointer"
+              >
+                Keep Active Plan
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelSubscription}
+                disabled={isCancellingSub}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-semibold cursor-pointer flex items-center space-x-1"
+              >
+                {isCancellingSub ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Cancelling...</span>
+                  </>
+                ) : (
+                  <span>Confirm Downgrade</span>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
