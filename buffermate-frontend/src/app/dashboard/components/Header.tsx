@@ -16,7 +16,14 @@ import {
   PanelLeftOpen,
   Settings,
   Search,
-  Command
+  Command,
+  UserCheck,
+  MessageSquare,
+  AtSign,
+  Check,
+  CheckCheck,
+  Play,
+  Flag
 } from 'lucide-react';
 import { BufferMateLogo } from './Sidebar';
 import { createClient } from '@/lib/supabase/client';
@@ -94,29 +101,110 @@ export default function Header({
     return () => window.removeEventListener('user-profile-updated', handleProfileUpdate);
   }, []);
 
-  const notifications = [
-    {
-      id: 'n1',
-      title: 'Goal Forecast Update',
-      desc: 'Leads goal tracking 4 days ahead of schedule (80% confidence)',
-      time: 'Just now',
-      unread: true,
-    },
-    {
-      id: 'n2',
-      title: 'Scorecard Campaign MQLs',
-      desc: '78 qualified leads captured across LinkedIn & Meta ads',
-      time: '12m ago',
-      unread: true,
-    },
-    {
-      id: 'n3',
-      title: 'Autopilot Action Completed',
-      desc: '146 community responses processed inside guardrails',
-      time: '1h ago',
-      unread: false,
-    },
-  ];
+  // Jira Live Notifications System
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [notifFilter, setNotifFilter] = useState<'all' | 'unread' | 'assigned' | 'mentions'>('all');
+  const [isLoadingNotifs, setIsLoadingNotifs] = useState(false);
+
+  const fetchNotifications = async (filter = notifFilter) => {
+    try {
+      setIsLoadingNotifs(true);
+      const res = await fetch(`/api/jira/notifications?filter=${filter}`);
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setNotifications(data.data);
+        setUnreadCount(data.unread_count ?? 0);
+      }
+    } catch (err) {
+      console.error('Failed to load notifications:', err);
+    } finally {
+      setIsLoadingNotifs(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications(notifFilter);
+    const interval = setInterval(() => fetchNotifications(notifFilter), 15000);
+
+    const handleRefresh = () => fetchNotifications(notifFilter);
+    window.addEventListener('jira-notification-refresh', handleRefresh);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('jira-notification-refresh', handleRefresh);
+    };
+  }, [notifFilter]);
+
+  const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    try {
+      await fetch(`/api/jira/notifications/${id}/read`, { method: 'PATCH' });
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await fetch('/api/jira/notifications/mark-all-read', { method: 'POST' });
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Failed to mark all as read:', err);
+    }
+  };
+
+  const handleNotificationClick = async (item: any) => {
+    if (!item.is_read) {
+      await handleMarkAsRead(item.id);
+    }
+    setShowNotifications(false);
+
+    if (item.data?.issue_key || item.work_item_id) {
+      if (onSelectTab) onSelectTab('tasks');
+      window.dispatchEvent(
+        new CustomEvent('open-jira-issue', {
+          detail: { issueIdOrKey: item.data?.issue_key || item.work_item_id },
+        })
+      );
+    } else if (item.sprint_id) {
+      if (onSelectTab) onSelectTab('tasks');
+    }
+  };
+
+  const formatTimeAgo = (dateStr: string) => {
+    try {
+      const diffSec = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+      if (diffSec < 60) return 'just now';
+      if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;
+      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;
+      return `${Math.floor(diffSec / 86400)}d ago`;
+    } catch {
+      return '';
+    }
+  };
+
+  const getEventIcon = (eventType: string) => {
+    switch (eventType) {
+      case 'issue_assigned':
+        return <UserCheck className="w-3.5 h-3.5 text-blue-600" />;
+      case 'issue_mentioned':
+        return <AtSign className="w-3.5 h-3.5 text-purple-600" />;
+      case 'issue_status_changed':
+        return <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />;
+      case 'issue_commented':
+        return <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />;
+      case 'sprint_started':
+        return <Play className="w-3.5 h-3.5 text-amber-600" />;
+      case 'sprint_completed':
+        return <Flag className="w-3.5 h-3.5 text-emerald-600" />;
+      default:
+        return <Bell className="w-3.5 h-3.5 text-slate-500" />;
+    }
+  };
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -240,37 +328,148 @@ export default function Header({
               setShowNotifications(!showNotifications);
               setShowUserMenu(false);
             }}
-            className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs transition-colors relative"
+            className="w-9 h-9 flex items-center justify-center rounded-full bg-white border border-slate-200/80 text-slate-600 hover:bg-slate-50 hover:text-slate-900 shadow-2xs transition-colors relative cursor-pointer"
             aria-label="View notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 px-1.5 min-w-[18px] h-[18px] rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white shadow-xs animate-pulse">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
+            )}
           </button>
 
-          {/* Notifications Dropdown */}
+          {/* Notifications Dropdown: Jira Parity Notification Center */}
           {showNotifications && (
-            <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-80 max-w-sm bg-white rounded-3xl shadow-xl border border-slate-100 py-2.5 z-50 animate-scale-up">
-              <div className="px-4 py-2 border-b border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-bold text-[#161616]">Notifications</span>
-                <span className="text-[10px] font-semibold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-full">
-                  2 New
-                </span>
+            <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200/80 py-3 z-50 animate-scale-up">
+              {/* Dropdown Header */}
+              <div className="px-4 pb-2.5 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-bold text-slate-900">Notifications</span>
+                  {unreadCount > 0 && (
+                    <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full">
+                      {unreadCount} unread
+                    </span>
+                  )}
+                </div>
+
+                {unreadCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={handleMarkAllAsRead}
+                    className="text-[11px] font-semibold text-slate-500 hover:text-blue-600 flex items-center space-x-1 cursor-pointer transition-colors"
+                    title="Mark all as read"
+                  >
+                    <CheckCheck className="w-3.5 h-3.5" />
+                    <span>Mark all read</span>
+                  </button>
+                )}
               </div>
-              <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
-                {notifications.map((item) => (
-                  <div key={item.id} className="p-3 hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div className="flex items-start justify-between">
-                      <p className="text-xs font-bold text-slate-900">{item.title}</p>
-                      <span className="text-[10px] text-slate-400">{item.time}</span>
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5 leading-snug">{item.desc}</p>
-                  </div>
+
+              {/* Jira Notification Filter Tabs */}
+              <div className="px-3 pt-2 pb-1 flex items-center space-x-1 border-b border-slate-100">
+                {(['all', 'unread', 'assigned', 'mentions'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setNotifFilter(tab)}
+                    className={`px-2.5 py-1 rounded-full text-[11px] font-bold capitalize transition-all cursor-pointer ${
+                      notifFilter === tab
+                        ? 'bg-[#141416] text-white shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                    }`}
+                  >
+                    {tab === 'all' ? 'All' : tab}
+                  </button>
                 ))}
               </div>
-              <div className="px-3 pt-2 text-center border-t border-slate-100">
+
+              {/* Notification Items List */}
+              <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
+                {isLoadingNotifs && notifications.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-slate-400">Loading notifications...</div>
+                ) : notifications.length === 0 ? (
+                  <div className="p-8 text-center space-y-1">
+                    <p className="text-xs font-bold text-slate-700">All caught up!</p>
+                    <p className="text-[11px] text-slate-400">No notifications in {notifFilter}.</p>
+                  </div>
+                ) : (
+                  notifications.map((item) => {
+                    const isUnread = !item.is_read;
+                    return (
+                      <div
+                        key={item.id}
+                        onClick={() => handleNotificationClick(item)}
+                        className={`p-3.5 hover:bg-slate-50/80 transition-colors cursor-pointer flex items-start space-x-3 group relative ${
+                          isUnread ? 'bg-blue-50/20' : ''
+                        }`}
+                      >
+                        {/* Event Icon */}
+                        <div className="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                          {getEventIcon(item.event_type)}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 pr-6">
+                          <div className="flex items-center space-x-1.5 flex-wrap">
+                            {item.data?.issue_key && (
+                              <span className="font-mono text-[10px] font-bold px-1.5 py-0.2 bg-blue-100/70 text-blue-800 rounded">
+                                {item.data.issue_key}
+                              </span>
+                            )}
+                            <p className={`text-xs text-slate-900 truncate ${isUnread ? 'font-bold' : 'font-medium'}`}>
+                              {item.title}
+                            </p>
+                          </div>
+                          <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                            {item.message}
+                          </p>
+                          <span className="text-[10px] text-slate-400 mt-1 inline-block font-mono">
+                            {formatTimeAgo(item.created_at)}
+                          </span>
+                        </div>
+
+                        {/* Right: Unread indicator & Quick Mark Read */}
+                        <div className="absolute right-3 top-3.5 flex items-center space-x-1.5">
+                          {isUnread && (
+                            <span
+                              className="w-2 h-2 rounded-full bg-blue-600 shrink-0"
+                              title="Unread notification"
+                            />
+                          )}
+                          {isUnread && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleMarkAsRead(item.id, e)}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-200/80 text-slate-400 hover:text-slate-700 rounded-full transition-all cursor-pointer"
+                              title="Mark as read"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Dropdown Footer */}
+              <div className="px-4 pt-2.5 pb-1 flex items-center justify-between border-t border-slate-100">
                 <button
+                  type="button"
+                  onClick={() => {
+                    setShowNotifications(false);
+                    if (onSelectTab) onSelectTab('tasks');
+                  }}
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                >
+                  View Tasks & Boards →
+                </button>
+                <button
+                  type="button"
                   onClick={() => setShowNotifications(false)}
-                  className="text-xs font-semibold text-purple-700 hover:underline"
+                  className="text-xs font-semibold text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
                   Close
                 </button>

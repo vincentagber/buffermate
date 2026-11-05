@@ -177,6 +177,9 @@ export default function PostSchedulerModal({
         });
         const pubData = await res.json();
         savedPost = pubData.post || pubData;
+        if (!savedPost.channels || savedPost.channels.length === 0) {
+          savedPost.channels = pubData.channels || selectedChannels;
+        }
       } else {
         const res = await fetch('/api/posts', {
           method: 'POST',
@@ -185,9 +188,18 @@ export default function PostSchedulerModal({
         });
         const postData = await res.json();
         savedPost = postData.post || postData;
+        if (!savedPost.channels || savedPost.channels.length === 0) {
+          savedPost.channels = postData.channels || selectedChannels;
+        }
       }
 
       if (savedPost && (savedPost.id || savedPost._id)) {
+        if (!savedPost.channels || savedPost.channels.length === 0) {
+          savedPost.channels = selectedChannels;
+        }
+        if (!savedPost.attachments || savedPost.attachments.length === 0) {
+          if (imageUrl) savedPost.attachments = [{ type: 'image', url: imageUrl }];
+        }
         onSavePost(savedPost);
       } else {
         onSavePost({ id: `post-${Date.now()}`, user_id: 'user-current', ...postPayload, created_at: new Date().toISOString() } as unknown as Post);

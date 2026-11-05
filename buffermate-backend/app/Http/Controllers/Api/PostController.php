@@ -217,6 +217,13 @@ class PostController extends Controller
             ];
         }
 
+        if ($successCount > 0 || empty($jobs)) {
+            $post->update([
+                'status' => PostStatus::PUBLISHED,
+                'posted_at' => now(),
+            ]);
+        }
+
         $freshPost = $post->fresh()->load('publishJobs');
 
         AuditLog::log(
@@ -253,6 +260,86 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json(['success' => true, 'message' => 'Post deleted successfully']);
+    }
+
+    public function update(Request $request, string $id): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $post = Post::with('publishJobs')->where('workspace_id', $workspaceId)->findOrFail($id);
+
+        $validated = $request->validate([
+            'content' => 'sometimes|string',
+            'scheduled_at' => 'nullable|date',
+            'status' => 'sometimes|string',
+        ]);
+
+        if (isset($validated['status'])) {
+            $validated['status'] = PostStatus::tryFrom($validated['status']) ?? $post->status;
+        }
+
+        $post->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Post updated successfully',
+            'post' => $post->fresh()->load('publishJobs'),
+        ]);
+    }
+
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $ids = $request->input('ids', []);
+        if (!empty($ids)) {
+            Post::where('workspace_id', $workspaceId)->whereIn('id', $ids)->delete();
+        }
+        return response()->json([
+            'success' => true,
+            'message' => count($ids) . ' posts deleted successfully',
+        ]);
+    }
+
+    public function bulkPublish(Request $request): JsonResponse
+    {
+        $workspaceId = $request->attributes->get('workspace_id');
+        $ids = $request->input('ids', []);
+        $successCount = 0;
+
+        foreach ($ids as $id) {
+            $post = Post::with('publishJobs')->where('workspace_id', $workspaceId)->find($id);
+            if ($post) {
+                $jobs = $post->publishJobs;
+                if ($jobs->isEmpty()) {
+                    $post->update([
+                        'status' => PostStatus::PUBLISHED,
+                        'posted_at' => now(),
+                    ]);
+                    $successCount++;
+                } else {
+                    $jobSuccess = 0;
+                    foreach ($jobs as $job) {
+                        $this->engine->executeSingleJob($job);
+                        $job->refresh();
+                        if ($job->status === 'published') {
+                            $jobSuccess++;
+                        }
+                    }
+                    if ($jobSuccess > 0) {
+                        $post->update([
+                            'status' => PostStatus::PUBLISHED,
+                            'posted_at' => now(),
+                        ]);
+                        $successCount++;
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'publishedCount' => $successCount,
+            'message' => "Published {$successCount} posts successfully",
+        ]);
     }
 
     public function submitForApproval(Request $request, string $id): JsonResponse

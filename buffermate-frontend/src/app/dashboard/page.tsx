@@ -41,7 +41,12 @@ import {
   Check,
   Megaphone,
   Target,
-  DollarSign
+  DollarSign,
+  Search,
+  AlertCircle,
+  Copy,
+  X,
+  Bookmark
 } from 'lucide-react';
 import Sidebar, { BufferMateLogo } from './components/Sidebar';
 import Header from './components/Header';
@@ -65,6 +70,7 @@ import AiContentStudio from './components/AiContentStudio';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import NewsPilotView from './components/NewsPilotView';
+import JiraProjectHub from './components/jira/JiraProjectHub';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ChevronStepper from '@/components/ui/ChevronStepper';
@@ -118,6 +124,12 @@ export default function DashboardPage() {
   const [leads, setLeads] = useState<SocialLead[]>(INITIAL_LEADS);
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [selectedPostIds, setSelectedPostIds] = useState<string[]>([]);
+  const [postsStatusFilter, setPostsStatusFilter] = useState<'all' | 'scheduled' | 'published' | 'draft' | 'failed'>('all');
+  const [postsChannelFilter, setPostsChannelFilter] = useState<string>('all');
+  const [postsSearchQuery, setPostsSearchQuery] = useState<string>('');
+  const [viewingPost, setViewingPost] = useState<Post | null>(null);
+  const [isBulkActionLoading, setIsBulkActionLoading] = useState(false);
+  const [actionLoadingPostId, setActionLoadingPostId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Modals state
@@ -129,6 +141,23 @@ export default function DashboardPage() {
   const [isFlowAssistOpen, setIsFlowAssistOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [composerPrefill, setComposerPrefill] = useState<{ content?: string; channels?: SocialChannel[] } | null>(null);
+
+  const getNormalizedStatus = (status: string): 'published' | 'scheduled' | 'draft' | 'failed' => {
+    if (status === 'published' || status === 'posted') return 'published';
+    if (status === 'draft' || status === 'in_review' || status === 'changes_requested') return 'draft';
+    if (status === 'failed') return 'failed';
+    return 'scheduled';
+  };
+
+  const getPostImageUrl = (post: Post): string | null => {
+    if (!post.attachments || post.attachments.length === 0) return null;
+    const first: any = post.attachments[0];
+    if (typeof first === 'string') return first;
+    if (typeof first === 'object' && first !== null) {
+      return first.url || first.thumbnail || null;
+    }
+    return null;
+  };
 
   const handleToggleSelectPost = (postId: string) => {
     setSelectedPostIds((prev) =>
@@ -144,26 +173,133 @@ export default function DashboardPage() {
     }
   };
 
-  const handleBulkStatusChange = async (newStatus: 'posted' | 'scheduled') => {
+  const handleBulkPublish = async () => {
     if (selectedPostIds.length === 0) return;
-    setPosts((prev) =>
-      prev.map((p) => (selectedPostIds.includes(p.id) ? { ...p, status: newStatus } : p))
-    );
-    if (newStatus === 'posted') {
+    setIsBulkActionLoading(true);
+    try {
+      const res = await fetch('/api/posts/bulk-publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedPostIds }),
+      });
+      const data = await res.json();
       triggerConfetti();
       showToast(`🎉 Published ${selectedPostIds.length} posts to live channels!`);
-    } else {
-      showToast(`Updated ${selectedPostIds.length} posts to scheduled.`);
+      setSelectedPostIds([]);
+      await loadDatabaseData();
+      await fetchRealtimeStats();
+    } catch (e) {
+      console.error('Failed to bulk publish:', e);
+      showToast('Error publishing selected posts');
+    } finally {
+      setIsBulkActionLoading(false);
     }
-    setSelectedPostIds([]);
   };
 
   const handleBulkDeletePosts = async () => {
     if (selectedPostIds.length === 0) return;
     if (!confirm(`Delete ${selectedPostIds.length} selected posts?`)) return;
-    setPosts((prev) => prev.filter((p) => !selectedPostIds.includes(p.id)));
-    showToast(`Deleted ${selectedPostIds.length} posts.`);
-    setSelectedPostIds([]);
+    setIsBulkActionLoading(true);
+    try {
+      const res = await fetch('/api/posts/bulk-delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedPostIds }),
+      });
+      if (res.ok) {
+        showToast(`Deleted ${selectedPostIds.length} posts.`);
+        setSelectedPostIds([]);
+        await loadDatabaseData();
+        await fetchRealtimeStats();
+      } else {
+        await Promise.all(selectedPostIds.map((id) => fetch(`/api/posts/${id}`, { method: 'DELETE' })));
+        showToast(`Deleted ${selectedPostIds.length} posts.`);
+        setSelectedPostIds([]);
+        await loadDatabaseData();
+        await fetchRealtimeStats();
+      }
+    } catch (e) {
+      console.error('Failed to bulk delete:', e);
+      showToast('Error deleting selected posts');
+    } finally {
+      setIsBulkActionLoading(false);
+    }
+  };
+
+  const handlePublishSinglePost = async (postId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setActionLoadingPostId(postId);
+    try {
+      const res = await fetch('/api/social/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ post_id: postId }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        triggerConfetti();
+        showToast('🎉 Post published to live channels!');
+        await loadDatabaseData();
+        await fetchRealtimeStats();
+        if (viewingPost?.id === postId) {
+          setViewingPost((prev) => prev ? { ...prev, status: 'published' } : null);
+        }
+      } else {
+        showToast('Failed to publish post: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      showToast('Error publishing post');
+    } finally {
+      setActionLoadingPostId(null);
+    }
+  };
+
+  const handleDeleteSinglePost = async (postId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    setActionLoadingPostId(postId);
+    try {
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        showToast('Post deleted successfully');
+        setSelectedPostIds((prev) => prev.filter((id) => id !== postId));
+        if (viewingPost?.id === postId) setViewingPost(null);
+        await loadDatabaseData();
+        await fetchRealtimeStats();
+      } else {
+        showToast('Failed to delete post');
+      }
+    } catch (err) {
+      showToast('Error deleting post');
+    } finally {
+      setActionLoadingPostId(null);
+    }
+  };
+
+  const handleApproveSinglePost = async (postId: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setActionLoadingPostId(postId);
+    try {
+      const res = await fetch(`/api/posts/${postId}/approve`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Post approved and scheduled!');
+        await loadDatabaseData();
+        if (viewingPost?.id === postId) {
+          setViewingPost((prev) => prev ? { ...prev, status: 'scheduled', approval_state: 'approved' } : null);
+        }
+      } else {
+        showToast('Failed to approve post: ' + (data.message || data.error));
+      }
+    } catch (err) {
+      showToast('Error approving post');
+    } finally {
+      setActionLoadingPostId(null);
+    }
   };
 
   // Fetch aggregated real-time metrics
@@ -430,8 +566,8 @@ export default function DashboardPage() {
 
   // Post Scheduling Handler
   const handleSavePost = (newPost: Post) => {
-    setPosts([newPost, ...posts]);
-    if (newPost.status === 'posted') {
+    setPosts((prev) => [newPost, ...prev.filter((p) => p.id !== newPost.id)]);
+    if (newPost.status === 'posted' || newPost.status === 'published') {
       const publishActivity: ActivityEvent = {
         id: `act-${Date.now()}`,
         event_type: 'post_published',
@@ -441,9 +577,11 @@ export default function DashboardPage() {
         time_ago: 'just now',
         created_at: new Date().toISOString(),
       };
-      setActivities([publishActivity, ...activities]);
+      setActivities((prev) => [publishActivity, ...prev]);
     }
-    showToast(newPost.status === 'posted' ? 'Post published successfully!' : 'Post scheduled in Supabase!');
+    showToast(newPost.status === 'posted' || newPost.status === 'published' ? '🎉 Post published successfully!' : 'Post scheduled in Supabase queue!');
+    loadDatabaseData();
+    fetchRealtimeStats();
   };
 
   // Filtered Activity Stream
@@ -460,6 +598,35 @@ export default function DashboardPage() {
   const messagesToday = realtimeStats.messagesToday;
   const activeAutomationsCount = realtimeStats.activeAutomationsCount;
   const leadsCapturedToday = realtimeStats.leadsCapturedToday;
+
+  // Filtered Posts for Posts & Social Scheduler View
+  const postCounts = {
+    all: posts.length,
+    scheduled: posts.filter((p) => getNormalizedStatus(p.status) === 'scheduled').length,
+    published: posts.filter((p) => getNormalizedStatus(p.status) === 'published').length,
+    draft: posts.filter((p) => getNormalizedStatus(p.status) === 'draft').length,
+    failed: posts.filter((p) => getNormalizedStatus(p.status) === 'failed').length,
+  };
+
+  const filteredPosts = posts.filter((post) => {
+    const normStatus = getNormalizedStatus(post.status);
+    if (postsStatusFilter !== 'all' && normStatus !== postsStatusFilter) {
+      return false;
+    }
+    if (postsChannelFilter !== 'all') {
+      const hasChannel = post.channels?.some(
+        (c) => c.toLowerCase() === postsChannelFilter.toLowerCase()
+      );
+      if (!hasChannel) return false;
+    }
+    if (postsSearchQuery.trim()) {
+      const q = postsSearchQuery.toLowerCase();
+      const matchContent = post.content?.toLowerCase().includes(q);
+      const matchChannel = post.channels?.some((c) => c.toLowerCase().includes(q));
+      if (!matchContent && !matchChannel) return false;
+    }
+    return true;
+  });
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased text-[#0F172A] overflow-x-hidden">
@@ -619,10 +786,10 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW: TASKS
+              VIEW: JIRA PROJECTS & TASK MANAGEMENT
              ========================================================= */}
-          {currentTab === 'tasks' && (
-            <TasksView />
+          {(currentTab === 'tasks' || currentTab === 'projects' || currentTab === 'jira') && (
+            <JiraProjectHub />
           )}
 
           {/* =========================================================
@@ -945,17 +1112,31 @@ export default function DashboardPage() {
              ========================================================= */}
           {(currentTab === 'post-manager' || currentTab === 'calendar') && (
             <div className="space-y-5 sm:space-y-6 animate-fade-in relative pb-16">
+              {/* Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
                     Posts & Social Scheduler
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Manage, select multiple posts, queue, and auto-publish content across all connected channels.
+                    Manage, queue, edit, review, and auto-publish content across all connected channels.
                   </p>
                 </div>
 
                 <div className="flex items-center flex-wrap gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      loadDatabaseData();
+                      fetchRealtimeStats();
+                      showToast('Refreshed posts from database');
+                    }}
+                    className="p-2 bg-white border border-slate-200/80 hover:bg-slate-50 text-slate-700 rounded-full text-xs font-semibold transition-all shadow-2xs cursor-pointer"
+                    title="Refresh from server"
+                  >
+                    <RefreshCw className="w-4 h-4 text-slate-600" />
+                  </button>
+
                   <button
                     type="button"
                     onClick={handleSelectAllPosts}
@@ -984,6 +1165,78 @@ export default function DashboardPage() {
                 </div>
               </div>
 
+              {/* Status Filter Tabs & Search Bar */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-2xs">
+                {/* Status Tabs */}
+                <div className="flex items-center overflow-x-auto gap-1.5 pb-1 md:pb-0 scrollbar-none">
+                  {[
+                    { id: 'all', label: 'All', count: postCounts.all },
+                    { id: 'scheduled', label: 'Scheduled', count: postCounts.scheduled },
+                    { id: 'published', label: 'Published', count: postCounts.published },
+                    { id: 'draft', label: 'Drafts & Review', count: postCounts.draft },
+                    { id: 'failed', label: 'Failed', count: postCounts.failed },
+                  ].map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setPostsStatusFilter(tab.id as any)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer flex items-center space-x-1.5 ${
+                        postsStatusFilter === tab.id
+                          ? 'bg-[#141416] text-white shadow-2xs'
+                          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      <span
+                        className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                          postsStatusFilter === tab.id
+                            ? 'bg-white/20 text-white'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {tab.count}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search & Channel Filters */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 sm:w-60">
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                    <input
+                      type="text"
+                      value={postsSearchQuery}
+                      onChange={(e) => setPostsSearchQuery(e.target.value)}
+                      placeholder="Search posts..."
+                      className="w-full pl-8 pr-7 py-1.5 bg-slate-50 border border-slate-200/80 rounded-full text-xs focus:outline-hidden focus:ring-1 focus:ring-slate-900 text-slate-800"
+                    />
+                    {postsSearchQuery && (
+                      <button
+                        onClick={() => setPostsSearchQuery('')}
+                        className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 text-xs"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  <select
+                    value={postsChannelFilter}
+                    onChange={(e) => setPostsChannelFilter(e.target.value)}
+                    className="px-3 py-1.5 bg-slate-50 border border-slate-200/80 rounded-full text-xs font-medium text-slate-700 focus:outline-hidden cursor-pointer"
+                  >
+                    <option value="all">All Channels</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="x">X (Twitter)</option>
+                    <option value="threads">Threads</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="whatsapp">WhatsApp</option>
+                  </select>
+                </div>
+              </div>
+
               {/* Floating Mass Action Toolbar when posts are selected */}
               {selectedPostIds.length > 0 && (
                 <div className="fixed bottom-20 sm:bottom-8 left-1/2 -translate-x-1/2 z-40 bg-[#141416] text-white px-5 py-2.5 rounded-full shadow-2xl flex items-center space-x-3 sm:space-x-4 border border-slate-800 animate-slide-up">
@@ -994,26 +1247,23 @@ export default function DashboardPage() {
 
                   <button
                     type="button"
-                    onClick={() => handleBulkStatusChange('posted')}
-                    className="px-3.5 py-1.5 bg-white text-slate-900 hover:bg-slate-100 rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer"
+                    disabled={isBulkActionLoading}
+                    onClick={handleBulkPublish}
+                    className="px-3.5 py-1.5 bg-white text-slate-900 hover:bg-slate-100 disabled:opacity-50 rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer"
                   >
-                    <Send className="w-3.5 h-3.5" />
+                    {isBulkActionLoading ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Send className="w-3.5 h-3.5" />
+                    )}
                     <span>Publish Now</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => handleBulkStatusChange('scheduled')}
-                    className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 cursor-pointer"
-                  >
-                    <Clock className="w-3.5 h-3.5 text-purple-300" />
-                    <span>Schedule</span>
-                  </button>
-
-                  <button
-                    type="button"
+                    disabled={isBulkActionLoading}
                     onClick={handleBulkDeletePosts}
-                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 rounded-full transition-all cursor-pointer"
+                    className="p-1.5 text-red-400 hover:text-red-300 hover:bg-white/10 disabled:opacity-50 rounded-full transition-all cursor-pointer"
                     title="Delete selected posts"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -1029,86 +1279,378 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-                {posts.map((post) => {
-                  const isSelected = selectedPostIds.includes(post.id);
-
-                  return (
-                    <div
-                      key={post.id}
-                      onClick={() => handleToggleSelectPost(post.id)}
-                      className={`bg-white rounded-3xl p-5 sm:p-6 border transition-all flex flex-col justify-between space-y-4 cursor-pointer shadow-2xs ${
-                        isSelected
-                          ? 'border-slate-900 bg-purple-50/20 ring-2 ring-slate-900/10 shadow-sm'
-                          : 'border-slate-200/80 hover:border-slate-300 hover:shadow-xs'
-                      }`}
+              {/* Empty State */}
+              {filteredPosts.length === 0 ? (
+                <div className="bg-white rounded-3xl p-10 text-center border border-slate-200/80 shadow-2xs space-y-3">
+                  <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center mx-auto">
+                    <Calendar className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900">No posts found</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    {postsSearchQuery || postsStatusFilter !== 'all' || postsChannelFilter !== 'all'
+                      ? 'No posts match your current filter or search criteria.'
+                      : 'You do not have any posts in the queue yet. Create your first post now!'}
+                  </p>
+                  <div className="flex items-center justify-center gap-2 pt-2">
+                    {(postsSearchQuery || postsStatusFilter !== 'all' || postsChannelFilter !== 'all') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPostsSearchQuery('');
+                          setPostsStatusFilter('all');
+                          setPostsChannelFilter('all');
+                        }}
+                        className="px-4 py-2 border border-slate-200/80 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-full cursor-pointer"
+                      >
+                        Reset Filters
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setIsPostComposerOpen(true)}
+                      className="px-4 py-2 bg-[#141416] hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs cursor-pointer flex items-center space-x-1.5"
                     >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <div
-                              className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all ${
-                                isSelected
-                                  ? 'bg-[#141416] border-[#141416] text-white'
-                                  : 'bg-white border-slate-300'
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Create New Post</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                  {filteredPosts.map((post) => {
+                    const isSelected = selectedPostIds.includes(post.id);
+                    const normStatus = getNormalizedStatus(post.status);
+                    const imageUrl = getPostImageUrl(post);
+                    const isActionLoading = actionLoadingPostId === post.id;
+
+                    return (
+                      <div
+                        key={post.id}
+                        className={`bg-white rounded-3xl p-5 sm:p-6 border transition-all flex flex-col justify-between space-y-4 shadow-2xs hover:shadow-xs ${
+                          isSelected
+                            ? 'border-slate-900 bg-purple-50/20 ring-2 ring-slate-900/10'
+                            : 'border-slate-200/80 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="space-y-3">
+                          {/* Card Top Row: Checkbox, Channels, Status Pill */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleToggleSelectPost(post.id);
+                                }}
+                                className={`w-5 h-5 rounded-lg flex items-center justify-center border transition-all cursor-pointer ${
+                                  isSelected
+                                    ? 'bg-[#141416] border-[#141416] text-white'
+                                    : 'bg-white border-slate-300 hover:border-slate-400'
+                                }`}
+                              >
+                                {isSelected && <Check className="w-3.5 h-3.5" />}
+                              </button>
+
+                              <div className="flex flex-wrap gap-1">
+                                {post.channels && post.channels.length > 0 ? (
+                                  post.channels.map((ch) => (
+                                    <span
+                                      key={ch}
+                                      className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60 flex items-center space-x-1"
+                                    >
+                                      <SocialPlatformIcon channel={ch as SocialChannel} className="w-2.5 h-2.5" />
+                                      <span>{ch}</span>
+                                    </span>
+                                  ))
+                                ) : (
+                                  <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-slate-100 text-slate-500">
+                                    Social Queue
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Status Badge */}
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium border flex items-center space-x-1 ${
+                                normStatus === 'published'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60'
+                                  : normStatus === 'scheduled'
+                                  ? 'bg-purple-50 text-purple-700 border-purple-200/60'
+                                  : normStatus === 'draft'
+                                  ? 'bg-amber-50 text-amber-700 border-amber-200/60'
+                                  : 'bg-rose-50 text-rose-700 border-rose-200/60'
                               }`}
                             >
-                              {isSelected && <Check className="w-3.5 h-3.5" />}
-                            </div>
-
-                            <div className="flex flex-wrap gap-1">
-                              {post.channels?.map((ch) => (
-                                <span key={ch} className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60">
-                                  {ch}
-                                </span>
-                              ))}
-                            </div>
+                              {normStatus === 'published' && <CheckCircle2 className="w-2.5 h-2.5 shrink-0" />}
+                              {normStatus === 'scheduled' && <Clock className="w-2.5 h-2.5 shrink-0" />}
+                              {normStatus === 'draft' && <Bookmark className="w-2.5 h-2.5 shrink-0" />}
+                              {normStatus === 'failed' && <AlertCircle className="w-2.5 h-2.5 shrink-0" />}
+                              <span>
+                                {normStatus === 'published'
+                                  ? 'Published'
+                                  : normStatus === 'scheduled'
+                                  ? 'Scheduled'
+                                  : normStatus === 'draft'
+                                  ? 'Draft'
+                                  : 'Failed'}
+                              </span>
+                            </span>
                           </div>
 
+                          {/* Media Attachment if present */}
+                          {imageUrl && (
+                            <div
+                              onClick={() => setViewingPost(post)}
+                              className="rounded-2xl overflow-hidden aspect-video bg-slate-100 border border-slate-100 cursor-pointer relative group"
+                            >
+                              <img
+                                src={imageUrl}
+                                alt="attachment"
+                                className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
+                              />
+                              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
+                                <Eye className="w-4 h-4 mr-1" /> View Full
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Post Content preview */}
+                          <div
+                            onClick={() => setViewingPost(post)}
+                            className="cursor-pointer group"
+                          >
+                            <p className="text-xs text-slate-700 whitespace-pre-line line-clamp-4 leading-relaxed font-normal group-hover:text-slate-900 transition-colors">
+                              {post.content}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Card Footer: Timestamp and Quick Actions */}
+                        <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                          <div className="flex items-center space-x-1.5">
+                            {normStatus === 'published' ? (
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                            ) : normStatus === 'failed' ? (
+                              <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                            ) : (
+                              <Clock className="w-3.5 h-3.5 text-slate-400" />
+                            )}
+                            <span className="truncate max-w-[130px]">
+                              {post.scheduled_at
+                                ? new Date(post.scheduled_at).toLocaleDateString(undefined, {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })
+                                : 'Immediate'}
+                            </span>
+                          </div>
+
+                          {/* Action Buttons on Card */}
+                          <div className="flex items-center space-x-1">
+                            {/* Publish / Retry Button */}
+                            {normStatus !== 'published' && (
+                              <button
+                                type="button"
+                                disabled={isActionLoading}
+                                onClick={(e) => handlePublishSinglePost(post.id, e)}
+                                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 rounded-full text-[10px] font-semibold transition-all flex items-center space-x-1 cursor-pointer"
+                                title={normStatus === 'failed' ? 'Retry publishing' : 'Publish now'}
+                              >
+                                {isActionLoading ? (
+                                  <RefreshCw className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <Send className="w-3 h-3" />
+                                )}
+                                <span>{normStatus === 'failed' ? 'Retry' : 'Publish'}</span>
+                              </button>
+                            )}
+
+                            {/* Approve Draft Button */}
+                            {normStatus === 'draft' && (
+                              <button
+                                type="button"
+                                disabled={isActionLoading}
+                                onClick={(e) => handleApproveSinglePost(post.id, e)}
+                                className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/60 rounded-full text-[10px] font-semibold transition-all flex items-center space-x-1 cursor-pointer"
+                                title="Approve and schedule this post"
+                              >
+                                <Check className="w-3 h-3" />
+                                <span>Approve</span>
+                              </button>
+                            )}
+
+                            {/* View Details Button */}
+                            <button
+                              type="button"
+                              onClick={() => setViewingPost(post)}
+                              className="p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all cursor-pointer"
+                              title="View full post details"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              disabled={isActionLoading}
+                              onClick={(e) => handleDeleteSinglePost(post.id, e)}
+                              className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all cursor-pointer"
+                              title="Delete post"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Post Details Modal */}
+              {viewingPost && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs font-sans animate-fade-in overflow-y-auto">
+                  <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200/80 overflow-hidden my-auto animate-slide-up">
+                    <div className="p-6 space-y-4">
+                      {/* Modal Header */}
+                      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div className="flex items-center space-x-2">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium border ${
-                              post.status === 'posted'
+                            className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center space-x-1.5 ${
+                              getNormalizedStatus(viewingPost.status) === 'published'
                                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200/60'
-                                : 'bg-purple-50 text-purple-700 border-purple-200/60'
+                                : getNormalizedStatus(viewingPost.status) === 'scheduled'
+                                ? 'bg-purple-50 text-purple-700 border-purple-200/60'
+                                : getNormalizedStatus(viewingPost.status) === 'draft'
+                                ? 'bg-amber-50 text-amber-700 border-amber-200/60'
+                                : 'bg-rose-50 text-rose-700 border-rose-200/60'
                             }`}
                           >
-                            {post.status === 'posted' ? 'Published' : 'Scheduled'}
+                            <span>
+                              {getNormalizedStatus(viewingPost.status) === 'published'
+                                ? 'Published'
+                                : getNormalizedStatus(viewingPost.status) === 'scheduled'
+                                ? 'Scheduled'
+                                : getNormalizedStatus(viewingPost.status) === 'draft'
+                                ? 'Draft'
+                                : 'Delivery Failed'}
+                            </span>
                           </span>
+
+                          <div className="flex flex-wrap gap-1">
+                            {viewingPost.channels?.map((ch) => (
+                              <span
+                                key={ch}
+                                className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-100 text-slate-700 border border-slate-200/60 flex items-center space-x-1"
+                              >
+                                <SocialPlatformIcon channel={ch as SocialChannel} className="w-3 h-3" />
+                                <span>{ch}</span>
+                              </span>
+                            ))}
+                          </div>
                         </div>
 
-                        {post.attachments?.[0]?.url && (
-                          <div className="rounded-2xl overflow-hidden aspect-video bg-slate-100 border border-slate-100">
-                            <img
-                              src={post.attachments[0].url}
-                              alt="attachment"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
-
-                        <p className="text-xs text-slate-700 whitespace-pre-line line-clamp-4 leading-relaxed font-normal">
-                          {post.content}
-                        </p>
+                        <button
+                          onClick={() => setViewingPost(null)}
+                          className="w-8 h-8 rounded-full border border-slate-200/80 hover:bg-slate-100 text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
 
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                        <div className="flex items-center space-x-1.5">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          <span>
-                            {new Date(post.scheduled_at).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                      {/* Modal Attachment */}
+                      {getPostImageUrl(viewingPost) && (
+                        <div className="rounded-2xl overflow-hidden aspect-video bg-slate-100 border border-slate-100">
+                          <img
+                            src={getPostImageUrl(viewingPost)!}
+                            alt="post attachment"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+
+                      {/* Modal Content */}
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                          Post Content
+                        </label>
+                        <div className="p-4 bg-slate-50/80 rounded-2xl border border-slate-100 text-xs sm:text-sm text-slate-800 whitespace-pre-wrap leading-relaxed max-h-60 overflow-y-auto">
+                          {viewingPost.content}
+                        </div>
+                      </div>
+
+                      {/* Modal Metadata Timing */}
+                      <div className="grid grid-cols-2 gap-3 text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <div>
+                          <span className="text-slate-400 block text-[10px] font-semibold uppercase">Scheduled Time</span>
+                          <span className="text-slate-800 font-medium">
+                            {viewingPost.scheduled_at
+                              ? new Date(viewingPost.scheduled_at).toLocaleString()
+                              : 'Immediate'}
                           </span>
                         </div>
-                        <span className="font-semibold text-slate-900">Live Queue</span>
+                        <div>
+                          <span className="text-slate-400 block text-[10px] font-semibold uppercase">Post ID</span>
+                          <span className="text-slate-600 font-mono text-[11px] truncate block" title={viewingPost.id}>
+                            {viewingPost.id.slice(0, 16)}...
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Modal Action Buttons */}
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(viewingPost.content);
+                            showToast('Copied content to clipboard!');
+                          }}
+                          className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-full transition-all flex items-center space-x-1.5 cursor-pointer"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                          <span>Copy Text</span>
+                        </button>
+
+                        <div className="flex items-center space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSinglePost(viewingPost.id)}
+                            className="px-3.5 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 border border-rose-200/60 rounded-full transition-all flex items-center space-x-1 cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>Delete</span>
+                          </button>
+
+                          {getNormalizedStatus(viewingPost.status) === 'draft' && (
+                            <button
+                              type="button"
+                              onClick={() => handleApproveSinglePost(viewingPost.id)}
+                              className="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
+                            >
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Approve</span>
+                            </button>
+                          )}
+
+                          {getNormalizedStatus(viewingPost.status) !== 'published' && (
+                            <button
+                              type="button"
+                              onClick={() => handlePublishSinglePost(viewingPost.id)}
+                              className="px-4 py-1.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
+                            >
+                              <Send className="w-3.5 h-3.5" />
+                              <span>Publish Now</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           {/* =========================================================

@@ -26,7 +26,10 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::get('/posts', [PostController::class, 'index']);
     Route::post('/posts', [PostController::class, 'store']);
     Route::post('/social/publish', [PostController::class, 'publish']);
+    Route::post('/posts/bulk-delete', [PostController::class, 'bulkDestroy']);
+    Route::post('/posts/bulk-publish', [PostController::class, 'bulkPublish']);
     Route::get('/posts/{id}', [PostController::class, 'show']);
+    Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
     Route::post('/posts/{id}/submit-for-approval', [PostController::class, 'submitForApproval']);
     Route::post('/posts/{id}/approve', [PostController::class, 'approve']);
@@ -89,5 +92,41 @@ Route::middleware(['tenant.scope'])->group(function () {
     Route::post('/news/settings', [\App\Http\Controllers\Api\NewsPilotController::class, 'updateSettings']);
     Route::post('/news/pipeline/run', [\App\Http\Controllers\Api\NewsPilotController::class, 'runPipeline']);
     Route::post('/social/accounts/{id}/automation-settings', [\App\Http\Controllers\Api\NewsPilotController::class, 'updateAccountAutomation']);
+
+    // Jira Project & Task Management API
+    Route::get('/jira/projects', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'index']);
+    Route::post('/jira/projects', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'store']);
+    Route::get('/jira/projects/{idOrKey}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'show']);
+    Route::put('/jira/projects/{id}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'update']);
+    Route::delete('/jira/projects/{id}', [\App\Http\Controllers\Api\Jira\JiraProjectController::class, 'destroy']);
+
+    Route::get('/jira/projects/{projectId}/issues', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'index']);
+    Route::post('/jira/projects/{projectId}/issues', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'store']);
+    Route::get('/jira/issues/{idOrKey}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'show']);
+    Route::patch('/jira/issues/{id}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'update']);
+    Route::delete('/jira/issues/{id}', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'destroy']);
+    Route::post('/jira/issues/{id}/comments', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'storeComment']);
+    Route::post('/jira/issues/{id}/links', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'linkIssue']);
+    Route::get('/jira/issues/{id}/watchers', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'getWatchers']);
+    Route::post('/jira/issues/{id}/watchers/toggle', [\App\Http\Controllers\Api\Jira\JiraIssueController::class, 'toggleWatcher']);
+
+    // Jira Notifications API
+    Route::get('/jira/notifications', [\App\Http\Controllers\Api\Jira\JiraNotificationController::class, 'index']);
+    Route::patch('/jira/notifications/{id}/read', [\App\Http\Controllers\Api\Jira\JiraNotificationController::class, 'markAsRead']);
+    Route::post('/jira/notifications/mark-all-read', [\App\Http\Controllers\Api\Jira\JiraNotificationController::class, 'markAllAsRead']);
+    Route::delete('/jira/notifications/{id}', [\App\Http\Controllers\Api\Jira\JiraNotificationController::class, 'destroy']);
+
+    Route::get('/jira/projects/{projectId}/sprints', [\App\Http\Controllers\Api\Jira\JiraSprintController::class, 'index']);
+    Route::post('/jira/projects/{projectId}/sprints', [\App\Http\Controllers\Api\Jira\JiraSprintController::class, 'store']);
+    Route::post('/jira/sprints/{id}/start', [\App\Http\Controllers\Api\Jira\JiraSprintController::class, 'start']);
+    Route::post('/jira/sprints/{id}/complete', [\App\Http\Controllers\Api\Jira\JiraSprintController::class, 'complete']);
+    Route::post('/jira/sprints/reorder-issues', [\App\Http\Controllers\Api\Jira\JiraSprintController::class, 'reorderIssues']);
+
+    Route::get('/jira/projects/{projectId}/board', [\App\Http\Controllers\Api\Jira\JiraBoardController::class, 'show']);
+    Route::patch('/jira/board-columns/{columnId}', [\App\Http\Controllers\Api\Jira\JiraBoardController::class, 'updateColumn']);
+
+    Route::get('/jira/projects/{projectId}/reports/summary', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'summary']);
+    Route::get('/jira/projects/{projectId}/reports/burndown', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'burndown']);
+    Route::get('/jira/projects/{projectId}/reports/velocity', [\App\Http\Controllers\Api\Jira\JiraReportController::class, 'velocity']);
 });
 
