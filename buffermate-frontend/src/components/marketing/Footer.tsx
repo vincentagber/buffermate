@@ -189,6 +189,16 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/how-it-works" className="hover:text-slate-900 transition-colors">
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-slate-900 transition-colors">
+                  Blog & Playbooks
+                </Link>
+              </li>
+              <li>
                 <Link href="/faq" className="hover:text-slate-900 transition-colors">
                   Frequently Asked Questions
                 </Link>

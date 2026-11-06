@@ -38,9 +38,10 @@ export default function MarketingNavbar() {
 
   const navLinks = [
     { label: 'Features', href: '/features' },
-    { label: 'How It Works', href: '/#how-it-works' },
-    { label: 'Integrations', href: '/integrations' },
+    { label: 'How It Works', href: '/how-it-works' },
     { label: 'Pricing', href: '/pricing' },
+    { label: 'Integrations', href: '/integrations' },
+    { label: 'Blog', href: '/blog' },
     { label: 'FAQ', href: '/faq' },
     { label: 'About', href: '/about' },
   ];

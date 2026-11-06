@@ -27,21 +27,16 @@ import MarketingFooter from '@/components/marketing/Footer';
 import ProductMockup from '@/components/marketing/ProductMockup';
 import InteractiveAiStudioDemo from '@/components/marketing/InteractiveAiStudioDemo';
 import MarqueeChannels from '@/components/marketing/MarqueeChannels';
+import UseCasesGrid from '@/components/marketing/UseCasesGrid';
 import InteractiveWorkflowDemo from '@/components/marketing/InteractiveWorkflowDemo';
 import FeatureAlternatingSections from '@/components/marketing/FeatureAlternatingSections';
 import InteractiveCalendarPreview from '@/components/marketing/InteractiveCalendarPreview';
+import TrustSection from '@/components/marketing/TrustSection';
 import TestimonialsSection from '@/components/marketing/TestimonialsSection';
 import PricingCards from '@/components/marketing/PricingCards';
 import FaqAccordion from '@/components/marketing/FaqAccordion';
+import BlogResourcesSection from '@/components/marketing/BlogResourcesSection';
 import CtaBanner from '@/components/marketing/CtaBanner';
-import {
-  InstagramIcon,
-  TikTokIcon,
-  ThreadsIcon,
-  FacebookIcon,
-  XIcon,
-  WhatsAppIcon
-} from '@/components/SocialIcons';
 
 export default function HomePage() {
   return (
@@ -53,7 +48,7 @@ export default function HomePage() {
 
       <main className="space-y-24 sm:space-y-32 pb-24 overflow-hidden">
         {/* =========================================================================
-            SECTION 2: INTERACTIVE HERO SECTION (Inspired by Bachs.io Clean Typography)
+            SECTION 2: INTERACTIVE HERO SECTION (Inspired by Kobble Typography & Motion)
         ========================================================================= */}
         <section className="relative pt-12 sm:pt-20 lg:pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
           {/* Subtle Radial Atmosphere Glow */}
@@ -80,7 +75,7 @@ export default function HomePage() {
 
           {/* Supporting Text */}
           <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto mt-6 leading-relaxed font-normal">
-            Create engaging content, manage multiple social accounts, and automate your publishing workflow with AI. Everything you need to grow your online presence, in one place.
+            Create high-velocity content with AI, schedule across 6 networks with peak engagement heatmaps, and convert post comments into paying clients 24/7.
           </p>
 
           {/* Hero CTAs */}
@@ -98,6 +93,7 @@ export default function HomePage() {
               className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200/90 text-slate-800 text-sm font-semibold shadow-2xs transition-all flex items-center justify-center space-x-1.5"
             >
               <span>Explore Features</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
             </Link>
           </div>
 
@@ -124,7 +120,26 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 3: AI CONTENT GENERATION DEMONSTRATION (ColorInvoice Pattern)
+            SECTION 3: SUPPORTED PLATFORMS (Horizontal Integration Strip)
+        ========================================================================= */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4">
+          <div className="text-center">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              Official developer API integrations with the world&apos;s leading networks
+            </p>
+          </div>
+          <MarqueeChannels />
+        </section>
+
+        {/* =========================================================================
+            SECTION 4: USE CASES (Kobble 6-Pillar Architecture)
+        ========================================================================= */}
+        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <UseCasesGrid />
+        </section>
+
+        {/* =========================================================================
+            SECTION 5: AI CONTENT GENERATION DEMONSTRATION (Interactive ColorInvoice/Kobble Demo)
         ========================================================================= */}
         <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-2">
@@ -144,19 +159,7 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 4: SUPPORTED PLATFORMS (Horizontal Integration Strip)
-        ========================================================================= */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-4">
-          <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Official developer API integrations with the world&apos;s leading networks
-            </p>
-          </div>
-          <MarqueeChannels />
-        </section>
-
-        {/* =========================================================================
-            SECTION 5: PUBLISHING WORKFLOW (Kobble Step-by-Step Demonstration)
+            SECTION 6: PUBLISHING WORKFLOW (Kobble Step-by-Step Demonstration)
         ========================================================================= */}
         <section id="workflow" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-2">
@@ -175,14 +178,14 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 6: FEATURE STORYTELLING (Alternating Layouts)
+            SECTION 7: FEATURE STORYTELLING (Alternating Layouts)
         ========================================================================= */}
         <section id="features" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <FeatureAlternatingSections />
         </section>
 
         {/* =========================================================================
-            SECTION 7: INTERACTIVE CONTENT CALENDAR (HTMLHost & Buffer Pattern)
+            SECTION 8: INTERACTIVE CONTENT CALENDAR (HTMLHost & Buffer Pattern)
         ========================================================================= */}
         <section id="calendar" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
           <div className="text-center max-w-3xl mx-auto space-y-2">
@@ -202,7 +205,7 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 8: HOW BUFFERMATE WORKS (Clean 3-Step Presentation)
+            SECTION 9: HOW BUFFERMATE WORKS (Clean 3-Step Presentation)
         ========================================================================= */}
         <section id="how-it-works" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
           <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -258,21 +261,28 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 9 & 10: BENEFITS & SOCIAL PROOF (Testimonials & Verified Metrics)
+            SECTION 10: TRUST & RELIABILITY (Kobble Foundation of Absolute Trust)
+        ========================================================================= */}
+        <section id="trust" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <TrustSection />
+        </section>
+
+        {/* =========================================================================
+            SECTION 11: SOCIAL PROOF & VERIFIED METRICS
         ========================================================================= */}
         <section id="proof" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <TestimonialsSection />
         </section>
 
         {/* =========================================================================
-            SECTION 11: PRICING (Predictable Plans & Bachs Payments)
+            SECTION 12: PRICING (Predictable Plans & Bachs Payments)
         ========================================================================= */}
         <section id="pricing" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <PricingCards showTitle={true} />
         </section>
 
         {/* =========================================================================
-            SECTION 12: FAQ (Interactive Knowledge Center)
+            SECTION 13: FAQ (Interactive Knowledge Center)
         ========================================================================= */}
         <section id="faq" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">
           <div className="text-center max-w-3xl mx-auto space-y-3">
@@ -291,13 +301,23 @@ export default function HomePage() {
         </section>
 
         {/* =========================================================================
-            SECTION 13: FINAL CTA BANNER & GLOBAL FOOTER
+            SECTION 14: BLOG & RESOURCES (Kobble Editorial Cards)
+        ========================================================================= */}
+        <section id="blog" className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <BlogResourcesSection />
+        </section>
+
+        {/* =========================================================================
+            SECTION 15: DUAL CLOSING CTA (Self-Serve + Enterprise)
         ========================================================================= */}
         <section className="px-4 sm:px-6 lg:px-8">
           <CtaBanner />
         </section>
       </main>
 
+      {/* =========================================================================
+          SECTION 16: GLOBAL MARKETING FOOTER
+      ========================================================================= */}
       <MarketingFooter />
     </div>
   );
