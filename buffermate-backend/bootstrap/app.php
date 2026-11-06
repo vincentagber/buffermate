@@ -12,11 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->prependToGroup('api', \App\Http\Middleware\ForceJsonResponse::class);
         $middleware->alias([
             'supabase.auth' => \App\Http\Middleware\VerifySupabaseToken::class,
             'tenant.scope' => \App\Http\Middleware\WorkspaceTenantScope::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->shouldRenderJsonWhen(function ($request, $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
     })->create();

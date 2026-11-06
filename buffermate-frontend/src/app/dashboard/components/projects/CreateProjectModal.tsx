@@ -34,16 +34,16 @@ export default function CreateProjectModal({
 
   const handleNameChange = (val: string) => {
     setName(val);
-    // Auto-generate key from name if not manually edited
-    if (!key || key === name.slice(0, 3).toUpperCase()) {
-      const words = val.trim().split(/\s+/);
-      let suggestedKey = '';
-      if (words.length >= 2) {
-        suggestedKey = words.map(w => w[0]).join('').slice(0, 4).toUpperCase();
-      } else {
-        suggestedKey = val.slice(0, 3).toUpperCase();
-      }
-      setKey(suggestedKey.replace(/[^A-Z0-9]/g, ''));
+    const words = val.trim().split(/\s+/).filter(Boolean);
+    let suggestedKey = '';
+    if (words.length >= 2) {
+      suggestedKey = words.map(w => w[0]).join('').slice(0, 5).toUpperCase();
+    } else if (words.length === 1 && words[0].length >= 2) {
+      suggestedKey = words[0].slice(0, 4).toUpperCase();
+    }
+    const sanitized = suggestedKey.replace(/[^A-Z0-9]/g, '');
+    if (sanitized && (!key || key.length <= 4)) {
+      setKey(sanitized === 'BM' ? 'CGA' : sanitized);
     }
   };
 
@@ -57,7 +57,10 @@ export default function CreateProjectModal({
     try {
       const res = await fetch('/api/projects', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: JSON.stringify({
           name: name.trim(),
           key: key.trim().toUpperCase(),
@@ -68,12 +71,29 @@ export default function CreateProjectModal({
         }),
       });
 
-      const data = await res.json();
-      if (data.success && data.data) {
+      const contentType = res.headers.get('content-type') || '';
+      let data: any = null;
+
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(
+          res.status === 422
+            ? 'Validation error on server. Please check the project key and details.'
+            : `Server response error (${res.status})`
+        );
+      }
+
+      if (res.ok && data?.success && data?.data) {
         onProjectCreated(data.data);
         onClose();
       } else {
-        setError(data.message || 'Failed to create project');
+        const errorMsg =
+          data?.message ||
+          (data?.errors ? Object.values(data.errors).flat().join(' ') : null) ||
+          'Failed to create project';
+        setError(errorMsg);
       }
     } catch (err: any) {
       setError(err.message || 'Error communicating with server');

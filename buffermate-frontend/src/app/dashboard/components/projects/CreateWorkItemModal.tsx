@@ -60,7 +60,10 @@ export default function CreateWorkItemModal({
     try {
       const res = await fetch(`/api/projects/${project.id}/issues`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
         body: JSON.stringify({
           title: title.trim(),
           description: description.trim() || null,
@@ -74,13 +77,30 @@ export default function CreateWorkItemModal({
         }),
       });
 
-      const data = await res.json();
-      if (data.success && data.data) {
+      const contentType = res.headers.get('content-type') || '';
+      let data: any = null;
+
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(
+          res.status === 422
+            ? 'Validation error on server. Please check the work item details.'
+            : `Server response error (${res.status})`
+        );
+      }
+
+      if (res.ok && data?.success && data?.data) {
         triggerConfetti();
         onIssueCreated(data.data);
         onClose();
       } else {
-        setError(data.message || 'Failed to create issue');
+        const errorMsg =
+          data?.message ||
+          (data?.errors ? Object.values(data.errors).flat().join(' ') : null) ||
+          'Failed to create issue';
+        setError(errorMsg);
       }
     } catch (err: any) {
       setError(err.message || 'Network error');
