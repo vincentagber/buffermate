@@ -35,7 +35,6 @@ interface HeaderProps {
   userName?: string;
   onOpenCreateModal?: () => void;
   onOpenSimulatorModal?: () => void;
-  onOpenPayRunModal?: () => void;
   onSignOut?: () => void;
   isMobileMenuOpen?: boolean;
   setIsMobileMenuOpen?: (open: boolean) => void;
@@ -52,7 +51,6 @@ export default function Header({
   userName = 'Alex Morgan',
   onOpenCreateModal,
   onOpenSimulatorModal,
-  onOpenPayRunModal,
   onSignOut,
   isMobileMenuOpen = false,
   setIsMobileMenuOpen,
@@ -309,19 +307,6 @@ export default function Header({
 
       {/* Right side: Actions, Notifications, Profile */}
       <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
-        {/* Quick Launch Pay Run Modal */}
-        {onOpenPayRunModal && (
-          <button
-            onClick={onOpenPayRunModal}
-            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-all shadow-2xs"
-            title="Generate Pay Run Cycle (Chevron Stepper)"
-          >
-            <span className="text-xs">⚡</span>
-            <span>Pay Run</span>
-          </button>
-        )}
-
-
         {/* Quick Add New Post Action */}
         {onOpenPostModal && (
           <AddNewButton

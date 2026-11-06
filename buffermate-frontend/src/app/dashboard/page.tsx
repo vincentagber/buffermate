@@ -64,7 +64,6 @@ import FlowAssistModal from './components/FlowAssistModal';
 import AutomationModal from './components/AutomationModal';
 import SimulatorModal from './components/SimulatorModal';
 import PostSchedulerModal from './components/PostSchedulerModal';
-import GeneratePayRunModal from './components/GeneratePayRunModal';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import NewsPilotView from './components/NewsPilotView';
@@ -136,7 +135,6 @@ export default function DashboardPage() {
   const [editingAutomation, setEditingAutomation] = useState<SocialAutomation | null>(null);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isPostComposerOpen, setIsPostComposerOpen] = useState(false);
-  const [isPayRunModalOpen, setIsPayRunModalOpen] = useState(false);
   const [isFlowAssistOpen, setIsFlowAssistOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [composerPrefill, setComposerPrefill] = useState<{ content?: string; channels?: SocialChannel[] } | null>(null);
@@ -668,7 +666,6 @@ export default function DashboardPage() {
         onOpenCreateModal={() => setIsPostComposerOpen(true)}
         onOpenPostModal={() => setIsPostComposerOpen(true)}
         onOpenSimulatorModal={() => setIsSimulatorOpen(true)}
-        onOpenPayRunModal={() => setIsPayRunModalOpen(true)}
         onSignOut={handleSignOut}
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
@@ -722,14 +719,6 @@ export default function DashboardPage() {
 
               {/* Quick Jump Buttons */}
               <div className="flex items-center space-x-2 self-end sm:self-auto flex-wrap gap-y-2">
-                <button
-                  onClick={() => setIsPayRunModalOpen(true)}
-                  className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
-                  title="Open Generate Pay Run Cycle (Chevron Stepper Wizard)"
-                >
-                  <DollarSign className="w-3.5 h-3.5 text-blue-100" />
-                  <span>Pay Run Cycle</span>
-                </button>
                 <AddNewButton
                   title="Create Post"
                   size={20}
@@ -2206,14 +2195,6 @@ export default function DashboardPage() {
         onSavePost={handleSavePost}
         initialContent={composerPrefill?.content}
         initialChannels={composerPrefill?.channels}
-      />
-
-      <GeneratePayRunModal
-        isOpen={isPayRunModalOpen}
-        onClose={() => setIsPayRunModalOpen(false)}
-        onSuccess={(data) => {
-          showToast(`Pay run cycle "${data.cycleTitle}" authorized successfully! 🚀`);
-        }}
       />
 
       <FlowAssistModal
