@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import AnimatedButton from '../ui/AnimatedButton';
 
 export default function MarketingCta() {
   return (
@@ -21,12 +22,9 @@ export default function MarketingCta() {
           </div>
 
           <div className="relative z-10 w-full sm:w-auto">
-            <Link
-              href="/signup"
-              className="inline-block px-8 py-4 bg-[#1A202C] text-white rounded-full font-bold text-[15px] hover:bg-[#2D3748] transition-all hover:shadow-xl hover:-translate-y-1 w-full text-center sm:w-auto"
-            >
+            <AnimatedButton href="/signup" size="lg">
               Start Free Workspace
-            </Link>
+            </AnimatedButton>
           </div>
         </div>
 
@@ -44,12 +42,9 @@ export default function MarketingCta() {
           </div>
 
           <div className="relative z-10 w-full sm:w-auto">
-            <Link
-              href="/pricing"
-              className="inline-block px-8 py-4 bg-[#FF882A] text-white rounded-full font-bold text-[15px] hover:bg-[#E67015] transition-all hover:shadow-[0_8px_24px_rgba(255,136,42,0.3)] hover:-translate-y-1 w-full text-center sm:w-auto"
-            >
+            <AnimatedButton href="/pricing" variant="brand" size="lg">
               Explore Agency Plans
-            </Link>
+            </AnimatedButton>
           </div>
         </div>
       </div>

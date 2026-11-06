@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import AnimatedButton from '@/components/ui/AnimatedButton';
 import {
   Sparkles,
   Calendar,
@@ -210,12 +211,9 @@ export default function FeaturesPage() {
 
             {/* Hero Quick CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link
-                href="/signup"
-                className="px-8 py-4 bg-[#1A202C] text-white rounded-full font-bold text-[15px] hover:bg-[#2D3748] transition-all hover:shadow-xl hover:-translate-y-0.5 w-full sm:w-auto"
-              >
+              <AnimatedButton href="/signup" size="lg">
                 Start Free Workspace
-              </Link>
+              </AnimatedButton>
               <Link
                 href="#interactive-demo"
                 className="px-7 py-4 bg-white border border-[#E2E0D5] text-[#1A202C] rounded-full font-bold text-[15px] hover:bg-[#F0EEE6] hover:border-[#C4C4B8] transition-all w-full sm:w-auto"

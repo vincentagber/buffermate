@@ -25,6 +25,7 @@ import ProjectSettingsView from './ProjectSettingsView';
 import CreateProjectModal from './CreateProjectModal';
 import CreateWorkItemModal from './CreateWorkItemModal';
 import WorkItemDetailModal from './WorkItemDetailModal';
+import AddNewButton from '@/components/ui/AddNewButton';
 
 export default function ProjectHub() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -182,14 +183,14 @@ export default function ProjectHub() {
         <p className="text-xs text-slate-500 leading-relaxed">
           Create your first software project to begin tracking tasks, grooming backlogs, and managing agile Scrum and Kanban boards.
         </p>
-        <button
-          type="button"
+        <AddNewButton
+          title="Create Project"
+          size={24}
           onClick={() => setIsCreateProjectOpen(true)}
-          className="px-5 py-2.5 bg-[#141416] hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all cursor-pointer inline-flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Project</span>
-        </button>
+          label="Create Project"
+          iconClassName="stroke-emerald-400 group-hover:stroke-white"
+          className="px-5 py-2.5 bg-[#141416] hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all inline-flex items-center space-x-1.5"
+        />
 
         <CreateProjectModal
           isOpen={isCreateProjectOpen}
@@ -254,15 +255,14 @@ export default function ProjectHub() {
             </select>
           )}
 
-          <button
-            type="button"
-            onClick={() => setIsCreateProjectOpen(true)}
-            className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
+          <AddNewButton
             title="Create New Project"
-          >
-            <Plus className="w-3.5 h-3.5 text-emerald-400" />
-            <span>New Project</span>
-          </button>
+            size={22}
+            onClick={() => setIsCreateProjectOpen(true)}
+            label="New Project"
+            iconClassName="stroke-emerald-400 group-hover:stroke-white"
+            className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all flex items-center space-x-1.5"
+          />
         </div>
       </div>
 

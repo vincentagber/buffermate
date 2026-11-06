@@ -28,6 +28,7 @@ import {
 import { BufferMateLogo } from './Sidebar';
 import { createClient } from '@/lib/supabase/client';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import AddNewButton from '@/components/ui/AddNewButton';
 
 interface HeaderProps {
   currentTab?: string;
@@ -320,6 +321,16 @@ export default function Header({
           </button>
         )}
 
+
+        {/* Quick Add New Post Action */}
+        {onOpenPostModal && (
+          <AddNewButton
+            title="Create New Post / Content"
+            size={36}
+            onClick={onOpenPostModal}
+            className="hover:scale-105 transition-transform"
+          />
+        )}
 
         {/* Messages quick toggle */}
         <button

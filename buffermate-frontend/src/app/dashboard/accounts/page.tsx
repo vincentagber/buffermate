@@ -18,6 +18,7 @@ import {
   Check,
 } from 'lucide-react';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
+import AddNewButton from '@/components/ui/AddNewButton';
 
 interface SocialAccount {
   id: string;
@@ -542,12 +543,25 @@ export default function AccountsPage() {
                       type="button"
                       onClick={() => handleLaunchOAuthPopup(provider.id)}
                       disabled={isLoading || isBlocked}
-                      className="w-full py-2.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center justify-center space-x-1.5 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                      className="group w-full py-2.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold transition-all shadow-2xs flex items-center justify-center space-x-2 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                       {isLoading ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                       ) : (
-                        <Plus className="w-4 h-4" />
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="18px"
+                          height="18px"
+                          viewBox="0 0 24 24"
+                          className="stroke-emerald-400 fill-none group-hover:rotate-90 group-hover:stroke-white duration-300"
+                        >
+                          <path
+                            d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                            strokeWidth="1.5"
+                          />
+                          <path d="M8 12H16" strokeWidth="1.5" strokeLinecap="round" />
+                          <path d="M12 16V8" strokeWidth="1.5" strokeLinecap="round" />
+                        </svg>
                       )}
                       <span>
                         {isBlocked ? 'Setup Required to Connect' : `Authorize ${provider.name}`}

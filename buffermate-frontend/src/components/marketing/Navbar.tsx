@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Moon } from 'lucide-react';
+import AnimatedButton from '../ui/AnimatedButton';
 
 export default function MarketingNavbar() {
   const pathname = usePathname();
@@ -84,12 +85,9 @@ export default function MarketingNavbar() {
             Log In
           </Link>
 
-          <Link
-            href="/signup"
-            className="px-5 py-2.5 rounded-full bg-[#1A202C] hover:bg-[#2D3748] text-white text-[14px] font-bold transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
-          >
+          <AnimatedButton href="/signup" size="sm">
             Start Free
-          </Link>
+          </AnimatedButton>
         </div>
 
         {/* Mobile Menu Button */}

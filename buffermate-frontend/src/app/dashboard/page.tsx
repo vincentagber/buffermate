@@ -72,6 +72,7 @@ import ProjectHub from './components/projects/ProjectHub';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ChevronStepper from '@/components/ui/ChevronStepper';
+import AddNewButton from '@/components/ui/AddNewButton';
 import {
   SocialAutomation,
   ActivityEvent,
@@ -729,13 +730,14 @@ export default function DashboardPage() {
                   <DollarSign className="w-3.5 h-3.5 text-blue-100" />
                   <span>Pay Run Cycle</span>
                 </button>
-                <button
+                <AddNewButton
+                  title="Create Post"
+                  size={20}
                   onClick={() => setIsPostComposerOpen(true)}
-                  className="px-3.5 py-1.5 bg-[#161616] hover:bg-black text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs hover:scale-105 active:scale-95 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Create Post</span>
-                </button>
+                  label="Create Post"
+                  iconClassName="stroke-emerald-400 group-hover:stroke-white"
+                  className="px-3.5 py-1.5 bg-[#161616] hover:bg-black text-white rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 shadow-2xs"
+                />
                 <button
                   onClick={() => setCurrentTab('campaigns')}
                   className="px-3.5 py-1.5 bg-white border border-slate-200/80 hover:bg-slate-50 rounded-full text-xs font-medium text-slate-700 transition-colors flex items-center space-x-1.5 shadow-2xs"

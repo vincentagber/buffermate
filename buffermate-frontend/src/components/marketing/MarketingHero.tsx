@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Star, CheckCircle2, TrendingUp, Sparkles } from 'lucide-react';
+import AnimatedButton from '../ui/AnimatedButton';
 
 export default function MarketingHero() {
   return (
@@ -29,15 +30,11 @@ export default function MarketingHero() {
               Connect with an autonomous AI network engineered to craft, schedule, and distribute high-converting content across 6 channels. Turn viral post comments into direct paying clients 24/7.
             </p>
 
-            {/* Black Pill CTA Button */}
+            {/* Animated Interactive CTA Button */}
             <div className="pt-2">
-              <Link
-                href="/signup"
-                className="inline-flex items-center space-x-2.5 px-8 py-4 rounded-full bg-[#1A202C] hover:bg-[#2D3748] text-white text-[15px] font-bold shadow-lg transition-all hover:-translate-y-0.5 cursor-pointer"
-              >
-                <span>Start Free Workspace</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <AnimatedButton href="/signup" size="lg">
+                Start Free Workspace
+              </AnimatedButton>
             </div>
 
             {/* Avatar Cluster with +2.4k Pill */}

@@ -16,6 +16,7 @@ import {
 import { Board, WorkItem, Project, IssueStatus } from './types';
 import { IssueTypeIcon, IssuePriorityIcon, IssueStatusBadge } from './WorkItemIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import AddNewButton from '@/components/ui/AddNewButton';
 
 interface ProjectBoardViewProps {
   project: Project;
@@ -139,14 +140,14 @@ export default function ProjectBoardView({
           <span className="text-xs text-slate-400 font-mono">
             {filteredIssues.length} issues
           </span>
-          <button
-            type="button"
+          <AddNewButton
+            title="Create Work Item"
+            size={22}
             onClick={() => onOpenCreateIssue()}
-            className="px-4 py-1.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Issue</span>
-          </button>
+            label="Create Issue"
+            iconClassName="stroke-white group-hover:stroke-emerald-400"
+            className="px-4 py-1.5 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5"
+          />
         </div>
       </div>
 
@@ -276,14 +277,13 @@ export default function ProjectBoardView({
               </div>
 
               {/* Bottom Quick Create Action */}
-              <button
-                type="button"
+              <AddNewButton
+                title={`Add item to ${col.name}`}
+                size={22}
                 onClick={() => onOpenCreateIssue(col.mapped_status)}
-                className="mt-3 w-full py-1.5 border border-transparent hover:border-slate-200 hover:bg-white text-slate-500 hover:text-slate-900 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Create item</span>
-              </button>
+                label="Create item"
+                className="mt-3 w-full py-1.5 border border-transparent hover:border-slate-200 hover:bg-white text-slate-500 hover:text-slate-900 rounded-xl text-xs font-semibold transition-all flex items-center justify-center space-x-1"
+              />
             </div>
           );
         })}

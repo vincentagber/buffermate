@@ -142,3 +142,148 @@ body {
 .animate-marquee-reverse:hover {
   animation-play-state: paused;
 }
+
+/* =========================================================================
+   From Uiverse.io by gharsh11032000 — Animated Interactive Button
+   ========================================================================= */
+.animated-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 34px;
+  border: 4px solid transparent;
+  font-size: 15px;
+  background-color: #141416;
+  border-radius: 100px;
+  font-weight: 600;
+  color: greenyellow;
+  box-shadow: 0 0 0 2px greenyellow;
+  cursor: pointer;
+  overflow: hidden;
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1.2;
+  transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animated-button svg {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  fill: greenyellow;
+  z-index: 9;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animated-button .arr-1 {
+  right: 16px;
+}
+
+.animated-button .arr-2 {
+  left: -25%;
+}
+
+.animated-button .circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  background-color: greenyellow;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animated-button .text {
+  position: relative;
+  z-index: 1;
+  transform: translateX(-12px);
+  transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animated-button:hover {
+  box-shadow: 0 0 0 12px transparent;
+  color: #212121;
+  border-radius: 12px;
+}
+
+.animated-button:hover .arr-1 {
+  right: -25%;
+}
+
+.animated-button:hover .arr-2 {
+  left: 16px;
+}
+
+.animated-button:hover .text {
+  transform: translateX(12px);
+}
+
+.animated-button:hover svg {
+  fill: #212121;
+}
+
+.animated-button:active {
+  scale: 0.95;
+  box-shadow: 0 0 0 4px greenyellow;
+}
+
+.animated-button:hover .circle {
+  width: 360px;
+  height: 360px;
+  opacity: 1;
+}
+
+/* Sizing Modifiers */
+.animated-button.btn-sm {
+  padding: 8px 24px;
+  font-size: 13px;
+}
+.animated-button.btn-sm svg {
+  width: 16px;
+  height: 16px;
+}
+.animated-button.btn-sm .arr-1 {
+  right: 10px;
+}
+.animated-button.btn-sm:hover .arr-2 {
+  left: 10px;
+}
+.animated-button.btn-sm .text {
+  transform: translateX(-8px);
+}
+.animated-button.btn-sm:hover .text {
+  transform: translateX(8px);
+}
+
+.animated-button.btn-lg {
+  padding: 18px 42px;
+  font-size: 17px;
+}
+
+/* Brand Theme Modifiers */
+.animated-button.btn-brand {
+  color: #6F9C3E;
+  box-shadow: 0 0 0 2px #6F9C3E;
+}
+.animated-button.btn-brand svg {
+  fill: #6F9C3E;
+}
+.animated-button.btn-brand .circle {
+  background-color: #6F9C3E;
+}
+.animated-button.btn-brand:hover {
+  color: #FFFFFF;
+}
+.animated-button.btn-brand:hover svg {
+  fill: #FFFFFF;
+}
+.animated-button.btn-brand:active {
+  box-shadow: 0 0 0 4px #6F9C3E;
+}
+

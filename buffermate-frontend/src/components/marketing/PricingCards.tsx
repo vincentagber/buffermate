@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   HelpCircle
 } from 'lucide-react';
+import AnimatedButton from '../ui/AnimatedButton';
 
 interface PricingCardsProps {
   showTitle?: boolean;
@@ -202,12 +203,13 @@ export default function PricingCards({ showTitle = true }: PricingCardsProps) {
             </div>
           </div>
 
-          <Link
+          <AnimatedButton
             href="/signup?plan=pro"
-            className="w-full py-3 rounded-full text-xs font-semibold text-center bg-[#141416] hover:bg-black text-white transition-all shadow-md block cursor-pointer"
+            size="md"
+            className="w-full text-center"
           >
-            Start 14-Day Free Trial →
-          </Link>
+            Start 14-Day Free Trial
+          </AnimatedButton>
         </div>
 
         {/* Tier 3: Scale & Agency */}

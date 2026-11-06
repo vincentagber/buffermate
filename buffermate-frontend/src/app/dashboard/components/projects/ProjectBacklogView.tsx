@@ -16,6 +16,7 @@ import {
 import { WorkItem, Project, Sprint, IssueStatus } from './types';
 import { IssueTypeIcon, IssuePriorityIcon, IssueStatusBadge } from './WorkItemIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import AddNewButton from '@/components/ui/AddNewButton';
 
 interface ProjectBacklogViewProps {
   project: Project;
@@ -181,17 +182,17 @@ export default function ProjectBacklogView({
           <p className="text-xs text-slate-500">Plan sprints, estimate story points, and commit issues</p>
         </div>
 
-        <button
-          type="button"
+        <AddNewButton
+          title="Create New Sprint"
+          size={22}
           onClick={() => {
             setNewSprintName(`${project.key} Sprint ${sprints.length + 1}`);
             setIsCreatingSprint(true);
           }}
-          className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Create Sprint</span>
-        </button>
+          label="Create Sprint"
+          iconClassName="stroke-white group-hover:stroke-emerald-400"
+          className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5"
+        />
       </div>
 
       {/* Create Sprint Form Drawer */}
@@ -277,14 +278,14 @@ export default function ProjectBacklogView({
                 </div>
               )}
               <div className="p-3 bg-slate-50 border-t border-slate-100 flex justify-end">
-                <button
-                  type="button"
+                <AddNewButton
+                  title="Create item in sprint"
+                  size={20}
                   onClick={() => onOpenCreateIssue(activeSprint.id)}
-                  className="text-xs text-blue-600 hover:underline font-semibold flex items-center space-x-1 cursor-pointer"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Create item in sprint</span>
-                </button>
+                  label="Create item in sprint"
+                  iconClassName="stroke-blue-600 group-hover:stroke-blue-800"
+                  className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1"
+                />
               </div>
             </div>
           )}
@@ -345,14 +346,14 @@ export default function ProjectBacklogView({
                   </div>
                 )}
                 <div className="p-3 bg-slate-50/50 border-t border-slate-100 flex justify-end">
-                  <button
-                    type="button"
+                  <AddNewButton
+                    title="Create item in sprint"
+                    size={20}
                     onClick={() => onOpenCreateIssue(sprint.id)}
-                    className="text-xs text-blue-600 hover:underline font-semibold flex items-center space-x-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Create item in sprint</span>
-                  </button>
+                    label="Create item in sprint"
+                    iconClassName="stroke-blue-600 group-hover:stroke-blue-800"
+                    className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1"
+                  />
                 </div>
               </div>
             )}
@@ -372,14 +373,14 @@ export default function ProjectBacklogView({
             </span>
           </div>
 
-          <button
-            type="button"
+          <AddNewButton
+            title="Create item in backlog"
+            size={20}
             onClick={() => onOpenCreateIssue(null)}
-            className="text-xs text-blue-600 hover:underline font-semibold flex items-center space-x-1 cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create item in backlog</span>
-          </button>
+            label="Create item in backlog"
+            iconClassName="stroke-blue-600 group-hover:stroke-blue-800"
+            className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1"
+          />
         </div>
 
         <div>
