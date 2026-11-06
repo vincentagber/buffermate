@@ -30,7 +30,7 @@ export default function MarketingFooter() {
               Autonomous social publishing, viral hook generation, and real-time comment lead funnels for modern creators and high-velocity marketing teams.
             </p>
 
-            {/* Live Uptime Badge matching Kobble */}
+            {/* Live Uptime Badge */}
             <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white border border-[#E7E4DC] text-[11px] font-medium text-slate-700 shadow-2xs">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>All Systems Operational (99.98% Uptime)</span>

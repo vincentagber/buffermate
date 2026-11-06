@@ -39,7 +39,7 @@ return new class extends Migration
             $table->foreignUuid('conversation_id')->constrained('social_conversations')->onDelete('cascade');
             $table->string('sender_type')->default('customer'); // customer, agent, system
             $table->string('sender_name');
-            $table->boolean('is_internal_note')->default(false); // Jira parity: internal team note
+            $table->boolean('is_internal_note')->default(false); // Internal team note
             $table->text('content');
             $table->timestamps();
 

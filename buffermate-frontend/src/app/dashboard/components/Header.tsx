@@ -101,7 +101,7 @@ export default function Header({
     return () => window.removeEventListener('user-profile-updated', handleProfileUpdate);
   }, []);
 
-  // Jira Live Notifications System
+  // Project Live Notifications System
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [notifFilter, setNotifFilter] = useState<'all' | 'unread' | 'assigned' | 'mentions'>('all');
@@ -110,7 +110,7 @@ export default function Header({
   const fetchNotifications = async (filter = notifFilter) => {
     try {
       setIsLoadingNotifs(true);
-      const res = await fetch(`/api/jira/notifications?filter=${filter}`);
+      const res = await fetch(`/api/projects/notifications?filter=${filter}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.data)) {
         setNotifications(data.data);
@@ -128,18 +128,18 @@ export default function Header({
     const interval = setInterval(() => fetchNotifications(notifFilter), 15000);
 
     const handleRefresh = () => fetchNotifications(notifFilter);
-    window.addEventListener('jira-notification-refresh', handleRefresh);
+    window.addEventListener('project-notification-refresh', handleRefresh);
 
     return () => {
       clearInterval(interval);
-      window.removeEventListener('jira-notification-refresh', handleRefresh);
+      window.removeEventListener('project-notification-refresh', handleRefresh);
     };
   }, [notifFilter]);
 
   const handleMarkAsRead = async (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     try {
-      await fetch(`/api/jira/notifications/${id}/read`, { method: 'PATCH' });
+      await fetch(`/api/projects/notifications/${id}/read`, { method: 'PATCH' });
       setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (err) {
@@ -149,7 +149,7 @@ export default function Header({
 
   const handleMarkAllAsRead = async () => {
     try {
-      await fetch('/api/jira/notifications/mark-all-read', { method: 'POST' });
+      await fetch('/api/projects/notifications/mark-all-read', { method: 'POST' });
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       setUnreadCount(0);
     } catch (err) {
@@ -172,7 +172,7 @@ export default function Header({
       if (onSelectTab) onSelectTab('tasks');
       setTimeout(() => {
         window.dispatchEvent(
-          new CustomEvent('open-jira-issue', {
+          new CustomEvent('open-project-task', {
             detail: { issueIdOrKey: issueKey },
           })
         );
@@ -348,7 +348,7 @@ export default function Header({
             )}
           </button>
 
-          {/* Notifications Dropdown: Jira Parity Notification Center */}
+          {/* Notifications Dropdown: Notification Center */}
           {showNotifications && (
             <div className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-auto sm:mt-2 w-[calc(100vw-24px)] sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-200/80 py-3 z-50 animate-scale-up">
               {/* Dropdown Header */}
@@ -375,7 +375,7 @@ export default function Header({
                 )}
               </div>
 
-              {/* Jira Notification Filter Tabs */}
+              {/* Notification Filter Tabs */}
               <div className="px-3 pt-2 pb-1 flex items-center space-x-1 border-b border-slate-100">
                 {(['all', 'unread', 'assigned', 'mentions'] as const).map((tab) => (
                   <button

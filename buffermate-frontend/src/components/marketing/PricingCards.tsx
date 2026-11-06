@@ -257,7 +257,7 @@ export default function PricingCards({ showTitle = true }: PricingCardsProps) {
                   <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                     <Check className="w-2.5 h-2.5" />
                   </div>
-                  <span>Jira-Grade Workflows & Dependency Timelines</span>
+                  <span>Enterprise Project Workflows & Dependency Timelines</span>
                 </li>
                 <li className="flex items-center space-x-2.5">
                   <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">

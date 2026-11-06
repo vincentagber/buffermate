@@ -41,7 +41,7 @@ class SocialInboxController extends Controller
             $query->where('channel', $request->channel);
         }
 
-        // Queue filter (Jira Service Management parity)
+        // Queue filter
         if ($request->has('queue')) {
             switch ($request->queue) {
                 case 'unassigned':
@@ -226,7 +226,7 @@ class SocialInboxController extends Controller
         ]);
     }
 
-    public function convertToJira(Request $request, string $id): JsonResponse
+    public function convertToProjectTask(Request $request, string $id): JsonResponse
     {
         $workspaceId = $this->resolveWorkspaceId($request);
 
@@ -240,7 +240,7 @@ class SocialInboxController extends Controller
 
         $project = Project::where('workspace_id', $workspaceId)->first();
         if (!$project) {
-            return response()->json(['success' => false, 'message' => 'No Jira project found for workspace'], 400);
+            return response()->json(['success' => false, 'message' => 'No project found for workspace'], 400);
         }
 
         $type = $request->input('type', 'task');
@@ -271,12 +271,12 @@ class SocialInboxController extends Controller
                 'work_item_key' => $item->key,
             ]);
 
-            // Add Jira link audit message
+            // Add work item link audit message
             $conversation->messages()->create([
                 'sender_type' => 'system',
-                'sender_name' => 'Jira Work Management',
+                'sender_name' => 'Project Engine',
                 'is_internal_note' => true,
-                'content' => "Converted to Jira Work Item: {$item->key} ({$item->title})",
+                'content' => "Converted to Work Item: {$item->key} ({$item->title})",
             ]);
 
             return $item;
@@ -284,12 +284,17 @@ class SocialInboxController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Converted to Jira issue ' . $workItem->key,
+            'message' => 'Converted to work item ' . $workItem->key,
             'data' => [
                 'work_item' => $workItem,
                 'conversation' => $conversation->fresh(['messages', 'workItem']),
             ],
         ]);
+    }
+
+    public function convertToJira(Request $request, string $id): JsonResponse
+    {
+        return $this->convertToProjectTask($request, $id);
     }
 
     public function stats(Request $request): JsonResponse

@@ -23,7 +23,7 @@ export default function ComposeMessageModal({
   const [priority, setPriority] = useState<'urgent' | 'high' | 'normal' | 'low'>('normal');
   const [pipelineValue, setPipelineValue] = useState('');
   const [message, setMessage] = useState('');
-  const [createJiraIssue, setCreateJiraIssue] = useState(false);
+  const [createWorkItem, setCreateWorkItem] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -65,20 +65,20 @@ export default function ComposeMessageModal({
 
       let conv = data.data;
 
-      // Optional convert to Jira issue immediately
-      if (createJiraIssue && conv?.id) {
+      // Optional convert to project work item immediately
+      if (createWorkItem && conv?.id) {
         try {
-          const jiraRes = await fetch(`/api/inbox/conversations/${conv.id}/convert-to-jira`, {
+          const taskRes = await fetch(`/api/inbox/conversations/${conv.id}/convert-to-project-task`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type: 'task', priority }),
           });
-          const jiraData = await jiraRes.json();
-          if (jiraData.success && jiraData.data?.conversation) {
-            conv = jiraData.data.conversation;
+          const taskData = await taskRes.json();
+          if (taskData.success && taskData.data?.conversation) {
+            conv = taskData.data.conversation;
           }
         } catch (err) {
-          console.error('Failed to auto-create Jira issue:', err);
+          console.error('Failed to auto-create work item:', err);
         }
       }
 
@@ -230,21 +230,21 @@ export default function ComposeMessageModal({
               />
             </div>
 
-            {/* Jira Auto-Creation Toggle */}
+            {/* Project Work Item Auto-Creation Toggle */}
             <div className="p-3 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex items-center justify-between">
               <div className="flex items-center space-x-2.5">
                 <div className="w-7 h-7 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
                   <FolderGit2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-blue-900 block">Create Jira Work Item</span>
-                  <span className="text-[10px] text-blue-700">Track in Jira Backlog & Agile Scrum Board</span>
+                  <span className="text-xs font-bold text-blue-900 block">Create Project Work Item</span>
+                  <span className="text-[10px] text-blue-700">Track in Project Backlog & Agile Board</span>
                 </div>
               </div>
               <input
                 type="checkbox"
-                checked={createJiraIssue}
-                onChange={(e) => setCreateJiraIssue(e.target.checked)}
+                checked={createWorkItem}
+                onChange={(e) => setCreateWorkItem(e.target.checked)}
                 className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
             </div>

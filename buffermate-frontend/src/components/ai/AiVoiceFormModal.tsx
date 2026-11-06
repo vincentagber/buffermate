@@ -350,7 +350,7 @@ export default function AiVoiceFormModal({
                 )}
               </h4>
 
-              {/* Description (Kobble copy) */}
+              {/* Description */}
               <p className="text-xs sm:text-sm text-slate-500 max-w-sm leading-relaxed mb-6">
                 {isRecording
                   ? 'Speak naturally. Mention topics, target channels, schedule timing, or discount codes. Tap the red button when finished!'

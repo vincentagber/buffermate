@@ -68,7 +68,7 @@ import GeneratePayRunModal from './components/GeneratePayRunModal';
 import ProfileSettingsView from './components/ProfileSettingsView';
 import IntegrationsView from './components/IntegrationsView';
 import NewsPilotView from './components/NewsPilotView';
-import JiraProjectHub from './components/jira/JiraProjectHub';
+import ProjectHub from './components/projects/ProjectHub';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ChevronStepper from '@/components/ui/ChevronStepper';
@@ -777,10 +777,10 @@ export default function DashboardPage() {
           )}
 
           {/* =========================================================
-              VIEW: JIRA PROJECTS & TASK MANAGEMENT
+              VIEW: PROJECTS & TASK MANAGEMENT
              ========================================================= */}
-          {(currentTab === 'tasks' || currentTab === 'projects' || currentTab === 'jira') && (
-            <JiraProjectHub />
+          {(currentTab === 'tasks' || currentTab === 'projects') && (
+            <ProjectHub />
           )}
 
           {/* =========================================================

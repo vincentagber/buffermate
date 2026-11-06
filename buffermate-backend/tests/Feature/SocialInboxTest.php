@@ -95,7 +95,7 @@ class SocialInboxTest extends TestCase
         $replyResponse->assertStatus(200)
             ->assertJsonPath('success', true);
 
-        // Internal note (Jira parity)
+        // Internal note
         $noteResponse = $this->withHeaders(['X-Workspace-Id' => $this->workspace->id])
             ->postJson("/api/inbox/conversations/{$conv->id}/reply", [
                 'content' => 'Internal Note: Checked user account, premium plan active.',
@@ -111,7 +111,7 @@ class SocialInboxTest extends TestCase
         $this->assertTrue($messages->where('is_internal_note', true)->isNotEmpty());
     }
 
-    public function test_can_convert_inquiry_to_jira_work_item(): void
+    public function test_can_convert_inquiry_to_project_work_item(): void
     {
         $conv = SocialConversation::create([
             'workspace_id' => $this->workspace->id,
@@ -124,7 +124,7 @@ class SocialInboxTest extends TestCase
         ]);
 
         $response = $this->withHeaders(['X-Workspace-Id' => $this->workspace->id])
-            ->postJson("/api/inbox/conversations/{$conv->id}/convert-to-jira", [
+            ->postJson("/api/inbox/conversations/{$conv->id}/convert-to-project-task", [
                 'type' => 'story',
             ]);
 

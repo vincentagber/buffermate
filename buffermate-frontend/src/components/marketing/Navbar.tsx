@@ -41,9 +41,9 @@ export default function MarketingNavbar() {
       }`}
     >
       <div className="max-w-[1200px] mx-auto px-5 md:px-10 h-[72px] flex items-center justify-between">
-        {/* Logo matching Kobble layout */}
+        {/* Buffermate Brand Logo */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          {/* Kobble-Style Rounded Green Squircle with inner ring */}
+          {/* Rounded Green Squircle with inner ring */}
           <div className="w-9 h-9 rounded-2xl bg-[#6F9C3E] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0">
             <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
           </div>
@@ -57,7 +57,7 @@ export default function MarketingNavbar() {
           </div>
         </Link>
 
-        {/* Desktop Nav - Clean links matching Kobble */}
+        {/* Desktop Navigation Links */}
         <nav className="hidden lg:flex items-center space-x-7 text-[15px] font-semibold text-[#4A5568]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;

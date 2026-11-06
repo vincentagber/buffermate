@@ -71,15 +71,15 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4F0] font-sans antialiased text-[#1A202C] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
-      {/* Kobble Ambient Gradient Glow Layers */}
+      {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
-      {/* Centered Kobble-Style Card */}
+      {/* Centered Auth Card */}
       <div className="w-full max-w-md bg-white rounded-[28px] border border-[#E2E0D5] shadow-xl p-7 sm:p-9 space-y-6 relative z-10">
-        {/* Brand Logo & Header matching Kobble */}
+        {/* Brand Logo & Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-flex items-center space-x-2.5 group">
             <div className="w-9 h-9 rounded-2xl bg-[#6F9C3E] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0">

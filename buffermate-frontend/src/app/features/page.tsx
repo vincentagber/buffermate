@@ -24,7 +24,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
-import KobbleCta from '@/components/marketing/KobbleCta';
+import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
 import {
   InstagramIcon,
@@ -156,7 +156,7 @@ export default function FeaturesPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
-      {/* Kobble Ambient Gradient Glow Layers */}
+      {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
@@ -166,10 +166,10 @@ export default function FeaturesPage() {
 
       <main className="flex-1 flex flex-col w-full relative">
         {/* ========================================================================= */}
-        {/* 1. HERO SECTION (Kobble exact layout & decorative floating SVG outlines) */}
+        {/* 1. HERO SECTION */}
         {/* ========================================================================= */}
         <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
-          {/* Subtle floating background SVG shapes matching Kobble */}
+          {/* Subtle floating background SVG shapes */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#1A202C] opacity-[0.03]">
             <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute -top-20 -left-10 rotate-12">
               <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
@@ -227,7 +227,7 @@ export default function FeaturesPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 2. CORE CAPABILITIES 6-CARD GRID (Kobble High-Polish Standard) */}
+        {/* 2. CORE CAPABILITIES 6-CARD GRID */}
         {/* ========================================================================= */}
         <section className="w-full bg-[#F5F4F0] border-b border-[#E2E0D5] py-20 md:py-28 relative">
           <div className="max-w-[1200px] mx-auto px-5 md:px-10 relative z-10">
@@ -808,7 +808,7 @@ export default function FeaturesPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 6. ENTERPRISE RELIABILITY & SECURITY SECTION (Kobble Dark Container) */}
+        {/* 6. ENTERPRISE RELIABILITY & SECURITY SECTION */}
         {/* ========================================================================= */}
         <section className="w-full bg-[#1A202C] text-white py-20 md:py-28 relative overflow-hidden">
           <div className="max-w-[1200px] mx-auto px-5 md:px-10 relative z-10">
@@ -867,9 +867,9 @@ export default function FeaturesPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 7. DUAL CLOSING CTA (Kobble Standard) */}
+        {/* 7. DUAL CLOSING CALL-TO-ACTION */}
         {/* ========================================================================= */}
-        <KobbleCta />
+        <MarketingCta />
       </main>
 
       <MarketingFooter />

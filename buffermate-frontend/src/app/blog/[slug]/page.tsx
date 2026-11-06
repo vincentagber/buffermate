@@ -12,7 +12,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
-import KobbleCta from '@/components/marketing/KobbleCta';
+import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
 import { BLOG_POSTS } from '@/lib/blog-data';
 
@@ -33,7 +33,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
-      {/* Kobble Ambient Gradient Glow Layers */}
+      {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
@@ -101,7 +101,7 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Article Body Content */}
         <section className="max-w-[850px] mx-auto w-full px-5 md:px-10 py-16">
-          {/* Key Takeaways Box (Kobble Feature Box) */}
+          {/* Key Takeaways Box */}
           <div className="bg-white rounded-[24px] p-6 md:p-8 border border-[#E2E0D5] mb-12 shadow-sm">
             <div className="flex items-center gap-2 text-xs font-bold text-[#6F9C3E] uppercase tracking-wider mb-4">
               <Sparkles className="w-4 h-4" />
@@ -200,11 +200,12 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
 
-        {/* Dual Closing CTA */}
-        <KobbleCta />
+        {/* Dual Closing Call-to-Action */}
+        <MarketingCta />
       </main>
 
       <MarketingFooter />
     </div>
   );
 }
+

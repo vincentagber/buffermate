@@ -58,7 +58,7 @@ class Project extends Model
 
     public function automationRules(): HasMany
     {
-        return $this->hasMany(JiraAutomationRule::class);
+        return $this->hasMany(ProjectAutomationRule::class);
     }
 
     /**

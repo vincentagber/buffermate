@@ -55,7 +55,7 @@ export default function TestimonialsSection() {
       role: 'Social Media & Growth Agency',
       headline: 'Managing 10+ Client Workspaces with Zero Accidental Cross-Posts',
       challenge: 'Client account management in generic tools caused accidental cross-brand posting and lacked approval gates before publishing.',
-      transformation: 'Employs Buffermate Jira-grade review workflows, permission roles, and automated queue reviews, delivering white-label analytics reports directly to clients.',
+      transformation: 'Employs Buffermate enterprise project workflows, permission roles, and automated queue reviews, delivering white-label analytics reports directly to clients.',
       metricBadge: '10 Team Seats & Approvals',
     },
   ];
@@ -77,7 +77,7 @@ export default function TestimonialsSection() {
           </p>
         </div>
 
-        {/* 4 Verified Metric Cards (Kobble rhythm) */}
+        {/* 4 Verified Metric Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {verifiedMetrics.map((m) => (
             <div

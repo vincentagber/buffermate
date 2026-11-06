@@ -165,7 +165,7 @@ class SocialInboxSeeder extends Seeder
                         'sender_type' => 'agent',
                         'sender_name' => 'Elena Rostova',
                         'is_internal_note' => true,
-                        'content' => 'Jira Work Item linked: Verified SLA adherence (4 mins reply).',
+                        'content' => 'Project Work Item linked: Verified SLA adherence (4 mins reply).',
                         'created_at' => $now->copy()->subHours(2)->subMinutes(50),
                     ]
                 ],

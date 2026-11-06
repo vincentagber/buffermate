@@ -14,7 +14,7 @@ import {
   MessageCircle
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
-import KobbleCta from '@/components/marketing/KobbleCta';
+import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
 
 interface FaqItem {
@@ -98,7 +98,7 @@ export default function FaqPage() {
 
   return (
     <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
-      {/* Kobble Ambient Gradient Glow Layers */}
+      {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
@@ -108,7 +108,7 @@ export default function FaqPage() {
 
       <main className="flex-1 flex flex-col w-full relative">
         {/* ========================================================================= */}
-        {/* 1. HERO SECTION (Kobble exact layout & decorative floating SVG outlines) */}
+        {/* 1. HERO SECTION */}
         {/* ========================================================================= */}
         <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
           <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#1A202C] opacity-[0.03]">
@@ -259,9 +259,9 @@ export default function FaqPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 5. DUAL CLOSING CTA (Kobble Standard) */}
+        {/* 5. DUAL CLOSING CTA */}
         {/* ========================================================================= */}
-        <KobbleCta />
+        <MarketingCta />
       </main>
 
       <MarketingFooter />

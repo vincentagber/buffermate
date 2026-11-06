@@ -1442,7 +1442,7 @@ export function TasksView() {
     </div>
   );
 }
-// 3. INBOX VIEW (REVERSE ENGINEERED JIRA QUEUES & OMNI-CHANNEL SERVICE DESK)
+// 3. INBOX VIEW (PROJECT QUEUES & OMNI-CHANNEL SERVICE DESK)
 // -------------------------------------------------------------
 export { default as InboxView } from './inbox/InboxView';
 

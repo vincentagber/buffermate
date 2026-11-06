@@ -134,7 +134,7 @@ export default function InteractiveWorkflowDemo() {
           </button>
         </div>
 
-        {/* 5-Stage Stepper Navigation Bar (Kobble numbered layout) */}
+        {/* 5-Stage Stepper Navigation Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-5 border-b border-slate-200/80 bg-white">
           {STEPS.map((s, idx) => {
             const isActive = currentStep === idx;

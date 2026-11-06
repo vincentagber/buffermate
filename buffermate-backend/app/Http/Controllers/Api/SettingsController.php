@@ -193,7 +193,7 @@ class SettingsController extends Controller
 
     /**
      * GET /api/settings/invoices
-     * Returns Jira-style billing history and Bachs invoice list.
+     * Returns billing history and Bachs invoice list.
      */
     public function getInvoices(Request $request): JsonResponse
     {
@@ -278,7 +278,7 @@ class SettingsController extends Controller
     }
 
     /**
-     * Helper to format Bachs payments into Jira-style invoice records.
+     * Helper to format Bachs payments into invoice records.
      */
     private function formatInvoices(Workspace $workspace): array
     {
@@ -303,7 +303,7 @@ class SettingsController extends Controller
             ];
         }
 
-        // If no Bachs payments exist yet in local DB, provide Jira-style standard ledger records
+        // If no Bachs payments exist yet in local DB, provide standard ledger records
         if (empty($invoices)) {
             $invoices = [
                 [

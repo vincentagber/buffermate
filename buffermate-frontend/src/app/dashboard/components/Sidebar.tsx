@@ -198,7 +198,7 @@ export default function Sidebar({
         },
         {
           id: 'tasks',
-          alias: ['jira', 'projects'],
+          alias: ['projects'],
           label: 'Projects & Tasks',
           icon: CheckSquare,
         },

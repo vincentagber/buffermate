@@ -933,7 +933,7 @@ export default function ProfileSettingsView() {
               </div>
             </div>
 
-            {/* REVERSE-ENGINEERED JIRA BILLING HISTORY & INVOICES */}
+            {/* BILLING HISTORY & INVOICES */}
             <div className="pt-6 border-t border-slate-100 space-y-4">
               <div className="flex items-center justify-between">
                 <div>

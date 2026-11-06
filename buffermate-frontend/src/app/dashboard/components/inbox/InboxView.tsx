@@ -25,8 +25,8 @@ import {
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ComposeMessageModal from './ComposeMessageModal';
-import JiraIssueDetailModal from '../jira/JiraIssueDetailModal';
-import { JiraProject } from '../jira/types';
+import WorkItemDetailModal from '../projects/WorkItemDetailModal';
+import { Project } from '../projects/types';
 
 interface Message {
   id: string;
@@ -94,12 +94,12 @@ export default function InboxView() {
   const [replyMode, setReplyMode] = useState<'public' | 'internal'>('public');
   const [replyText, setReplyText] = useState('');
   const [isSendingReply, setIsSendingReply] = useState(false);
-  const [isConvertingToJira, setIsConvertingToJira] = useState(false);
+  const [isConvertingToTask, setIsConvertingToTask] = useState(false);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
 
-  // Jira Issue Modal preview
-  const [selectedJiraKey, setSelectedJiraKey] = useState<string | null>(null);
-  const [defaultProject, setDefaultProject] = useState<JiraProject | null>(null);
+  // Work Item Modal preview
+  const [selectedWorkItemKey, setSelectedWorkItemKey] = useState<string | null>(null);
+  const [defaultProject, setDefaultProject] = useState<Project | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -130,13 +130,13 @@ export default function InboxView() {
 
   const fetchDefaultProject = async () => {
     try {
-      const res = await fetch('/api/jira/projects');
+      const res = await fetch('/api/projects');
       const data = await res.json();
       if (data.success && data.data && data.data.length > 0) {
         setDefaultProject(data.data[0]);
       }
     } catch (e) {
-      console.error('Failed to load Jira default project:', e);
+      console.error('Failed to load default project:', e);
     }
   };
 
@@ -258,12 +258,12 @@ export default function InboxView() {
     }
   };
 
-  const handleConvertToJira = async () => {
-    if (!activeConversation || isConvertingToJira) return;
+  const handleConvertToTask = async () => {
+    if (!activeConversation || isConvertingToTask) return;
 
-    setIsConvertingToJira(true);
+    setIsConvertingToTask(true);
     try {
-      const res = await fetch(`/api/inbox/conversations/${activeConversation.id}/convert-to-jira`, {
+      const res = await fetch(`/api/inbox/conversations/${activeConversation.id}/convert-to-project-task`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'task' }),
@@ -274,7 +274,7 @@ export default function InboxView() {
         const updatedConv = data.data.conversation;
         setActiveConversation(updatedConv);
         triggerConfetti();
-        showToast(`Converted to Jira issue ${data.data.work_item?.key || 'BM-WorkItem'}!`);
+        showToast(`Converted to work item ${data.data.work_item?.key || 'BM-WorkItem'}!`);
 
         // Update in list
         setConversations((prev) =>
@@ -286,10 +286,10 @@ export default function InboxView() {
         );
       }
     } catch (e) {
-      console.error('Failed to convert to Jira:', e);
-      showToast('Error converting inquiry to Jira.');
+      console.error('Failed to convert to project task:', e);
+      showToast('Error converting inquiry to task.');
     } finally {
-      setIsConvertingToJira(false);
+      setIsConvertingToTask(false);
     }
   };
 
@@ -448,9 +448,9 @@ export default function InboxView() {
         </div>
       </div>
 
-      {/* JIRA QUEUES & CHANNEL FILTER NAVIGATION */}
+      {/* PROJECT QUEUES & CHANNEL FILTER NAVIGATION */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-2">
-        {/* Jira Queues (JSM Parity) */}
+        {/* Project Queues */}
         <div className="flex items-center overflow-x-auto gap-1.5 sm:gap-2 scrollbar-none pb-1 -mx-2 px-2 sm:mx-0 sm:px-0">
           {[
             { id: 'all', label: 'All Inquiries' },
@@ -631,7 +631,7 @@ export default function InboxView() {
                       {m.last_message_preview}
                     </p>
 
-                    {/* Metadata tags: Channel, Priority, Jira Issue Key */}
+                    {/* Metadata tags: Channel, Priority, Work Item Key */}
                     <div className="flex items-center justify-between pt-1 border-t border-slate-200/40">
                       <div className="flex items-center space-x-1.5">
                         <div className="p-1 rounded-md bg-white border border-slate-200/60 shadow-2xs">
@@ -647,10 +647,10 @@ export default function InboxView() {
                           <span
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedJiraKey(m.work_item_key || null);
+                              setSelectedWorkItemKey(m.work_item_key || null);
                             }}
                             className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-mono font-bold hover:bg-blue-100 transition-colors"
-                            title="Click to view Jira Issue"
+                            title="Click to view Work Item"
                           >
                             {m.work_item_key}
                           </span>
@@ -676,13 +676,13 @@ export default function InboxView() {
           </div>
         </div>
 
-        {/* Right Column (Active Thread & Jira Controls, 7 Cols) */}
+        {/* Right Column (Active Thread & Task Controls, 7 Cols) */}
         <div className={`lg:col-span-7 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200/70 shadow-2xs flex flex-col justify-between h-[640px] ${
           mobileInboxView === 'list' ? 'hidden lg:flex' : 'flex'
         }`}>
           {activeConversation ? (
             <div className="flex flex-col h-full min-h-0">
-              {/* Thread Header: Customer info & Jira controls */}
+              {/* Thread Header: Customer info & Task controls */}
               <div className="pb-4 border-b border-slate-100 shrink-0 space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
@@ -712,11 +712,11 @@ export default function InboxView() {
                     </div>
                   </div>
 
-                  {/* Jira Issue Conversion / Open Button */}
+                  {/* Work Item Conversion / Open Button */}
                   <div>
                     {activeConversation.work_item_key ? (
                       <button
-                        onClick={() => setSelectedJiraKey(activeConversation.work_item_key || null)}
+                        onClick={() => setSelectedWorkItemKey(activeConversation.work_item_key || null)}
                         className="px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold font-mono flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs"
                       >
                         <FolderGit2 className="w-3.5 h-3.5" />
@@ -725,12 +725,12 @@ export default function InboxView() {
                       </button>
                     ) : (
                       <button
-                        onClick={handleConvertToJira}
-                        disabled={isConvertingToJira}
+                        onClick={handleConvertToTask}
+                        disabled={isConvertingToTask}
                         className="px-3.5 py-1.5 rounded-full bg-slate-900 hover:bg-black text-white text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer shadow-2xs disabled:opacity-50"
                       >
                         <FolderGit2 className="w-3.5 h-3.5 text-blue-400" />
-                        <span>{isConvertingToJira ? 'Converting...' : 'Convert to Jira Issue'}</span>
+                        <span>{isConvertingToTask ? 'Converting...' : 'Convert to Task'}</span>
                       </button>
                     )}
                   </div>
@@ -932,16 +932,16 @@ export default function InboxView() {
         }}
       />
 
-      {/* Jira Issue Detail Modal (Seamless In-Place Jira Inspection) */}
-      {selectedJiraKey && defaultProject && (
-        <JiraIssueDetailModal
-          issueIdOrKey={selectedJiraKey}
-          onClose={() => setSelectedJiraKey(null)}
+      {/* Work Item Detail Modal */}
+      {selectedWorkItemKey && defaultProject && (
+        <WorkItemDetailModal
+          issueIdOrKey={selectedWorkItemKey}
+          onClose={() => setSelectedWorkItemKey(null)}
           onIssueUpdated={(updated) => {
             fetchConversations();
           }}
           onIssueDeleted={(deletedId) => {
-            setSelectedJiraKey(null);
+            setSelectedWorkItemKey(null);
             fetchConversations();
           }}
           project={defaultProject}
