@@ -13,6 +13,7 @@ import {
 interface UseCaseCard {
   icon: React.ReactNode;
   iconBg: string;
+  iconBorder: string;
   iconColor: string;
   title: string;
   description: string;
@@ -20,44 +21,50 @@ interface UseCaseCard {
 
 const USE_CASES: UseCaseCard[] = [
   {
-    icon: <Smartphone className="w-5 h-5" />,
-    iconBg: 'bg-blue-50 border-blue-100',
-    iconColor: 'text-blue-600',
+    icon: <Smartphone className="w-6 h-6" />,
+    iconBg: 'bg-[#3B82F6]/10',
+    iconBorder: 'border-[#3B82F6]/20',
+    iconColor: 'text-[#3B82F6]',
     title: 'AI Viral Script Studio',
     description: 'Transform rough ideas or URLs into platform-tailored hooks, threads, and short-form video scripts with predictive curiosity scoring.',
   },
   {
-    icon: <Share2 className="w-5 h-5" />,
-    iconBg: 'bg-amber-50 border-amber-100',
-    iconColor: 'text-amber-600',
+    icon: <Share2 className="w-6 h-6" />,
+    iconBg: 'bg-[#F59E0B]/10',
+    iconBorder: 'border-[#F59E0B]/20',
+    iconColor: 'text-[#F59E0B]',
     title: 'Multi-Channel Auto-Scheduler',
     description: 'Compose once, adapt automatically. Queue media and captions formatted precisely for Instagram, TikTok, Threads, Facebook, X, and WhatsApp.',
   },
   {
-    icon: <Edit3 className="w-5 h-5" />,
-    iconBg: 'bg-emerald-50 border-emerald-100',
-    iconColor: 'text-emerald-600',
+    icon: <Edit3 className="w-6 h-6" />,
+    iconBg: 'bg-[#6F9C3E]/10',
+    iconBorder: 'border-[#6F9C3E]/20',
+    iconColor: 'text-[#6F9C3E]',
     title: '24/7 Comment Keyword Auto-DMs',
     description: 'Automatically trigger personalized direct messages whenever someone comments "LINK", "GUIDE", or "PRICE". Convert viral engagement into sales.',
   },
   {
-    icon: <Video className="w-5 h-5" />,
-    iconBg: 'bg-purple-50 border-purple-100',
-    iconColor: 'text-purple-600',
+    icon: <Video className="w-6 h-6" />,
+    iconBg: 'bg-[#8B5CF6]/10',
+    iconBorder: 'border-[#8B5CF6]/20',
+    iconColor: 'text-[#8B5CF6]',
     title: 'Peak Engagement Heatmaps',
     description: 'Algorithmically discover when your specific followers are most active across every platform to maximize initial algorithmic velocity.',
   },
   {
-    icon: <ClipboardList className="w-5 h-5" />,
-    iconBg: 'bg-rose-50 border-rose-100',
-    iconColor: 'text-rose-600',
+    icon: <ClipboardList className="w-6 h-6" />,
+    iconBg: 'bg-[#EF4444]/10',
+    iconBorder: 'border-[#EF4444]/20',
+    iconColor: 'text-[#EF4444]',
     title: 'Unified Social Inbox & CRM',
     description: 'Respond to comments and inbound direct messages from every connected channel in one high-velocity, team-collaborative feed.',
   },
   {
-    icon: <Megaphone className="w-5 h-5" />,
-    iconBg: 'bg-pink-50 border-pink-100',
-    iconColor: 'text-pink-600',
+    icon: <Megaphone className="w-6 h-6" />,
+    iconBg: 'bg-[#EC4899]/10',
+    iconBorder: 'border-[#EC4899]/20',
+    iconColor: 'text-[#EC4899]',
     title: 'Attribution & Revenue Analytics',
     description: 'Connect post engagement directly to website visits and Bachs checkout conversions with comprehensive white-label PDF reports.',
   },
@@ -65,39 +72,39 @@ const USE_CASES: UseCaseCard[] = [
 
 export default function KobbleUseCases() {
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-20 md:py-28 border-b border-[#E2E0D5]">
       {/* Heading styled identically to Kobble */}
-      <div className="space-y-3">
-        <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#141416] leading-tight">
+      <div className="max-w-[650px] mb-16">
+        <h2 className="font-extrabold text-[34px] md:text-[46px] text-[#1A202C] leading-[1.12] mb-4">
           Scale your social presence with <br />
-          <span className="text-[#52832B]">autonomous precision.</span>
+          <span className="text-[#6F9C3E]">autonomous precision.</span>
         </h2>
-        <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
+        <p className="font-medium text-[17px] text-[#6B6B60] leading-relaxed">
           Deploy autonomous AI agents and scheduling algorithms for operations requiring contextual nuance, viral curiosity hooks, and sub-15s speed-to-lead.
         </p>
       </div>
 
       {/* 6 White Cards in 3x2 Grid matching Kobble */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {USE_CASES.map((uc) => (
+        {USE_CASES.map((uc, idx) => (
           <div
-            key={uc.title}
-            className="bg-white rounded-2xl p-6 sm:p-7 border border-[#E7E4DC] shadow-xs hover:shadow-md transition-shadow duration-200 space-y-4"
+            key={idx}
+            className="bg-white rounded-[24px] p-8 border border-[#E2E0D5] hover:border-[#C4C4B8] transition-all hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between"
           >
-            {/* Square rounded icon box matching Kobble */}
-            <div
-              className={`w-11 h-11 rounded-xl border flex items-center justify-center ${uc.iconBg} ${uc.iconColor}`}
-            >
-              {uc.icon}
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-base font-bold text-[#141416] tracking-tight">
-                {uc.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                {uc.description}
-              </p>
+            <div className="flex items-start gap-5">
+              <div
+                className={`w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 border ${uc.iconBg} ${uc.iconBorder} ${uc.iconColor}`}
+              >
+                {uc.icon}
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-[20px] text-[#1A202C] mb-2 leading-snug">
+                  {uc.title}
+                </h3>
+                <p className="font-medium text-[15px] text-[#6B6B60] leading-relaxed">
+                  {uc.description}
+                </p>
+              </div>
             </div>
           </div>
         ))}
@@ -105,4 +112,3 @@ export default function KobbleUseCases() {
     </section>
   );
 }
-

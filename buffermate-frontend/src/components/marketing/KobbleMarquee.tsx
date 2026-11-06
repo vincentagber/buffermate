@@ -40,9 +40,9 @@ const ROW_2: MarqueePill[] = [
 
 export default function KobbleMarquee() {
   return (
-    <section className="py-12 bg-white/60 border-y border-[#EBE7DF] overflow-hidden">
+    <section className="py-12 bg-white/60 border-b border-[#E2E0D5] overflow-hidden">
       <div className="text-center mb-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#6B6B60]">
           6+ CHANNELS &amp; ADVANCED AUTOMATION ENGINES
         </p>
       </div>

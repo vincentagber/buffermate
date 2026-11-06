@@ -9,144 +9,210 @@ import {
   ArrowRight,
   Sparkles,
   Users,
-  Target
+  Target,
+  TrendingUp,
+  Award,
+  Globe
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
-import KobbleMarquee from '@/components/marketing/KobbleMarquee';
+import KobbleCta from '@/components/marketing/KobbleCta';
 import MarketingFooter from '@/components/marketing/Footer';
 
 export default function AboutPage() {
   const values = [
     {
-      icon: <Zap className="w-5 h-5 text-emerald-600" />,
-      iconBg: 'bg-emerald-50 border-emerald-100',
+      icon: <Zap className="w-7 h-7 text-[#6F9C3E]" />,
+      bg: 'bg-[#6F9C3E]/10 border-[#6F9C3E]/20',
       title: 'Built for Speed',
-      description: 'From drafting a hook to multi-channel dispatch, every step is optimized for throughput. Scheduled content reaches active feeds at peak audience velocity without manual lag.',
+      description: 'From drafting an opening curiosity hook to multi-channel dispatch, every micro-step is engineered for throughput. Content reaches active follower feeds at peak velocity without manual lag.',
     },
     {
-      icon: <Layers className="w-5 h-5 text-amber-600" />,
-      iconBg: 'bg-amber-50 border-amber-100',
+      icon: <Layers className="w-7 h-7 text-[#FF882A]" />,
+      bg: 'bg-[#FF882A]/10 border-[#FF882A]/20',
       title: 'Automation at Scale',
-      description: 'Tap an autonomous publishing engine ready to manage 1 to 100+ social accounts. Scale your audience and inbound client funnels without hiring overhead or creator burnout.',
+      description: 'An autonomous publishing engine built to handle 1 to 100+ social accounts seamlessly. Scale audience reach and inbound client pipeline without adding headcount or experiencing burnout.',
     },
     {
-      icon: <ShieldCheck className="w-5 h-5 text-blue-600" />,
-      iconBg: 'bg-blue-50 border-blue-100',
-      title: 'Transparent & Secure',
-      description: 'Official developer APIs only. Zero password storage, AES-256 encrypted tokens, and strict anti-spam guardrails to protect your account health and brand reputation.',
+      icon: <ShieldCheck className="w-7 h-7 text-[#3B82F6]" />,
+      bg: 'bg-[#3B82F6]/10 border-[#3B82F6]/20',
+      title: 'Transparent & Compliant',
+      description: 'Official developer APIs only. Zero password storage, AES-256 encrypted authentication tokens, and strict rate limit safety guardrails that protect your brand and account health.',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE] font-sans text-slate-900 selection:bg-[#52832B]/20 selection:text-[#52832B]">
+    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+      {/* Kobble Ambient Gradient Glow Layers */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+      </div>
+
       <MarketingNavbar />
 
-      <main className="overflow-hidden">
-        {/* About Hero matching Kobble */}
-        <section className="pt-12 sm:pt-16 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white border border-[#E7E4DC] text-[10px] font-bold uppercase tracking-widest text-slate-500 shadow-2xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#52832B]" />
-            <span>ABOUT BUFFERMATE</span>
+      <main className="flex-1 flex flex-col w-full relative">
+        {/* ========================================================================= */}
+        {/* 1. HERO SECTION (Kobble exact layout & decorative floating SVG outlines) */}
+        {/* ========================================================================= */}
+        <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#1A202C] opacity-[0.03]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute -top-16 -left-10 rotate-12">
+              <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute top-[30%] right-[10%] rotate-12">
+              <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /><rect width="20" height="14" x="2" y="6" rx="2" />
+            </svg>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-[64px] font-extrabold tracking-tight text-[#141416] leading-[1.08] max-w-4xl mx-auto">
-            Social media intelligence, <br className="hidden sm:inline" />
-            <span className="text-[#52832B]">delivered at scale.</span>
-          </h1>
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#6F9C3E]/10 blur-[100px] rounded-full pointer-events-none" />
 
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Buffermate was built with a simple mission: give modern creators and agencies a transparent, fast, and reliable way to automate social content creation, schedule across every platform, and turn audience engagement into paying clients.
-          </p>
+          <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
+              <div className="w-2 h-2 rounded-full bg-[#6F9C3E] animate-pulse" />
+              <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
+                About Buffermate
+              </span>
+            </div>
+
+            <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
+              Social intelligence, <br className="hidden sm:inline" />
+              <span className="text-[#6F9C3E]">delivered at scale</span>.
+            </h1>
+
+            <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto">
+              Buffermate was built with a simple mission: give modern creators and agencies a transparent, fast, and reliable way to automate social publishing, schedule across every platform, and turn audience engagement into paying clients.
+            </p>
+          </div>
         </section>
 
-        {/* Story Section matching Kobble (2-columns) */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        {/* ========================================================================= */}
+        {/* 2. STORY SECTION (2-Column Layout matching Kobble) */}
+        {/* ========================================================================= */}
+        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-20 items-center">
             {/* Left Column: Story text */}
-            <div className="lg:col-span-6 space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#141416] tracking-tight leading-tight">
+            <div className="flex-1 space-y-6">
+              <h2 className="font-extrabold text-[36px] md:text-[46px] leading-[1.12] text-[#1A202C]">
                 The Modern Creator <br />
-                <span className="text-[#52832B]">Workflow, solved.</span>
+                <span className="text-[#6F9C3E]">Workflow</span>, solved.
               </h2>
 
-              <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+              <div className="space-y-5 font-medium text-[17px] text-[#6B6B60] leading-relaxed">
                 <p>
-                  Managing a serious social presence used to mean juggling scattered spreadsheets, brittle Chrome extensions, manually reformating images for 6 different aspect ratios, and constantly checking feeds at late hours to hit peak posting windows.
+                  Managing a serious social presence used to mean juggling scattered spreadsheets, brittle Chrome extensions, manually reformatting videos for 6 different aspect ratios, and constantly checking feeds at late hours to hit peak posting windows.
                 </p>
                 <p>
                   We noticed a massive gap: high-growth brands and creators were getting thousands of comments on viral videos saying &ldquo;PRICE&rdquo; or &ldquo;LINK&rdquo;, but dropping 80% of those leads because manual DMs took 4 hours. By the time a human replied, the buyer was gone.
                 </p>
                 <p>
-                  That&apos;s why we built Buffermate AI. We replaced the busywork with autonomous intelligence. From Google Gemini 2.0 hook formulation to automated multi-channel scheduling and sub-15s direct message funnels, we help you make every post count.
+                  That is why we built Buffermate AI. We replaced the busywork with autonomous intelligence. From Google Gemini 2.0 hook formulation to automated multi-channel scheduling and sub-15s direct message funnels, we help you make every post count.
                 </p>
               </div>
             </div>
 
             {/* Right Column: Tilted Photo Card matching Kobble */}
-            <div className="lg:col-span-6 flex justify-center">
-              <div className="relative w-full max-w-[480px] aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white rotate-1 hover:rotate-0 transition-transform duration-500">
+            <div className="flex-1 flex justify-center w-full">
+              <div className="relative w-full max-w-[500px] aspect-[4/3] rounded-[32px] overflow-hidden shadow-2xl border-4 border-white rotate-1 hover:rotate-0 transition-transform duration-500">
                 <img
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&auto=format&fit=crop&q=80"
                   alt="Buffermate Team"
                   className="w-full h-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-6 left-6 text-white">
+                  <div className="text-xs font-mono font-bold tracking-wider text-emerald-400">
+                    BUFFERMATE LABS · LAGOS &amp; GLOBAL
+                  </div>
+                  <div className="text-lg font-bold">
+                    Building the autonomous social stack
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Core Values matching Kobble */}
-        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#141416] tracking-tight text-center">
-            Our Core Values
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {values.map((v) => (
-              <div
-                key={v.title}
-                className="bg-white rounded-2xl p-7 border border-[#E7E4DC] shadow-xs space-y-4"
-              >
-                <div
-                  className={`w-11 h-11 rounded-xl border flex items-center justify-center ${v.iconBg}`}
-                >
-                  {v.icon}
+        {/* ========================================================================= */}
+        {/* 3. PLATFORM STATISTICS COUNTER (Kobble Polish) */}
+        {/* ========================================================================= */}
+        <section className="w-full bg-[#FAF8F4] border-b border-[#E2E0D5] py-16 md:py-20">
+          <div className="max-w-[1200px] mx-auto px-5 md:px-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="font-extrabold text-[40px] md:text-[52px] text-[#1A202C] tracking-tight">
+                  2,400+
                 </div>
-                <h3 className="text-lg font-bold text-[#141416] tracking-tight">
-                  {v.title}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  {v.description}
-                </p>
+                <div className="text-sm font-semibold text-[#6B6B60] mt-1">
+                  Active Creators &amp; Agencies
+                </div>
+              </div>
+              <div>
+                <div className="font-extrabold text-[40px] md:text-[52px] text-[#6F9C3E] tracking-tight">
+                  1.2M+
+                </div>
+                <div className="text-sm font-semibold text-[#6B6B60] mt-1">
+                  Social Posts Dispatched
+                </div>
+              </div>
+              <div>
+                <div className="font-extrabold text-[40px] md:text-[52px] text-[#FF882A] tracking-tight">
+                  98.4%
+                </div>
+                <div className="text-sm font-semibold text-[#6B6B60] mt-1">
+                  Comment-to-DM Open Rate
+                </div>
+              </div>
+              <div>
+                <div className="font-extrabold text-[40px] md:text-[52px] text-[#1A202C] tracking-tight">
+                  99.98%
+                </div>
+                <div className="text-sm font-semibold text-[#6B6B60] mt-1">
+                  Dispatched Post Uptime
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================================= */}
+        {/* 4. CORE VALUES (Kobble 3-Card Layout) */}
+        {/* ========================================================================= */}
+        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-20 md:py-28 border-b border-[#E2E0D5]">
+          <div className="text-center max-w-[650px] mx-auto mb-16">
+            <h2 className="font-extrabold text-[36px] md:text-[46px] text-[#1A202C] leading-tight mb-4">
+              Our Core Values
+            </h2>
+            <p className="font-medium text-[17px] text-[#6B6B60]">
+              The product principles guiding every feature, AI model iteration, and API integration we build.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {values.map((val, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-[28px] p-8 md:p-9 border border-[#E2E0D5] hover:border-[#C4C4B8] hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border ${val.bg}`}>
+                    {val.icon}
+                  </div>
+                  <h3 className="font-extrabold text-[22px] text-[#1A202C] mb-3">
+                    {val.title}
+                  </h3>
+                  <p className="font-medium text-[15px] text-[#6B6B60] leading-relaxed">
+                    {val.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Marquee matching Kobble */}
-        <KobbleMarquee />
-
-        {/* Dark Navy CTA Banner matching Kobble */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="bg-[#0A0F1D] text-white rounded-3xl p-10 sm:p-16 text-center space-y-6 shadow-2xl border border-slate-800">
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-              Ready to put your social media <br className="hidden sm:inline" />
-              on autopilot?
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
-              Launch your workspace today and experience the speed of autonomous publishing.
-            </p>
-            <div>
-              <Link
-                href="/signup"
-                className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-full bg-[#52832B] hover:bg-[#436e22] text-white font-bold text-sm shadow-md transition-all hover:scale-[1.02]"
-              >
-                <span>Start Free Workspace</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
+        {/* ========================================================================= */}
+        {/* 5. DUAL CLOSING CTA (Kobble Standard) */}
+        {/* ========================================================================= */}
+        <KobbleCta />
       </main>
 
       <MarketingFooter />

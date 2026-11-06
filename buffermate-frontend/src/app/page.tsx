@@ -14,11 +14,17 @@ import MarketingFooter from '@/components/marketing/Footer';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#F6F4EE] font-sans text-slate-900 selection:bg-[#52832B]/20 selection:text-[#52832B]">
+    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+      {/* Kobble Ambient Gradient Glow Layers */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+      </div>
+
       {/* 1. Header & Navigation */}
       <MarketingNavbar />
 
-      <main className="overflow-hidden">
+      <main className="flex-1 flex flex-col w-full relative">
         {/* 2. Hero Section (Exact 2-Column Split + Tilted Photo + 3 Floating Interface Cards) */}
         <KobbleHero />
 

@@ -1,30 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Boutique Luxury Clinic Palette */
-  --color-brand-orange: #141416;
+  /* Kobble-inspired Warm Canvas & Forest Palette */
+  --font-figtree: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-kobble-bg: #F5F4F0;
+  --color-kobble-border: #E2E0D5;
+  --color-kobble-border-hover: #C4C4B8;
+  --color-kobble-dark: #1A202C;
+  --color-kobble-muted: #6B6B60;
+  --color-kobble-green: #6F9C3E;
+  --color-kobble-green-deep: #52832B;
+  --color-kobble-orange: #FF882A;
+
+  /* App token mappings */
+  --color-brand-orange: #1A202C;
   --color-brand-orange-hover: #000000;
-  --color-brand-orange-light: #EDE9FE;
-  --color-brand-orange-border: #DDD6FE;
+  --color-brand-orange-light: #EBF3E5;
+  --color-brand-orange-border: #E2E0D5;
   
-  --color-bg-page: #F8F9FA;
+  --color-bg-page: #F5F4F0;
   --color-bg-card: #FFFFFF;
   --color-bg-sidebar: #FFFFFF;
   
-  --color-text-main: #0F172A;
-  --color-text-muted: #64748B;
+  --color-text-main: #1A202C;
+  --color-text-muted: #6B6B60;
   --color-text-light: #94A3B8;
 
-  --color-border: #E2E8F0;
-  --color-border-card: #E2E8F0;
+  --color-border: #E2E0D5;
+  --color-border-card: #E2E0D5;
 }
 
 body {
-  background-color: var(--color-bg-page);
-  color: var(--color-text-main);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-kobble-bg);
+  color: var(--color-kobble-dark);
+  font-family: var(--font-figtree);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Custom scrollbar */
@@ -36,11 +48,62 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #E2D9CF;
+  background: #D8D5CC;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #CBD5E1;
+  background: #B8B4A8;
+}
+
+/* Kobble-style ambient background wrapper */
+.kobble-ambient-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -10;
+}
+
+.kobble-ambient-glow-top {
+  position: absolute;
+  top: -12%;
+  left: -10%;
+  width: 60%;
+  height: 60%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(111, 156, 62, 0.12) 0%, rgba(111, 156, 62, 0) 70%);
+  filter: blur(120px);
+}
+
+.kobble-ambient-glow-bottom {
+  position: absolute;
+  bottom: -12%;
+  right: -10%;
+  width: 55%;
+  height: 55%;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 136, 42, 0.08) 0%, rgba(255, 136, 42, 0) 70%);
+  filter: blur(130px);
+}
+
+/* Subtle dot texture */
+.bg-kobble-dots {
+  background-image: radial-gradient(#D6D2C4 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Glass & Card styles */
+.kobble-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E2E0D5;
+  border-radius: 24px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kobble-card:hover {
+  border-color: #C4C4B8;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 32px -8px rgba(26, 32, 44, 0.08);
 }
 
 @keyframes pulseSlow {
@@ -48,36 +111,19 @@ body {
   50% { opacity: 0.7; transform: scale(1.05); }
 }
 
-@keyframes slideUp {
+@keyframes slideUpFade {
   from {
     opacity: 0;
-    transform: translateY(16px) scale(0.98);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-pulse-slow {
-  animation: pulseSlow 2s ease-in-out infinite;
-}
-
-.animate-slide-up {
-  animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-slide-up-fade {
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes marquee {
@@ -88,9 +134,16 @@ body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee 30s linear infinite;
+  animation: marquee 35s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite reverse;
+}
+
+.animate-marquee:hover,
+.animate-marquee-reverse:hover {
   animation-play-state: paused;
 }

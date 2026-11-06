@@ -64,45 +64,45 @@ export default function KobbleFaq() {
   };
 
   return (
-    <section className="py-20 bg-[#F6F4EE] border-t border-[#EBE7DF]">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+    <section className="py-20 md:py-28 bg-[#F5F4F0] border-b border-[#E2E0D5]">
+      <div className="max-w-[850px] mx-auto px-5 md:px-10 space-y-12">
         {/* Header matching Kobble */}
         <div className="text-center space-y-3">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#141416] leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1A202C] leading-tight">
             Got questions? <br />
-            <span className="text-[#52832B]">We&apos;ve got answers.</span>
+            <span className="text-[#6F9C3E]">We&apos;ve got answers.</span>
           </h2>
-          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
+          <p className="font-medium text-base text-[#6B6B60] max-w-xl mx-auto">
             Everything you need to know about scheduling, supported networks, and automated comment leads.
           </p>
         </div>
 
         {/* Filter Switcher matching Kobble */}
         <div className="flex justify-center">
-          <div className="inline-flex bg-[#EBE7DF] p-1 rounded-full text-xs font-bold">
+          <div className="inline-flex p-1.5 rounded-full bg-white border border-[#E2E0D5] shadow-xs">
             <button
               onClick={() => {
                 setSelectedCategory('business');
                 setOpenIndex(0);
               }}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-full transition-all cursor-pointer ${
+              className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'business'
-                  ? 'bg-[#52832B] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#1A202C] text-white shadow-xs'
+                  : 'text-[#6B6B60] hover:text-[#1A202C]'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
-              <span>For Businesses &amp; Agencies</span>
+              <span>For Agencies &amp; Brands</span>
             </button>
             <button
               onClick={() => {
                 setSelectedCategory('creator');
                 setOpenIndex(0);
               }}
-              className={`flex items-center space-x-1.5 px-4 py-2 rounded-full transition-all cursor-pointer ${
+              className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'creator'
-                  ? 'bg-[#52832B] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-[#1A202C] text-white shadow-xs'
+                  : 'text-[#6B6B60] hover:text-[#1A202C]'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -111,32 +111,29 @@ export default function KobbleFaq() {
           </div>
         </div>
 
-        {/* Accordion List matching Kobble */}
-        <div className="space-y-3">
+        {/* FAQ Accordion List matching Kobble */}
+        <div className="space-y-4">
           {filteredFaqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
             return (
               <div
                 key={idx}
-                className="bg-white rounded-2xl border border-[#E7E4DC] shadow-xs overflow-hidden transition-all duration-200"
+                className="bg-white rounded-[24px] border border-[#E2E0D5] p-6 hover:border-[#C4C4B8] transition-all"
               >
                 <button
-                  type="button"
                   onClick={() => toggle(idx)}
-                  className="w-full px-6 py-4.5 text-left flex items-center justify-between text-sm sm:text-base font-bold text-[#141416] hover:text-[#52832B] transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
                 >
-                  <span className="pr-4">{faq.q}</span>
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                      isOpen ? 'bg-[#52832B] text-white' : 'bg-slate-100 text-slate-500'
-                    }`}
-                  >
-                    {isOpen ? <Minus className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                  <span className="font-extrabold text-[17px] text-[#1A202C] leading-snug">
+                    {faq.q}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-[#F5F4F0] text-[#1A202C] flex items-center justify-center shrink-0">
+                    {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-50 animate-fade-in">
+                  <div className="mt-4 pt-4 border-t border-[#EFECE5] text-sm md:text-[15px] font-medium text-[#6B6B60] leading-relaxed">
                     {faq.a}
                   </div>
                 )}
@@ -145,20 +142,16 @@ export default function KobbleFaq() {
           })}
         </div>
 
-        {/* Bottom Contact link matching Kobble */}
-        <div className="text-center pt-2 text-xs sm:text-sm text-slate-500">
-          Still have questions? Visit{' '}
-          <Link href="/blog" className="text-[#52832B] font-bold hover:underline">
-            the blog
-          </Link>{' '}
-          or{' '}
-          <Link href="/contact" className="text-[#52832B] font-bold hover:underline">
-            contact us
+        {/* View Full FAQ Link */}
+        <div className="text-center pt-2">
+          <Link
+            href="/faq"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6F9C3E] hover:underline"
+          >
+            <span>View all questions in Knowledge Center →</span>
           </Link>
-          .
         </div>
       </div>
     </section>
   );
 }
-

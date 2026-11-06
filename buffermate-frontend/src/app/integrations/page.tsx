@@ -3,18 +3,19 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Globe,
-  CheckCircle2,
-  ExternalLink,
   ShieldCheck,
+  CheckCircle2,
+  Lock,
   ArrowRight,
-  Layers,
+  ExternalLink,
   Sparkles,
-  Lock
+  Zap,
+  Globe,
+  Layers
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
+import KobbleCta from '@/components/marketing/KobbleCta';
 import MarketingFooter from '@/components/marketing/Footer';
-import CtaBanner from '@/components/marketing/CtaBanner';
 import {
   InstagramIcon,
   TikTokIcon,
@@ -24,187 +25,271 @@ import {
   WhatsAppIcon
 } from '@/components/SocialIcons';
 
-interface IntegrationItem {
-  id: string;
+interface IntegrationChannel {
   name: string;
   category: string;
-  status: 'Live' | 'Verified Partner';
+  status: 'Verified Partner' | 'Official API' | 'Hosted Gateway';
+  badgeColor: string;
   description: string;
   capabilities: string[];
   icon: React.ReactNode;
+  iconBg: string;
 }
 
-const INTEGRATIONS: IntegrationItem[] = [
+const INTEGRATIONS: IntegrationChannel[] = [
   {
-    id: 'instagram',
     name: 'Instagram Graph API',
-    category: 'Social Media',
+    category: 'Meta Verified',
     status: 'Verified Partner',
-    description: 'Publish Reels, carousels, and single images directly. Read organic comments in real time and trigger automated DM dispatches.',
-    capabilities: ['Reels & Video Publishing', 'Photo Carousels', 'Comment Keyword DM Funnels', 'Audience Reach Analytics'],
-    icon: <InstagramIcon className="w-8 h-8 text-pink-600" />,
+    badgeColor: 'bg-[#6F9C3E]/10 text-[#6F9C3E] border-[#6F9C3E]/20',
+    description: 'Direct publishing for Reels, multi-image carousels, and feed photos. Reads real-time comments to trigger sub-15s direct message funnels.',
+    capabilities: [
+      'Reels & Video Publishing',
+      'Photo Carousel Sequencing',
+      'Comment Keyword DM Funnels',
+      'Audience Engagement Metrics'
+    ],
+    icon: <InstagramIcon className="w-7 h-7 text-pink-600" />,
+    iconBg: 'bg-pink-50 border-pink-100',
   },
   {
-    id: 'tiktok',
     name: 'TikTok Creator & Business API',
-    category: 'Video & Short-Form',
-    status: 'Live',
-    description: 'Direct publishing to TikTok feeds with privacy settings, commercial content disclosures, and peak viewing slot scheduling.',
-    capabilities: ['Direct Video Publishing', 'Custom Cover Image Selection', 'Sound & Hashtag Sync', 'Short-Form Video Metrics'],
-    icon: <TikTokIcon className="w-8 h-8 text-slate-900" />,
+    category: 'Short-Form Video',
+    status: 'Official API',
+    badgeColor: 'bg-[#1A202C]/10 text-[#1A202C] border-[#1A202C]/20',
+    description: 'Direct video dispatch to TikTok creator feeds with commercial disclosure flags, custom cover selections, and peak viewing slot scheduling.',
+    capabilities: [
+      'Direct HD Video Uploads',
+      'Custom Cover Frame Selection',
+      'Commercial Content Tags',
+      'Audience Retention Analytics'
+    ],
+    icon: <TikTokIcon className="w-7 h-7 text-[#1A202C]" />,
+    iconBg: 'bg-slate-100 border-slate-200',
   },
   {
-    id: 'threads',
     name: 'Meta Threads API',
-    category: 'Microblogging',
-    status: 'Live',
-    description: 'Schedule high-curiosity conversational threads, reply to community discussions, and sync thought leadership content simultaneously.',
-    capabilities: ['Text Posts up to 500 Chars', 'Image & Video Attachments', 'Comment Thread Routing', 'Cross-Posting from X'],
-    icon: <ThreadsIcon className="w-8 h-8 text-slate-900" />,
+    category: 'Conversational',
+    status: 'Official API',
+    badgeColor: 'bg-[#1A202C]/10 text-[#1A202C] border-[#1A202C]/20',
+    description: 'Schedule high-curiosity conversational threads, reply to community discussions, and sync thought leadership text posts simultaneously.',
+    capabilities: [
+      'Text Posts up to 500 Chars',
+      'Image & Video Attachments',
+      'Thread Reply Trees',
+      'Cross-Post Sync from X'
+    ],
+    icon: <ThreadsIcon className="w-7 h-7 text-[#1A202C]" />,
+    iconBg: 'bg-slate-100 border-slate-200',
   },
   {
-    id: 'facebook',
     name: 'Facebook Pages API',
-    category: 'Social Media',
-    status: 'Live',
-    description: 'Manage brand presence across business pages, schedule status updates, and auto-reply to post comments with links.',
-    capabilities: ['Page Feed Publishing', 'Media Album Scheduling', 'Page Engagement Stats', 'Auto-Comment Replies'],
-    icon: <FacebookIcon className="w-8 h-8 text-blue-600" />,
+    category: 'Meta Verified',
+    status: 'Official API',
+    badgeColor: 'bg-[#3B82F6]/10 text-[#3B82F6] border-[#3B82F6]/20',
+    description: 'Manage brand presence across business pages, schedule status updates, and auto-reply to post comments with links and lead magnets.',
+    capabilities: [
+      'Page Feed Publishing',
+      'Media Album Scheduling',
+      'Auto-Comment Replies',
+      'Follower Demographic Stats'
+    ],
+    icon: <FacebookIcon className="w-7 h-7 text-blue-600" />,
+    iconBg: 'bg-blue-50 border-blue-100',
   },
   {
-    id: 'x',
     name: 'X (Twitter API v2)',
     category: 'Microblogging',
-    status: 'Live',
-    description: 'Automate high-velocity short updates, tweet threads, and engagement analytics using official developer endpoints.',
-    capabilities: ['Single Tweets & Threads', 'Media Attachment Encoding', 'Real-Time Engagement Counters', 'B2B Lead Tracking'],
-    icon: <XIcon className="w-8 h-8 text-slate-900" />,
+    status: 'Official API',
+    badgeColor: 'bg-[#1A202C]/10 text-[#1A202C] border-[#1A202C]/20',
+    description: 'Automate high-velocity short updates, formatted tweet threads, and engagement analytics using official X Developer endpoints.',
+    capabilities: [
+      'Single Tweets & Multi-Part Threads',
+      'Media Attachment Encoding',
+      'Real-Time Retweet Counters',
+      'B2B Inbound Lead Tracking'
+    ],
+    icon: <XIcon className="w-7 h-7 text-[#1A202C]" />,
+    iconBg: 'bg-slate-100 border-slate-200',
   },
   {
-    id: 'whatsapp',
-    name: 'WhatsApp Direct Gateway',
-    category: 'Messaging',
-    status: 'Live',
-    description: 'Direct messaging connection for sending verified lead alerts, customer onboarding links, and priority support dispatch.',
-    capabilities: ['Instant Lead Alerts', 'Direct-to-Chat Links', 'Customer Support Hand-off', 'High Conversion Rate'],
-    icon: <WhatsAppIcon className="w-8 h-8 text-emerald-600" />,
+    name: 'WhatsApp Direct Cloud API',
+    category: 'Direct Messaging',
+    status: 'Official API',
+    badgeColor: 'bg-[#6F9C3E]/10 text-[#6F9C3E] border-[#6F9C3E]/20',
+    description: 'Direct messaging connection for sending verified lead alerts, customer onboarding links, and priority client hand-offs directly to WhatsApp.',
+    capabilities: [
+      'Instant Inbound Lead Alerts',
+      'Direct-to-Chat Short Links',
+      'Automated Support Handoff',
+      'High-Conversion Pipeline'
+    ],
+    icon: <WhatsAppIcon className="w-7 h-7 text-emerald-600" />,
+    iconBg: 'bg-emerald-50 border-emerald-100',
   },
   {
-    id: 'bachs',
-    name: 'Bachs Payment Gateway',
+    name: 'Bachs Hosted Payment Gateway',
     category: 'Billing & Checkout',
-    status: 'Verified Partner',
-    description: 'Global subscription infrastructure supporting international cards, African bank settlement (NGN, GHS, KES, ZAR), mobile money, and stablecoins.',
-    capabilities: ['Hosted & Overlay Checkout', 'Automated Subscription Billing', 'HMAC-SHA256 Webhook Verification', 'Multi-Currency Settlement'],
-    icon: <ShieldCheck className="w-8 h-8 text-purple-700" />,
+    status: 'Hosted Gateway',
+    badgeColor: 'bg-[#FF882A]/10 text-[#FF882A] border-[#FF882A]/20',
+    description: 'Global subscription billing infrastructure supporting international debit/credit cards, African bank settlement (NGN, GHS, KES, ZAR), mobile money, and crypto.',
+    capabilities: [
+      'Hosted & Overlay Checkout',
+      'HMAC-SHA256 Webhook Security',
+      'Automated Recurring Subscriptions',
+      'Multi-Currency Settlement'
+    ],
+    icon: <ShieldCheck className="w-7 h-7 text-[#FF882A]" />,
+    iconBg: 'bg-amber-50 border-amber-100',
   },
 ];
 
 export default function IntegrationsPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans text-slate-900 selection:bg-purple-100 selection:text-purple-900">
+    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+      {/* Kobble Ambient Gradient Glow Layers */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+      </div>
+
       <MarketingNavbar />
 
-      <main className="space-y-24 sm:space-y-32 pb-24 overflow-hidden">
-        {/* Header */}
-        <section className="pt-16 sm:pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold">
-            <Globe className="w-3.5 h-3.5" />
-            <span>Supported Platforms & Partner Ecosystem</span>
+      <main className="flex-1 flex flex-col w-full relative">
+        {/* ========================================================================= */}
+        {/* 1. HERO SECTION (Kobble exact layout & decorative floating SVG outlines) */}
+        {/* ========================================================================= */}
+        <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#1A202C] opacity-[0.03]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute -top-16 -left-10 rotate-12">
+              <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute top-[30%] right-[10%] rotate-12">
+              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-950 max-w-3xl mx-auto leading-tight">
-            Connect all your channels. <br />
-            Publish without limits.
-          </h1>
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#6F9C3E]/10 blur-[100px] rounded-full pointer-events-none" />
 
-          <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Buffermate AI connects exclusively via official developer APIs and OAuth 2.0 protocols to safeguard your account integrity.
-          </p>
+          <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
+              <div className="w-2 h-2 rounded-full bg-[#6F9C3E] animate-pulse" />
+              <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
+                Official Integrations
+              </span>
+            </div>
+
+            <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
+              Connect every channel with <br className="hidden sm:inline" />
+              <span className="text-[#6F9C3E]">verified developer APIs</span>.
+            </h1>
+
+            <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto">
+              We connect exclusively through officially sanctioned developer partner endpoints. Zero password sharing, zero browser scraping, and 100% compliant with platform security policies.
+            </p>
+          </div>
         </section>
 
-        {/* Integrations Grid */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* ========================================================================= */}
+        {/* 2. INTEGRATIONS GRID (Kobble High-Polish Cards) */}
+        {/* ========================================================================= */}
+        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {INTEGRATIONS.map((item) => (
+            {INTEGRATIONS.map((item, idx) => (
               <div
-                key={item.id}
-                className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/90 shadow-2xs flex flex-col justify-between space-y-6 hover:shadow-xs transition-shadow"
+                key={idx}
+                className="bg-white rounded-[28px] p-8 border border-[#E2E0D5] hover:border-[#C4C4B8] hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-center justify-center shadow-2xs">
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border ${item.iconBg}`}>
                       {item.icon}
                     </div>
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span>{item.status}</span>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold border ${item.badgeColor}`}>
+                      {item.status}
                     </span>
                   </div>
 
-                  <div>
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-                      {item.name}
-                    </h3>
-                    <p className="text-xs text-purple-700 font-semibold mt-0.5">{item.category}</p>
-                    <p className="text-xs text-slate-600 mt-2.5 leading-relaxed">
-                      {item.description}
-                    </p>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#6B6B60] mb-1">
+                    {item.category}
                   </div>
+                  <h3 className="font-extrabold text-[20px] text-[#1A202C] mb-3 leading-snug">
+                    {item.name}
+                  </h3>
 
-                  <div className="pt-3 border-t border-slate-100">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                      Capabilities:
-                    </p>
-                    <ul className="space-y-1.5 text-xs text-slate-700">
-                      {item.capabilities.map((cap) => (
-                        <li key={cap} className="flex items-center space-x-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>{cap}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <p className="font-medium text-[14px] text-[#6B6B60] leading-relaxed mb-6">
+                    {item.description}
+                  </p>
+
+                  <div className="space-y-2 mb-6">
+                    {item.capabilities.map((cap, cIdx) => (
+                      <div key={cIdx} className="flex items-center gap-2 text-xs font-semibold text-[#4A5568]">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#6F9C3E] shrink-0" />
+                        <span>{cap}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <div className="pt-2">
-                  <Link
-                    href="/signup"
-                    className="w-full py-2.5 rounded-full text-xs font-semibold text-center border border-slate-200/80 text-slate-800 hover:bg-slate-50 transition-colors block"
-                  >
-                    Connect {item.name.split(' ')[0]} →
-                  </Link>
+                <div className="pt-4 border-t border-[#EFECE5] flex items-center justify-between text-xs font-semibold text-[#1A202C]">
+                  <span>Status: Operational</span>
+                  <span className="text-[#6F9C3E]">99.98% Dispatches →</span>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Security & Authentication Notice */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          <div className="p-6 sm:p-8 rounded-3xl bg-white border border-slate-200 shadow-2xs space-y-3 text-center sm:text-left flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center shrink-0 text-slate-800">
-              <Lock className="w-6 h-6" />
-            </div>
-            <div className="space-y-1 flex-1">
-              <h3 className="text-sm font-bold text-slate-900">
-                Official API Security & Zero Password Storage
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Buffermate AI never asks for or stores your social media account passwords. We utilize official OAuth 2.0 authorization tokens encrypted with industry-standard AES-256 protocols.
-              </p>
+        {/* ========================================================================= */}
+        {/* 3. SECURITY & TOKEN ENCRYPTION NOTICE (Kobble Dark Container) */}
+        {/* ========================================================================= */}
+        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-20">
+          <div className="bg-[#1A202C] text-white rounded-[32px] p-8 md:p-14 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#6F9C3E]/10 rounded-full blur-[80px] pointer-events-none" />
+
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-8 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-emerald-400">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Enterprise Security Standard</span>
+                </div>
+                <h3 className="font-extrabold text-[28px] md:text-[38px] text-white leading-tight">
+                  Your credentials are never stored. <br />
+                  <span className="text-[#6F9C3E]">Direct OAuth 2.0 handshake only.</span>
+                </h3>
+                <p className="font-normal text-[15px] md:text-[16px] text-slate-300 leading-relaxed max-w-2xl">
+                  Buffermate never asks for your social passwords. Authentication happens directly on the verified login portals of Meta, TikTok, and X. Access tokens are encrypted at rest with AES-256 GCM encryption.
+                </p>
+              </div>
+
+              <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
+                <Link
+                  href="/signup"
+                  className="px-7 py-3.5 bg-[#6F9C3E] hover:bg-[#5f8734] text-white text-center font-bold text-sm rounded-full shadow-lg transition-all"
+                >
+                  Connect Your First Channel
+                </Link>
+                <a
+                  href="https://docs.bachs.io"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-7 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white text-center font-bold text-sm rounded-full transition-all inline-flex items-center justify-center gap-1.5"
+                >
+                  <span>Bachs Payment Security Docs</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Closing CTA */}
-        <section className="px-4 sm:px-6 lg:px-8">
-          <CtaBanner />
-        </section>
+        {/* ========================================================================= */}
+        {/* 4. DUAL CLOSING CTA (Kobble Standard) */}
+        {/* ========================================================================= */}
+        <KobbleCta />
       </main>
 
       <MarketingFooter />
     </div>
   );
 }
-
