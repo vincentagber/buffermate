@@ -3,109 +3,149 @@
 import React from 'react';
 import Link from 'next/link';
 import {
-  Sparkles,
-  Target,
-  Shield,
-  Heart,
-  Globe,
-  ArrowRight,
-  CheckCircle2,
-  Users,
   Zap,
-  Building2
+  Layers,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+  Users,
+  Target
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
+import KobbleMarquee from '@/components/marketing/KobbleMarquee';
 import MarketingFooter from '@/components/marketing/Footer';
-import CtaBanner from '@/components/marketing/CtaBanner';
-import { BufferMateLogo } from '@/app/dashboard/components/Sidebar';
 
 export default function AboutPage() {
+  const values = [
+    {
+      icon: <Zap className="w-5 h-5 text-emerald-600" />,
+      iconBg: 'bg-emerald-50 border-emerald-100',
+      title: 'Built for Speed',
+      description: 'From drafting a hook to multi-channel dispatch, every step is optimized for throughput. Scheduled content reaches active feeds at peak audience velocity without manual lag.',
+    },
+    {
+      icon: <Layers className="w-5 h-5 text-amber-600" />,
+      iconBg: 'bg-amber-50 border-amber-100',
+      title: 'Automation at Scale',
+      description: 'Tap an autonomous publishing engine ready to manage 1 to 100+ social accounts. Scale your audience and inbound client funnels without hiring overhead or creator burnout.',
+    },
+    {
+      icon: <ShieldCheck className="w-5 h-5 text-blue-600" />,
+      iconBg: 'bg-blue-50 border-blue-100',
+      title: 'Transparent & Secure',
+      description: 'Official developer APIs only. Zero password storage, AES-256 encrypted tokens, and strict anti-spam guardrails to protect your account health and brand reputation.',
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#FAFAFA] font-sans text-slate-900 selection:bg-purple-100 selection:text-purple-900">
+    <div className="min-h-screen bg-[#F6F4EE] font-sans text-slate-900 selection:bg-[#52832B]/20 selection:text-[#52832B]">
       <MarketingNavbar />
 
-      <main className="space-y-24 sm:space-y-32 pb-24 overflow-hidden">
-        {/* Header */}
-        <section className="pt-16 sm:pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-4">
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200 text-xs font-semibold">
-            <Heart className="w-3.5 h-3.5" />
-            <span>Our Mission & Vision</span>
+      <main className="overflow-hidden">
+        {/* About Hero matching Kobble */}
+        <section className="pt-12 sm:pt-16 pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-4">
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-white border border-[#E7E4DC] text-[10px] font-bold uppercase tracking-widest text-slate-500 shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#52832B]" />
+            <span>ABOUT BUFFERMATE</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-950 max-w-3xl mx-auto leading-tight">
-            Building the autonomous operating system for modern creators.
+          <h1 className="text-4xl sm:text-6xl lg:text-[64px] font-extrabold tracking-tight text-[#141416] leading-[1.08] max-w-4xl mx-auto">
+            Social media intelligence, <br className="hidden sm:inline" />
+            <span className="text-[#52832B]">delivered at scale.</span>
           </h1>
 
-          <p className="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            We believe creators and growing businesses shouldn&apos;t waste 20+ hours each week wrestling with fragmented social tools and manual direct messages.
+          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Buffermate was built with a simple mission: give modern creators and agencies a transparent, fast, and reliable way to automate social content creation, schedule across every platform, and turn audience engagement into paying clients.
           </p>
         </section>
 
-        {/* Narrative Section */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 text-sm sm:text-base text-slate-700 leading-relaxed">
-          <div className="bg-white rounded-3xl p-8 sm:p-12 border border-slate-200/90 shadow-2xs space-y-6">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Why we built Buffermate AI
-            </h2>
-            <p>
-              In 2026, social presence is no longer optional—it is the primary distribution channel for founders, agencies, coaches, and digital products. Yet, the tools used to manage this presence have remained stuck in 2016: static schedulers that post text blindly and leave the actual hard work—viral ideation and customer DM follow-ups—entirely manual.
-            </p>
-            <p>
-              Buffermate AI was founded on a simple principle: <strong>What if your social publishing platform wasn&apos;t just a calendar, but an autonomous marketing team?</strong>
-            </p>
-            <p>
-              We combined Google Gemini 2.0 AI models with official Meta, TikTok, and X Graph APIs. Today, creators use Buffermate to generate predictive viral hooks, dispatch content to six networks simultaneously, and automatically convert interested commenters into qualified paying leads 24 hours a day.
-            </p>
-          </div>
-        </section>
+        {/* Story Section matching Kobble (2-columns) */}
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            {/* Left Column: Story text */}
+            <div className="lg:col-span-6 space-y-6">
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#141416] tracking-tight leading-tight">
+                The Modern Creator <br />
+                <span className="text-[#52832B]">Workflow, solved.</span>
+              </h2>
 
-        {/* Core Principles Bento Grid */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
-          <div className="text-center max-w-2xl mx-auto space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Our Core Principles
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
-              The values guiding how we engineer our product and support our community.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-700 border border-purple-200 flex items-center justify-center font-bold">
-                <Zap className="w-5 h-5" />
+              <div className="space-y-4 text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                <p>
+                  Managing a serious social presence used to mean juggling scattered spreadsheets, brittle Chrome extensions, manually reformating images for 6 different aspect ratios, and constantly checking feeds at late hours to hit peak posting windows.
+                </p>
+                <p>
+                  We noticed a massive gap: high-growth brands and creators were getting thousands of comments on viral videos saying &ldquo;PRICE&rdquo; or &ldquo;LINK&rdquo;, but dropping 80% of those leads because manual DMs took 4 hours. By the time a human replied, the buyer was gone.
+                </p>
+                <p>
+                  That&apos;s why we built Buffermate AI. We replaced the busywork with autonomous intelligence. From Google Gemini 2.0 hook formulation to automated multi-channel scheduling and sub-15s direct message funnels, we help you make every post count.
+                </p>
               </div>
-              <h3 className="text-base font-bold text-slate-900">Autonomous Velocity</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Repetitive publishing tasks, hashtag formatting, and basic comment replies should be automated so creators can focus on strategy, vision, and deep craft.
-              </p>
             </div>
 
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-700 border border-indigo-200 flex items-center justify-center font-bold">
-                <Target className="w-5 h-5" />
+            {/* Right Column: Tilted Photo Card matching Kobble */}
+            <div className="lg:col-span-6 flex justify-center">
+              <div className="relative w-full max-w-[480px] aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white rotate-1 hover:rotate-0 transition-transform duration-500">
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=900&auto=format&fit=crop&q=80"
+                  alt="Buffermate Team"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <h3 className="text-base font-bold text-slate-900">Real Revenue, Not Vanity</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Views and likes don&apos;t pay rent. Our features are intentionally designed to capture qualified buyer intent through instant DM lead funnels and measurable conversion tracking.
-              </p>
-            </div>
-
-            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-2xs space-y-4">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
-                <Shield className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900">Account Safety First</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                We never use illegal reverse-engineered private APIs or store passwords. Everything connects via verified partner OAuth 2.0 endpoints with built-in anti-detection rate limits.
-              </p>
             </div>
           </div>
         </section>
 
-        {/* Closing CTA */}
-        <section className="px-4 sm:px-6 lg:px-8">
-          <CtaBanner />
+        {/* Core Values matching Kobble */}
+        <section className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#141416] tracking-tight text-center">
+            Our Core Values
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {values.map((v) => (
+              <div
+                key={v.title}
+                className="bg-white rounded-2xl p-7 border border-[#E7E4DC] shadow-xs space-y-4"
+              >
+                <div
+                  className={`w-11 h-11 rounded-xl border flex items-center justify-center ${v.iconBg}`}
+                >
+                  {v.icon}
+                </div>
+                <h3 className="text-lg font-bold text-[#141416] tracking-tight">
+                  {v.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  {v.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Marquee matching Kobble */}
+        <KobbleMarquee />
+
+        {/* Dark Navy CTA Banner matching Kobble */}
+        <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="bg-[#0A0F1D] text-white rounded-3xl p-10 sm:p-16 text-center space-y-6 shadow-2xl border border-slate-800">
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+              Ready to put your social media <br className="hidden sm:inline" />
+              on autopilot?
+            </h2>
+            <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
+              Launch your workspace today and experience the speed of autonomous publishing.
+            </p>
+            <div>
+              <Link
+                href="/signup"
+                className="inline-flex items-center space-x-2 px-8 py-3.5 rounded-full bg-[#52832B] hover:bg-[#436e22] text-white font-bold text-sm shadow-md transition-all hover:scale-[1.02]"
+              >
+                <span>Start Free Workspace</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
         </section>
       </main>
 
@@ -113,4 +153,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
