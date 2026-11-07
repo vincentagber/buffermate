@@ -165,6 +165,25 @@ XML;
 
     public function test_per_account_automation_settings_enforce_manual_review_vs_auto_publish(): void
     {
+        Http::fake([
+            'https://generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                ['text' => 'AI Automated Post: How modern businesses scale distribution effortlessly. #BufferMate #Automation']
+                            ]
+                        ]
+                    ]
+                ]
+            ], 200),
+            'https://api.openai.com/*' => Http::response([
+                'choices' => [
+                    ['message' => ['content' => 'AI Automated Post: How modern businesses scale distribution effortlessly.']]
+                ]
+            ], 200),
+        ]);
+
         // 1. Create Facebook Page account with manual_review
         $fbAccount = SocialAccount::create([
             'workspace_id' => $this->workspace->id,

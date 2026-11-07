@@ -175,7 +175,7 @@ export default function ProductMockup() {
                   </div>
                   <button
                     type="button"
-                    className="px-4 py-2 bg-[#161616] text-white rounded-full font-semibold flex items-center justify-center space-x-1.5 shadow-2xs hover:bg-black transition-all"
+                    className="px-4 py-2 bg-[#141416] text-[#C8FF3D] rounded-full font-semibold flex items-center justify-center space-x-1.5 shadow-2xs hover:bg-black transition-all"
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>Schedule Cross-Platform</span>

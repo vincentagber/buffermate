@@ -48,6 +48,14 @@ class BachsPaymentGatewayTest extends TestCase
 
     public function test_can_create_bachs_checkout_session(): void
     {
+        \Illuminate\Support\Facades\Http::fake([
+            '*bachs.io*' => \Illuminate\Support\Facades\Http::response([
+                'id' => 'cs_mock_test_1234567890',
+                'checkout_url' => 'https://checkout.bachs.io/session/cs_mock_test_1234567890',
+                'status' => 'open',
+            ], 200),
+        ]);
+
         $response = $this->withHeaders([
             'X-Workspace-Id' => $this->workspace->id,
             'X-User-Id' => 'dev_user',

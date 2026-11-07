@@ -64,22 +64,22 @@ export default function MarketingFaq() {
   };
 
   return (
-    <section className="py-20 md:py-28 bg-[#F5F4F0] border-b border-[#E2E0D5]">
+    <section className="py-20 md:py-28 bg-[#E2E0D5] border-b border-[#141416]/15">
       <div className="max-w-[850px] mx-auto px-5 md:px-10 space-y-12">
         {/* Header */}
         <div className="text-center space-y-3">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1A202C] leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#000000] leading-tight">
             Got questions? <br />
-            <span className="text-[#6F9C3E]">We&apos;ve got answers.</span>
+            <span className="font-editorial-italic font-normal text-[#141416]">We&apos;ve got answers.</span>
           </h2>
-          <p className="font-medium text-base text-[#6B6B60] max-w-xl mx-auto">
+          <p className="font-medium text-base text-[#141416]/75 max-w-xl mx-auto">
             Everything you need to know about scheduling, supported networks, and automated comment leads.
           </p>
         </div>
 
         {/* Filter Switcher */}
         <div className="flex justify-center">
-          <div className="inline-flex p-1.5 rounded-full bg-white border border-[#E2E0D5] shadow-xs">
+          <div className="inline-flex p-1.5 rounded-full bg-[#141416] border border-[#141416] shadow-md">
             <button
               onClick={() => {
                 setSelectedCategory('business');
@@ -87,8 +87,8 @@ export default function MarketingFaq() {
               }}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'business'
-                  ? 'bg-[#1A202C] text-white shadow-xs'
-                  : 'text-[#6B6B60] hover:text-[#1A202C]'
+                  ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                  : 'text-[#E2E0D5]/70 hover:text-white'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -101,8 +101,8 @@ export default function MarketingFaq() {
               }}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'creator'
-                  ? 'bg-[#1A202C] text-white shadow-xs'
-                  : 'text-[#6B6B60] hover:text-[#1A202C]'
+                  ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                  : 'text-[#E2E0D5]/70 hover:text-white'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -118,22 +118,22 @@ export default function MarketingFaq() {
             return (
               <div
                 key={idx}
-                className="bg-white rounded-[24px] border border-[#E2E0D5] p-6 hover:border-[#C4C4B8] transition-all"
+                className="bg-[#141416] rounded-[24px] border border-[#141416] p-6 hover:border-[#C8FF3D]/40 transition-all text-[#E2E0D5]"
               >
                 <button
                   onClick={() => toggle(idx)}
                   className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
                 >
-                  <span className="font-extrabold text-[17px] text-[#1A202C] leading-snug">
+                  <span className="font-extrabold text-[17px] text-[#E2E0D5] leading-snug">
                     {faq.q}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-[#F5F4F0] text-[#1A202C] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center shrink-0">
                     {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="mt-4 pt-4 border-t border-[#EFECE5] text-sm md:text-[15px] font-medium text-[#6B6B60] leading-relaxed">
+                  <div className="mt-4 pt-4 border-t border-[#E2E0D5]/15 text-sm md:text-[15px] font-medium text-[#E2E0D5]/70 leading-relaxed">
                     {faq.a}
                   </div>
                 )}
@@ -146,7 +146,7 @@ export default function MarketingFaq() {
         <div className="text-center pt-2">
           <Link
             href="/faq"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6F9C3E] hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#C8FF3D] decoration-2"
           >
             <span>View all questions in Knowledge Center →</span>
           </Link>

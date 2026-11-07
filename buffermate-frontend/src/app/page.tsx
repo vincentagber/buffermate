@@ -6,7 +6,6 @@ import MarketingHero from '@/components/marketing/MarketingHero';
 import MarketingMarquee from '@/components/marketing/MarketingMarquee';
 import PlatformUseCases from '@/components/marketing/PlatformUseCases';
 import MarketingWorkflowSpeed from '@/components/marketing/MarketingWorkflowSpeed';
-import BufferMateSwissShowcase from '@/components/marketing/BufferMateSwissShowcase';
 import MarketingTrust from '@/components/marketing/MarketingTrust';
 import MarketingFaq from '@/components/marketing/MarketingFaq';
 import MarketingBlog from '@/components/marketing/MarketingBlog';
@@ -15,11 +14,11 @@ import MarketingFooter from '@/components/marketing/Footer';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#F5F1EA] text-[#0A0A0A] relative selection:bg-[#C8FF3D]/30 selection:text-[#0A0A0A]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/10 to-transparent blur-[130px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[140px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/8 to-transparent blur-[140px]" />
       </div>
 
       {/* 1. Header & Navigation */}
@@ -38,10 +37,7 @@ export default function HomePage() {
         {/* 5. Built for Speed (Interactive Multi-Step Workflows) */}
         <MarketingWorkflowSpeed />
 
-        {/* 6. Neo-Swiss Editorial Showcase (8 Bento Cards with Bold Grotesk, Italic Serif & Outline) */}
-        <BufferMateSwissShowcase />
-
-        {/* 7. Built on a Foundation of Absolute Trust (Enterprise Container) */}
+        {/* 6. Built on a Foundation of Absolute Trust (Enterprise Container) */}
         <MarketingTrust />
 
         {/* 8. Frequently Asked Questions (FAQ with Filters) */}

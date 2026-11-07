@@ -56,13 +56,16 @@ const nextConfig = {
     ];
   },
 
-  // Proxy /api requests to Laravel backend
+  // Proxy /api requests to Laravel backend (supports both LARAVEL_API_URL and NEXT_PUBLIC_API_URL)
   async rewrites() {
-    const backendUrl = process.env.LARAVEL_API_URL || "http://127.0.0.1:8001";
+    const backendUrl =
+      process.env.LARAVEL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://127.0.0.1:8001";
     return [
       {
         source: "/api/:path*",
-        destination: `${backendUrl}/api/:path*`,
+        destination: `${backendUrl.replace(/\/+$/, '')}/api/:path*`,
       },
     ];
   },

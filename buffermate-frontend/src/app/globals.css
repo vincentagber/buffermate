@@ -3,43 +3,46 @@
 
 :root {
   /* -------------------------------------------------------------------------
-     Neo-Swiss Editorial Minimalism Tokens (Sampled from Reference)
+     The 4 Consistent Color Tokens:
+     #C8FF3D - Electric Lime / Neon Chartreuse Accent
+     #141416 - Dark Surface / Card / Container / Pill
+     #E2E0D5 - Canvas / Border / Divider / Muted Tone
+     #000000 - Pure Black (High Contrast Text & Deep Tone)
   ------------------------------------------------------------------------- */
   --color-lime: #C8FF3D;
-  --color-cream: #F5F1EA;
-  --color-black: #0A0A0A;
-  --color-charcoal: #353733;
-  --color-graphite: #1B1B1B;
+  --color-dark: #141416;
+  --color-border: #E2E0D5;
+  --color-black: #000000;
 
+  /* Universal Brand Color Mappings */
+  --color-brand-green: #C8FF3D;
+  --color-brand-green-deep: #141416;
+  --color-brand-orange: #C8FF3D;
+
+  --color-warm-bg: #E2E0D5;
+  --color-border-warm: #E2E0D5;
+  --color-border-warm-hover: #141416;
+  --color-slate-dark: #000000;
+  --color-slate-muted: #141416;
+
+  --color-bg-page: #E2E0D5;
+  --color-bg-card: #FFFFFF;
+  --color-bg-sidebar: #FFFFFF;
+  
+  --color-text-main: #000000;
+  --color-text-muted: #141416;
+  --color-text-light: #141416;
+
+  --color-border-card: #E2E0D5;
+
+  /* Typography Font Stacks */
   --font-heading: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   --font-editorial: "Playfair Display", serif;
   --font-outline: "Montserrat", sans-serif;
   --font-geist: "Geist", "Inter", sans-serif;
   --font-geist-mono: "Geist Mono", monospace;
-
-  /* Buffermate Brand Alignment */
-  --font-figtree: "Inter", "Figtree", sans-serif;
-  --color-warm-bg: #F5F1EA;
-  --color-border-warm: #E2E0D5;
-  --color-border-warm-hover: #C4C4B8;
-  --color-slate-dark: #0A0A0A;
-  --color-slate-muted: #6B6B60;
-  --color-brand-green: #6F9C3E;
-  --color-brand-green-deep: #52832B;
-  --color-brand-orange: #FF882A;
-
-  /* App token mappings */
-  --color-bg-page: #F5F1EA;
-  --color-bg-card: #FFFFFF;
-  --color-bg-sidebar: #FFFFFF;
-  
-  --color-text-main: #0A0A0A;
-  --color-text-muted: #6B6B60;
-  --color-text-light: #94A3B8;
-
-  --color-border: #E2E0D5;
-  --color-border-card: #E2E0D5;
+  --font-figtree: "Inter", sans-serif;
 }
 
 body {
@@ -182,7 +185,7 @@ body {
   width: 60%;
   height: 60%;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(111, 156, 62, 0.12) 0%, rgba(111, 156, 62, 0) 70%);
+  background: radial-gradient(circle, rgba(200, 255, 61, 0.14) 0%, rgba(200, 255, 61, 0) 70%);
   filter: blur(120px);
 }
 
@@ -193,28 +196,28 @@ body {
   width: 55%;
   height: 55%;
   border-radius: 9999px;
-  background: radial-gradient(circle, rgba(255, 136, 42, 0.08) 0%, rgba(255, 136, 42, 0) 70%);
+  background: radial-gradient(circle, rgba(20, 20, 22, 0.08) 0%, rgba(20, 20, 22, 0) 70%);
   filter: blur(130px);
 }
 
 /* Subtle dot texture */
 .bg-warm-dots {
-  background-image: radial-gradient(#D6D2C4 1px, transparent 1px);
+  background-image: radial-gradient(#E2E0D5 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
 /* Glass & Card styles */
 .brand-card {
-  background-color: #FFFFFF;
-  border: 1px solid #E2E0D5;
+  background-color: #141416;
+  border: 1px solid #141416;
   border-radius: 24px;
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-card:hover {
-  border-color: #C4C4B8;
+  border-color: #C8FF3D;
   transform: translateY(-2px);
-  box-shadow: 0 16px 32px -8px rgba(26, 32, 44, 0.08);
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.25);
 }
 
 @keyframes pulseSlow {
@@ -261,6 +264,7 @@ body {
 
 /* =========================================================================
    From Uiverse.io by gharsh11032000 — Animated Interactive Button
+   Theme: #C8FF3D (Lime), #141416 (Dark), #E2E0D5 (Border), #000000 (Black)
    ========================================================================= */
 .animated-button {
   position: relative;
@@ -273,9 +277,9 @@ body {
   font-size: 15px;
   background-color: #141416;
   border-radius: 100px;
-  font-weight: 600;
-  color: greenyellow;
-  box-shadow: 0 0 0 2px greenyellow;
+  font-weight: 700;
+  color: #C8FF3D;
+  box-shadow: 0 0 0 2px #C8FF3D;
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;
@@ -288,7 +292,7 @@ body {
   position: absolute;
   width: 22px;
   height: 22px;
-  fill: greenyellow;
+  fill: #C8FF3D;
   z-index: 9;
   transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -308,7 +312,7 @@ body {
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  background-color: greenyellow;
+  background-color: #C8FF3D;
   border-radius: 50%;
   opacity: 0;
   pointer-events: none;
@@ -324,8 +328,8 @@ body {
 
 .animated-button:hover {
   box-shadow: 0 0 0 12px transparent;
-  color: #212121;
-  border-radius: 12px;
+  color: #000000;
+  border-radius: 14px;
 }
 
 .animated-button:hover .arr-1 {
@@ -341,12 +345,12 @@ body {
 }
 
 .animated-button:hover svg {
-  fill: #212121;
+  fill: #000000;
 }
 
 .animated-button:active {
   scale: 0.95;
-  box-shadow: 0 0 0 4px greenyellow;
+  box-shadow: 0 0 0 4px #C8FF3D;
 }
 
 .animated-button:hover .circle {
@@ -384,22 +388,22 @@ body {
 
 /* Brand Theme Modifiers */
 .animated-button.btn-brand {
-  color: #6F9C3E;
-  box-shadow: 0 0 0 2px #6F9C3E;
+  color: #C8FF3D;
+  box-shadow: 0 0 0 2px #C8FF3D;
 }
 .animated-button.btn-brand svg {
-  fill: #6F9C3E;
+  fill: #C8FF3D;
 }
 .animated-button.btn-brand .circle {
-  background-color: #6F9C3E;
+  background-color: #C8FF3D;
 }
 .animated-button.btn-brand:hover {
-  color: #FFFFFF;
+  color: #000000;
 }
 .animated-button.btn-brand:hover svg {
-  fill: #FFFFFF;
+  fill: #000000;
 }
 .animated-button.btn-brand:active {
-  box-shadow: 0 0 0 4px #6F9C3E;
+  box-shadow: 0 0 0 4px #C8FF3D;
 }
 

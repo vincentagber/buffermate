@@ -37,37 +37,37 @@ export default function MarketingNavbar() {
     <header
       className={`sticky top-0 w-full z-50 transition-all duration-200 ${
         scrolled
-          ? 'bg-[#F5F4F0]/90 backdrop-blur-md border-b border-[#E2E0D5] shadow-xs'
-          : 'bg-[#F5F4F0]/80 backdrop-blur-sm border-b border-[#E2E0D5]'
+          ? 'bg-[#E2E0D5]/95 backdrop-blur-md border-b border-[#141416]/15 shadow-xs'
+          : 'bg-[#E2E0D5]/85 backdrop-blur-sm border-b border-[#141416]/10'
       }`}
     >
       <div className="max-w-[1200px] mx-auto px-5 md:px-10 h-[72px] flex items-center justify-between">
         {/* Buffermate Brand Logo */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          {/* Rounded Green Squircle with inner ring */}
-          <div className="w-9 h-9 rounded-2xl bg-[#6F9C3E] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0">
-            <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
+          {/* Rounded Lime Squircle with inner ring */}
+          <div className="w-9 h-9 rounded-2xl bg-[#C8FF3D] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#141416]/15">
+            <div className="w-3.5 h-3.5 rounded-full border-2 border-[#141416] bg-transparent" />
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-[19px] text-[#1A202C] tracking-tight leading-tight">
+            <span className="font-extrabold text-[19px] text-[#000000] tracking-tight leading-tight">
               Buffermate
             </span>
-            <span className="text-[10px] text-[#6B6B60] font-semibold tracking-tight">
+            <span className="text-[10px] text-[#141416]/70 font-semibold tracking-tight">
               social media · automated
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center space-x-7 text-[15px] font-semibold text-[#4A5568]">
+        <nav className="hidden lg:flex items-center space-x-7 text-[15px] font-semibold text-[#141416]/80">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.label}
                 href={link.href}
-                className={`transition-colors hover:text-[#1A202C] ${
-                  isActive ? 'text-[#6F9C3E]' : 'text-[#4A5568]'
+                className={`transition-colors hover:text-[#000000] ${
+                  isActive ? 'text-[#000000] font-black underline underline-offset-4 decoration-[#C8FF3D] decoration-2' : 'text-[#141416]/80'
                 }`}
               >
                 {link.label}
@@ -80,7 +80,7 @@ export default function MarketingNavbar() {
         <div className="hidden md:flex items-center space-x-4">
           <Link
             href="/login"
-            className="text-[14px] font-bold text-[#1A202C] hover:text-[#6F9C3E] transition-colors px-2 py-1"
+            className="text-[14px] font-bold text-[#141416] hover:text-[#000000] transition-colors px-2 py-1"
           >
             Log In
           </Link>
@@ -94,13 +94,13 @@ export default function MarketingNavbar() {
         <div className="lg:hidden flex items-center space-x-2">
           <Link
             href="/signup"
-            className="px-3.5 py-1.5 rounded-full bg-[#1A202C] text-white text-xs font-bold"
+            className="px-3.5 py-1.5 rounded-full bg-[#141416] text-[#C8FF3D] text-xs font-bold border border-[#C8FF3D]/30"
           >
             Start Free
           </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 text-[#1A202C] rounded-lg hover:bg-[#EAE6DD]"
+            className="p-2 text-[#000000] rounded-lg hover:bg-[#141416]/10"
             aria-label="Open menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -110,28 +110,28 @@ export default function MarketingNavbar() {
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#F5F4F0] border-b border-[#E2E0D5] px-5 pt-3 pb-6 space-y-2">
+        <div className="lg:hidden bg-[#E2E0D5] border-b border-[#141416]/20 px-5 pt-3 pb-6 space-y-2">
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
-                className="px-3 py-2 text-[15px] font-semibold text-[#1A202C] hover:bg-[#EAE6DD] rounded-xl"
+                className="px-3 py-2 text-[15px] font-semibold text-[#000000] hover:bg-[#141416]/10 rounded-xl"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="pt-3 border-t border-[#E2E0D5] flex flex-col space-y-2">
+          <div className="pt-3 border-t border-[#141416]/15 flex flex-col space-y-2">
             <Link
               href="/login"
-              className="w-full py-2.5 text-center text-sm font-semibold text-[#1A202C] hover:bg-[#EAE6DD] rounded-xl"
+              className="w-full py-2.5 text-center text-sm font-semibold text-[#000000] hover:bg-[#141416]/10 rounded-xl"
             >
               Log In
             </Link>
             <Link
               href="/signup"
-              className="w-full py-2.5 text-center text-sm font-bold bg-[#6F9C3E] text-white rounded-full shadow-md"
+              className="w-full py-2.5 text-center text-sm font-bold bg-[#141416] text-[#C8FF3D] rounded-full shadow-md border border-[#C8FF3D]/40"
             >
               Start Free Workspace
             </Link>

@@ -1,0 +1,168 @@
+# ==============================================================================
+# RENDER INFRASTRUCTURE AS CODE (BLUEPRINT SPECIFICATION)
+# Application: BufferMate AI Platform
+# Target Architecture: Web API, Background Queue Worker & Scheduled Cron
+# ==============================================================================
+
+version: "1"
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. LARAVEL WEB API (Nginx + PHP 8.3 FPM)
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: buffermate-api
+    runtime: docker
+    dockerfilePath: ./buffermate-backend/Dockerfile
+    dockerContext: ./buffermate-backend
+    plan: starter
+    healthCheckPath: /up
+    numInstances: 1
+    envVars:
+      - key: APP_NAME
+        value: BufferMate API
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_TIMEZONE
+        value: UTC
+      - key: APP_URL
+        sync: false # Set to your deployed Render URL or custom API domain
+      - key: FRONTEND_URL
+        sync: false # Set to your Vercel frontend URL, e.g. https://buffermate.xyz
+      - key: APP_KEY
+        generateValue: true
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: info
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DATABASE_URL
+        sync: false # Connect to Supabase or Render Postgres connection string
+      - key: SESSION_DRIVER
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: ENCRYPTION_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: BACHS_API_KEY
+        sync: false
+      - key: BACHS_WEBHOOK_SECRET
+        sync: false
+
+  # ----------------------------------------------------------------------------
+  # 2. BACKGROUND QUEUE WORKER (Laravel Queue Runner)
+  # ----------------------------------------------------------------------------
+  - type: worker
+    name: buffermate-worker
+    runtime: docker
+    dockerfilePath: ./buffermate-backend/Dockerfile
+    dockerContext: ./buffermate-backend
+    dockerCommand: php artisan queue:work --tries=3 --timeout=90 --sleep=3 --rest=1
+    plan: starter
+    numInstances: 1
+    envVars:
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_NAME
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_ENV
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_KEY
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_DEBUG
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: DB_CONNECTION
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: DATABASE_URL
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: QUEUE_CONNECTION
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: CACHE_STORE
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: SUPABASE_URL
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: SUPABASE_JWT_SECRET
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: ENCRYPTION_KEY
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: GEMINI_API_KEY
+
+  # ----------------------------------------------------------------------------
+  # 3. CRON SCHEDULER (Laravel Task Scheduler)
+  # ----------------------------------------------------------------------------
+  - type: cron
+    name: buffermate-scheduler
+    runtime: docker
+    dockerfilePath: ./buffermate-backend/Dockerfile
+    dockerContext: ./buffermate-backend
+    schedule: "* * * * *"
+    dockerCommand: php artisan schedule:run
+    plan: starter
+    envVars:
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_NAME
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_ENV
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: APP_KEY
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: DB_CONNECTION
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: DATABASE_URL
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: QUEUE_CONNECTION
+      - fromService:
+          type: web
+          name: buffermate-api
+          envVarKey: CACHE_STORE
+

@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
       "react-hooks/purity": "off",
       "react-hooks/immutability": "off",
       "react-hooks/set-state-in-effect": "off",
-      "react-compiler/react-compiler": "warn",
+      "react-hooks/preserve-manual-memoization": "off",
       "@next/next/no-img-element": "warn",
     },
   },

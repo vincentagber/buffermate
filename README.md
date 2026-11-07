@@ -1,127 +1,122 @@
-# Buffermate AI
+# BufferMate AI — Multi-Tenant Social Media Management & Syndication Platform
 
-![Buffermate Banner](https://raw.githubusercontent.com/vincentagber/buffermate/main/assets/banner.png)
+[![CI Pipeline](https://github.com/vincentagber/buffermate/actions/workflows/ci.yml/badge.svg)](https://github.com/vincentagber/buffermate/actions/workflows/ci.yml)
+[![Next.js 16](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=next.js)](https://nextjs.org/)
+[![Laravel 11](https://img.shields.io/badge/Backend-Laravel%2011-red?logo=laravel)](https://laravel.com/)
+[![PHP 8.3](https://img.shields.io/badge/PHP-8.3-blue?logo=php)](https://php.net/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase%20Postgres-3ecf8e?logo=supabase)](https://supabase.com/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Node.js](https://img.shields.io/badge/node-%3E%3D14-brightgreen.svg)](https://nodejs.org/) [![OpenAI](https://img.shields.io/badge/OpenAI-API-green)](https://openai.com/api/)
-
----
-
-## Overview
-Buffermate is a modern, **Buffer‑like** auto‑posting web application that leverages **AI** to generate compelling social media content. It integrates with major platforms (X, Facebook, LinkedIn) and provides a sleek scheduling experience backed by Supabase.
-
----
-
-## Table of Contents
-- [Features](#features)
-- [Demo](#demo)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running Locally](#running-locally)
-- [Deployment](#deployment)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
-- [Credits](#credits)
+BufferMate AI is a production-grade multi-tenant social media management, content syndication, and AI-assisted publishing SaaS platform. It enables creators, marketing agencies, and editorial teams to schedule multi-platform posts, automate RSS headline publishing (NewsPilot), collaborate across workspaces, and monetize via tiered subscriptions.
 
 ---
 
-## Features
-- **Social Auth** – Connect X, Facebook, LinkedIn (and a mock provider for testing).
-- **AI‑Powered Content** – Generate post suggestions using the OpenAI API.
-- **Scheduling** – Queue posts for future publication with a robust background worker.
-- **Supabase Backend** – Utilises Supabase for database, authentication, and storage.
-- **Responsive UI** – Built with Next.js and Tailwind CSS for a smooth experience.
+## Architecture Overview
+
+BufferMate AI is engineered as an enterprise-grade monorepo designed for independent multi-cloud deployment:
+
+```text
+buffermate/
+├── buffermate-frontend/     # Next.js 16 App Router (React 19, TypeScript, Tailwind) -> Deploy to Vercel
+├── buffermate-backend/      # Laravel 11 REST API (PHP 8.3, Nginx, Docker) -> Deploy to Render
+├── render.yaml              # Render Blueprint Infrastructure-as-Code specification
+├── .github/workflows/ci.yml # Automated CI pipeline running unit tests, linting, and builds
+└── docs/                    # Complete architectural, deployment, and security documentation
+```
+
+### Production Deployment Topology
+
+| Component | Target URL | Deployment Host | Technology |
+|---|---|---|---|
+| **Frontend Web App** | `https://yourdomain.com` | **Vercel** | Next.js 16 (React 19), Edge CDN |
+| **Backend API** | `https://api.yourdomain.com` | **Render** | Docker Container (Alpine + Nginx + PHP 8.3-FPM) |
+| **Background Worker** | *Private Service* | **Render** | Docker Background Worker (`artisan queue:work`) |
+| **Cron Scheduler** | *Private Service* | **Render** | Docker Scheduled Job (`* * * * * artisan schedule:run`) |
+| **Database** | *Private Cloud* | **Supabase / Render** | Managed PostgreSQL (v15+) |
 
 ---
 
-## Demo
-> *A live demo is hosted on Vercel. Replace the placeholder below with a screenshot or GIF of the app in action.*
+## Key Features
 
-![Demo Screenshot](https://raw.githubusercontent.com/vincentagber/buffermate/main/assets/demo.png)
+- **Multi-Tenant Workspaces:** Strict tenant data isolation with role-based member permissions and custom branding.
+- **Multi-Platform Publishing:** Schedule and publish content across X (Twitter), Facebook, Instagram, LinkedIn, TikTok, and Threads.
+- **NewsPilot Syndication:** Automated RSS feed ingestion, AI headline optimization, and multi-channel editorial syndication.
+- **AI Content Studio:** Google Gemini 1.5 & OpenAI integration for high-engagement copy generation, hashtag discovery, and banner visuals.
+- **Centralized Social Inbox:** Real-time social engagement tracking, comments, and conversation workflows.
+- **Bachs Payment Gateway:** Full subscription checkout flow, plan upgrades (Pro, Agency), and HMAC-verified webhooks.
+- **Cryptographic Security:** End-to-end Supabase JWT HMAC-SHA256 signature verification, strict CORS policies, and AES token encryption.
 
 ---
 
-## Installation
+## Documentation Suite
+
+Comprehensive engineering documentation is available in the [`docs/`](docs/) directory:
+
+- [**System Architecture (`docs/ARCHITECTURE.md`)**](docs/ARCHITECTURE.md): Detailed component diagrams, request lifecycles, and data model isolation.
+- [**Production Deployment Guide (`docs/DEPLOYMENT.md`)**](docs/DEPLOYMENT.md): Step-by-step deployment runbooks for Vercel, Render Blueprints, database migrations, and domain setup.
+- [**Environment Variables Dictionary (`docs/ENVIRONMENT_VARIABLES.md`)**](docs/ENVIRONMENT_VARIABLES.md): Authoritative reference for every frontend and backend environment setting.
+- [**Security Audit & Remediation (`docs/SECURITY_AUDIT.md`)**](docs/SECURITY_AUDIT.md): Detailed report of security audits, CVE mitigations, and hardening measures.
+- [**Production Readiness Checklist (`docs/PRODUCTION_READINESS.md`)**](docs/PRODUCTION_READINESS.md): Verification matrix classifying all layers by operational state.
+
+---
+
+## Local Development Quickstart
+
+### Prerequisites
+- Node.js 20+ and npm
+- PHP 8.3+ with `pdo_sqlite` or `pdo_pgsql`, `mbstring`, `bcmath`, `curl`
+- Composer 2+
+
+### 1. Clone & Setup Frontend
 ```bash
-# Clone the repository
-git clone https://github.com/vincentagber/buffermate.git
-cd buffermate
-
-# Install dependencies
+cd buffermate-frontend
+cp .env.example .env.local
 npm install
-```
-
----
-
-## Configuration
-1. **Environment Variables**
-   ```bash
-   cp .env.example .env.local
-   ```
-   Edit `.env.local` and provide the following keys:
-   - `NEXT_PUBLIC_SUPABASE_URL` & `NEXT_PUBLIC_SUPABASE_ANON_KEY` – from your Supabase dashboard.
-   - `SUPABASE_SERVICE_ROLE_KEY` – Supabase Service Role key (Settings → API).
-   - `ENCRYPTION_KEY` – 32‑byte base64 string (or any dev string).
-   - `OPENAI_API_KEY` – your OpenAI API key.
-2. **Database Setup** – Run the SQL in `migrations/init.sql` via the Supabase SQL editor.
-3. **Optional Seed Data**
-   ```bash
-   npx ts-node scripts/seed.ts
-   ```
-
----
-
-## Running Locally
-### Frontend
-```bash
 npm run dev
+# Running on http://localhost:3000
 ```
-Visit <http://localhost:3000>.
 
-### Background Worker
-Open a second terminal and run:
+### 2. Setup Backend API
 ```bash
-npm run worker
+cd buffermate-backend
+cp .env.example .env
+composer install
+php artisan key:generate
+php artisan migrate
+php artisan serve --port=8001
+# Running on http://localhost:8001
 ```
-The worker processes scheduled posts.
 
----
-
-## Deployment
-### Vercel (Frontend + API)
-1. Push the code to GitHub.
-2. Import the repository in Vercel.
-3. Add the same environment variables as in `.env.local`.
-4. Deploy.
-
-### Render (Worker)
-1. Create a **Background Worker** service.
-2. Connect the GitHub repo.
-3. Build Command: `npm install && npm run build` (or just `npm install` for ts‑node).
-4. Start Command: `npm run worker`.
-5. Add the required environment variables.
-
----
-
-## Testing
+### 3. Run Queue Worker & Scheduler (Locally)
 ```bash
-npm run test
+cd buffermate-backend
+php artisan queue:work
+# In another terminal:
+php artisan schedule:work
 ```
-Run the test suite to ensure core functionality works as expected.
 
 ---
 
-## Contributing
-Contributions are welcome! Please fork the repository, create a feature branch, and submit a pull request. Follow the existing code style and include tests for new features.
+## Automated Testing & CI
+
+BufferMate includes automated testing and linting across both applications:
+
+```bash
+# Frontend Lint & Production Build
+cd buffermate-frontend
+npm run lint
+npm run build
+
+# Backend Feature & Unit Tests
+cd buffermate-backend
+php artisan test
+```
+
+Continuous integration runs automatically on every commit via GitHub Actions (`.github/workflows/ci.yml`).
 
 ---
 
 ## License
-This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
 
----
-
-## Credits
-**Developed significantly by Vincent Agber.**
-
----
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
