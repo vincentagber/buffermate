@@ -21,17 +21,10 @@ export default function SimulatorModal({
   onTriggerEvent,
 }: SimulatorModalProps) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!isOpen || !mounted) return null;
-
   const [channel, setChannel] = useState<SocialChannel>('instagram');
   const [userHandle, setUserHandle] = useState('@clara_creator');
   const [commentText, setCommentText] = useState('How much does this cost? Can you send me the price link?');
   const [postTitle, setPostTitle] = useState('Reel: 5 AI Automation Hacks for 2026');
-  
   const [isProcessing, setIsProcessing] = useState(false);
   const [executionResult, setExecutionResult] = useState<{
     matched: boolean;
@@ -41,6 +34,12 @@ export default function SimulatorModal({
     privateDm?: string;
     leadSaved?: boolean;
   } | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSimulate = async () => {
     setIsProcessing(true);

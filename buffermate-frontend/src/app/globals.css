@@ -53,6 +53,18 @@ body {
 /* ---------------------------------------------------------------------------
    Neo-Swiss Editorial Typography Utility Classes
 --------------------------------------------------------------------------- */
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.font-editorial {
+  font-family: var(--font-editorial);
+}
+
 /* Style 1: Bold Grotesk Sans-Serif (Heavy/ExtraBold/Black, Tight Tracking) */
 .font-grotesk {
   font-family: var(--font-heading);

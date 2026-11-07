@@ -13,6 +13,9 @@ const eslintConfig = defineConfig([
       "prefer-const": "warn",
       "react-hooks/purity": "off",
       "react-hooks/immutability": "off",
+      "react-hooks/set-state-in-effect": "off",
+      "react-compiler/react-compiler": "warn",
+      "@next/next/no-img-element": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
