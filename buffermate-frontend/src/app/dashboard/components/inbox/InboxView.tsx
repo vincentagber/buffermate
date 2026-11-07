@@ -27,6 +27,7 @@ import { triggerConfetti } from '@/components/ui/Confetti';
 import ComposeMessageModal from './ComposeMessageModal';
 import WorkItemDetailModal from '../projects/WorkItemDetailModal';
 import { Project } from '../projects/types';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface Message {
   id: string;
@@ -130,9 +131,8 @@ export default function InboxView() {
 
   const fetchDefaultProject = async () => {
     try {
-      const res = await fetch('/api/projects');
-      const data = await res.json();
-      if (data.success && data.data && data.data.length > 0) {
+      const { data } = await safeFetchJson<any>('/api/projects');
+      if (data?.success && data?.data && data.data.length > 0) {
         setDefaultProject(data.data[0]);
       }
     } catch (e) {
@@ -142,9 +142,8 @@ export default function InboxView() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('/api/inbox/stats');
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>('/api/inbox/stats');
+      if (data?.success && data?.data) {
         setStats(data.data);
       }
     } catch (e) {
@@ -159,9 +158,8 @@ export default function InboxView() {
       if (activeQueue !== 'all') params.append('queue', activeQueue);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
-      const res = await fetch(`/api/inbox/conversations?${params.toString()}`);
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
+      const { data } = await safeFetchJson<any>(`/api/inbox/conversations?${params.toString()}`);
+      if (data?.success && Array.isArray(data.data)) {
         setConversations(data.data);
 
         // Preserve active conversation or select first
@@ -182,9 +180,8 @@ export default function InboxView() {
   const loadConversationDetails = async (id: string) => {
     try {
       setMobileInboxView('thread');
-      const res = await fetch(`/api/inbox/conversations/${id}`);
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>(`/api/inbox/conversations/${id}`);
+      if (data?.success && data?.data) {
         setActiveConversation(data.data);
         // Optimistically update read status in conversations list
         setConversations((prev) =>
@@ -213,7 +210,7 @@ export default function InboxView() {
     const isInternal = replyMode === 'internal';
 
     try {
-      const res = await fetch(`/api/inbox/conversations/${activeConversation.id}/reply`, {
+      const { data } = await safeFetchJson<any>(`/api/inbox/conversations/${activeConversation.id}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -223,8 +220,7 @@ export default function InboxView() {
         }),
       });
 
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data?.data) {
         setActiveConversation(data.data);
         setReplyText('');
         triggerConfetti();

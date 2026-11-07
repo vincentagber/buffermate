@@ -28,6 +28,7 @@ import {
 import { BufferMateLogo } from './Sidebar';
 import { createClient } from '@/lib/supabase/client';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import { safeFetchJson } from '@/lib/safe-fetch';
 import AddNewButton from '@/components/ui/AddNewButton';
 
 interface HeaderProps {
@@ -109,9 +110,8 @@ export default function Header({
   const fetchNotifications = async (filter = notifFilter) => {
     try {
       setIsLoadingNotifs(true);
-      const res = await fetch(`/api/projects/notifications?filter=${filter}`);
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
+      const { data } = await safeFetchJson<any>(`/api/projects/notifications?filter=${filter}`);
+      if (data?.success && Array.isArray(data.data)) {
         setNotifications(data.data);
         setUnreadCount(data.unread_count ?? 0);
       }
