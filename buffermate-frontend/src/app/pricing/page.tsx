@@ -58,11 +58,11 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[130px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/10 to-transparent blur-[130px]" />
       </div>
 
       <MarketingNavbar />
@@ -71,8 +71,8 @@ export default function PricingPage() {
         {/* ========================================================================= */}
         {/* 1. HERO SECTION */}
         {/* ========================================================================= */}
-        <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#1A202C] opacity-[0.03]">
+        <section className="relative overflow-hidden w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#141416]/15">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden text-[#141416] opacity-[0.03]">
             <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="absolute -top-16 -left-10 rotate-12">
               <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
             </svg>
@@ -81,38 +81,38 @@ export default function PricingPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#6F9C3E]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/15 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#6F9C3E] animate-pulse" />
-              <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#141416]/15 shadow-xs mb-6 mx-auto">
+              <div className="w-2 h-2 rounded-full bg-[#141416] animate-pulse" />
+              <span className="font-bold text-[12px] text-[#000000] tracking-wide uppercase">
                 Transparent Pricing
               </span>
             </div>
 
-            <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
+            <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#000000] leading-[1.08] mb-6 tracking-tight font-hero-sans">
               Simple, transparent pricing <br className="hidden sm:inline" />
-              <span className="text-[#6F9C3E]">for every creator</span>.
+              <span className="font-editorial-italic font-normal text-[#141416]">for every creator</span>.
             </h1>
 
-            <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto mb-8">
+            <p className="font-medium text-[18px] md:text-[20px] text-[#141416]/75 leading-relaxed max-w-[700px] mx-auto mb-8 font-hero-sans">
               Start with our generous free tier. Upgrade when you need unlimited channels, autonomous comment-to-DM bots, and agency scale.
             </p>
 
             {/* Billing Switcher (Annual -20% / Monthly) */}
-            <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-[#E2E0D5] shadow-xs">
+            <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-[#141416]/15 shadow-xs">
               <button
                 type="button"
                 onClick={() => setBillingCycle('annual')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   billingCycle === 'annual'
-                    ? 'bg-[#1A202C] text-white shadow-xs'
-                    : 'text-[#6B6B60] hover:text-[#1A202C]'
+                    ? 'bg-[#141416] text-[#C8FF3D] shadow-xs'
+                    : 'text-[#141416]/70 hover:text-[#000000]'
                 }`}
               >
                 <span>Annual Billing</span>
-                <span className="text-[10px] font-extrabold bg-[#6F9C3E] text-white px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-extrabold bg-[#C8FF3D] text-[#000000] px-2 py-0.5 rounded-full border border-[#141416]/20">
                   Save 20%
                 </span>
               </button>
@@ -121,8 +121,8 @@ export default function PricingPage() {
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   billingCycle === 'monthly'
-                    ? 'bg-[#1A202C] text-white shadow-xs'
-                    : 'text-[#6B6B60] hover:text-[#1A202C]'
+                    ? 'bg-[#141416] text-[#C8FF3D] shadow-xs'
+                    : 'text-[#141416]/70 hover:text-[#000000]'
                 }`}
               >
                 Monthly Billing
@@ -174,35 +174,35 @@ export default function PricingPage() {
 
               <Link
                 href="/signup"
-                className="w-full py-4 text-center rounded-full bg-[#F5F4F0] hover:bg-[#EAE6DD] text-[#1A202C] font-bold text-sm border border-[#E2E0D5] transition-all"
+                className="w-full py-4 text-center rounded-full bg-[#E2E0D5] hover:bg-[#141416]/10 text-[#000000] font-bold text-sm border border-[#141416]/20 transition-all"
               >
                 Start Free Workspace
               </Link>
             </div>
 
             {/* Tier 2: Pro Growth (Popular) */}
-            <div className="bg-white rounded-[28px] border-2 border-[#6F9C3E] p-8 md:p-9 flex flex-col justify-between shadow-2xl relative">
+            <div className="bg-[#141416] text-[#E2E0D5] rounded-[28px] border-2 border-[#C8FF3D] p-8 md:p-9 flex flex-col justify-between shadow-2xl relative">
               {/* Popular Pill */}
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#6F9C3E] text-white text-[10px] font-extrabold uppercase tracking-widest shadow-md">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#C8FF3D] text-[#000000] text-[10px] font-black uppercase tracking-widest shadow-md border border-[#141416]/20">
                 Most Popular
               </div>
 
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6F9C3E] mb-2">
+                <div className="text-[11px] font-black uppercase tracking-wider text-[#C8FF3D] mb-2">
                   High-Growth Creators
                 </div>
-                <h3 className="font-extrabold text-[26px] text-[#1A202C] mb-2">
+                <h3 className="font-extrabold text-[26px] text-[#E2E0D5] mb-2">
                   Pro Growth
                 </h3>
-                <p className="text-sm font-medium text-[#6B6B60] mb-6">
+                <p className="text-sm font-medium text-[#E2E0D5]/70 mb-6">
                   Autonomous viral scripting, unlimited queue, and 24/7 comment-to-DM bots.
                 </p>
 
                 <div className="flex items-baseline gap-1 mb-8">
-                  <span className="text-[44px] font-extrabold text-[#1A202C]">
+                  <span className="text-[44px] font-extrabold text-[#E2E0D5]">
                     ${billingCycle === 'annual' ? '23' : '29'}
                   </span>
-                  <span className="text-sm font-bold text-[#6B6B60]">
+                  <span className="text-sm font-bold text-[#E2E0D5]/60">
                     / mo {billingCycle === 'annual' ? '(billed yearly)' : ''}
                   </span>
                 </div>
@@ -218,8 +218,8 @@ export default function PricingPage() {
                     '90-Day Deep Historical Analytics',
                     'Priority Email Support',
                   ].map((feat, idx) => (
-                    <div key={idx} className="flex items-center gap-3 text-xs md:text-sm font-semibold text-[#1A202C]">
-                      <div className="w-5 h-5 rounded-full bg-[#6F9C3E] text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+                    <div key={idx} className="flex items-center gap-3 text-xs md:text-sm font-semibold text-[#E2E0D5]">
+                      <div className="w-5 h-5 rounded-full bg-[#C8FF3D] text-[#000000] flex items-center justify-center font-black text-[10px] shrink-0">
                         ✓
                       </div>
                       <span>{feat}</span>
@@ -230,7 +230,7 @@ export default function PricingPage() {
 
               <Link
                 href="/signup?plan=pro"
-                className="w-full py-4 text-center rounded-full bg-[#6F9C3E] hover:bg-[#5f8734] text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all"
+                className="w-full py-4 text-center rounded-full bg-[#C8FF3D] hover:bg-white text-[#000000] font-black text-sm shadow-lg hover:shadow-xl transition-all"
               >
                 Upgrade to Pro Growth
               </Link>
@@ -289,16 +289,16 @@ export default function PricingPage() {
           </div>
 
           {/* Bachs Payment Security Badge */}
-          <div className="mt-12 p-6 rounded-2xl bg-white border border-[#E2E0D5] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="mt-12 p-6 rounded-2xl bg-[#141416] text-[#E2E0D5] border border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#6F9C3E]/10 text-[#6F9C3E] flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#C8FF3D]/10 text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <div className="font-bold text-sm text-[#1A202C]">
+                <div className="font-bold text-sm text-[#E2E0D5]">
                   Hosted Payment Infrastructure: Bachs (docs.bachs.io)
                 </div>
-                <div className="text-xs text-[#6B6B60]">
+                <div className="text-xs text-[#E2E0D5]/70">
                   International Cards · African Bank Transfers (NGN, GHS, KES, ZAR) · Mobile Money · Crypto
                 </div>
               </div>
@@ -308,7 +308,7 @@ export default function PricingPage() {
               href="https://docs.bachs.io"
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-bold text-[#6F9C3E] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-bold text-[#C8FF3D] hover:underline flex items-center gap-1 shrink-0"
             >
               <span>Learn About Bachs Security</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -319,44 +319,44 @@ export default function PricingPage() {
         {/* ========================================================================= */}
         {/* 3. DETAILED PLAN COMPARISON MATRIX */}
         {/* ========================================================================= */}
-        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
+        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#141416]/15">
           <div className="text-center max-w-[700px] mx-auto mb-14">
-            <h2 className="font-extrabold text-[32px] md:text-[42px] text-[#1A202C] leading-tight mb-3">
+            <h2 className="font-extrabold text-[32px] md:text-[42px] text-[#000000] leading-tight mb-3">
               Detailed Feature Comparison
             </h2>
-            <p className="font-medium text-[16px] text-[#6B6B60]">
+            <p className="font-medium text-[16px] text-[#141416]/75">
               Review side-by-side capabilities across Starter, Pro, and Scale tiers.
             </p>
           </div>
 
-          <div className="bg-white rounded-[28px] border border-[#E2E0D5] shadow-xl overflow-hidden">
+          <div className="bg-[#141416] text-[#E2E0D5] rounded-[28px] border border-[#141416] shadow-xl overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#F5F4F0] border-b border-[#E2E0D5] text-xs font-bold text-[#6B6B60] uppercase tracking-wider">
+                <thead className="bg-[#000000] border-b border-[#E2E0D5]/15 text-xs font-bold text-[#E2E0D5]/60 uppercase tracking-wider">
                   <tr>
-                    <th className="py-5 px-6 md:px-8 text-[#1A202C]">Capability</th>
-                    <th className="py-5 px-6 text-[#4A5568]">Starter Free</th>
-                    <th className="py-5 px-6 text-[#6F9C3E] font-extrabold bg-[#6F9C3E]/5">
+                    <th className="py-5 px-6 md:px-8 text-[#E2E0D5]">Capability</th>
+                    <th className="py-5 px-6 text-[#E2E0D5]/60">Starter Free</th>
+                    <th className="py-5 px-6 text-[#C8FF3D] font-extrabold bg-[#C8FF3D]/10">
                       Pro Growth ($23/mo)
                     </th>
-                    <th className="py-5 px-6 text-[#1A202C] font-extrabold">
+                    <th className="py-5 px-6 text-[#E2E0D5] font-extrabold">
                       Scale &amp; Agency ($63/mo)
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E2E0D5]">
+                <tbody className="divide-y divide-[#E2E0D5]/15">
                   {comparisonRows.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-[#F5F4F0]/50 transition-colors">
-                      <td className="py-4 px-6 md:px-8 font-bold text-[#1A202C] text-sm">
+                    <tr key={idx} className="hover:bg-[#000000]/40 transition-colors">
+                      <td className="py-4 px-6 md:px-8 font-bold text-[#E2E0D5] text-sm">
                         {row.feature}
                       </td>
-                      <td className="py-4 px-6 text-[#6B6B60] text-xs md:text-sm font-medium">
+                      <td className="py-4 px-6 text-[#E2E0D5]/70 text-xs md:text-sm font-medium">
                         {row.free}
                       </td>
-                      <td className="py-4 px-6 font-bold text-[#6F9C3E] text-xs md:text-sm bg-[#6F9C3E]/5">
+                      <td className="py-4 px-6 font-bold text-[#C8FF3D] text-xs md:text-sm bg-[#C8FF3D]/10">
                         {row.pro}
                       </td>
-                      <td className="py-4 px-6 font-bold text-[#1A202C] text-xs md:text-sm">
+                      <td className="py-4 px-6 font-bold text-[#E2E0D5] text-xs md:text-sm">
                         {row.agency}
                       </td>
                     </tr>
@@ -395,7 +395,7 @@ export default function PricingPage() {
                     <span className="font-extrabold text-[17px] text-[#1A202C] leading-snug">
                       {faq.q}
                     </span>
-                    <div className="w-8 h-8 rounded-full bg-[#F5F4F0] text-[#1A202C] flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-[#E2E0D5] text-[#000000] flex items-center justify-center shrink-0">
                       {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                     </div>
                   </button>

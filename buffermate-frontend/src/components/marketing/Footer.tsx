@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { InstagramIcon, TikTokIcon, ThreadsIcon, XIcon } from '@/components/SocialIcons';
 
 export default function MarketingFooter() {
@@ -179,7 +179,7 @@ export default function MarketingFooter() {
               </li>
               <li>
                 <span className="text-[#E2E0D5]/50">
-                  AES-256 OAuth Compliance
+                  OAuth 2.0 Compliance
                 </span>
               </li>
             </ul>
@@ -190,11 +190,6 @@ export default function MarketingFooter() {
         <div className="mt-12 pt-8 border-t border-[#E2E0D5]/15 flex flex-col sm:flex-row items-center justify-between text-xs text-[#E2E0D5]/60 gap-4">
           <p>© 2026 Buffermate AI Technologies Inc. All rights reserved.</p>
           <div className="flex items-center space-x-4">
-            <span className="flex items-center gap-1.5 text-[#E2E0D5]/70">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#C8FF3D]" />
-              <span>AES-256 Token Encryption</span>
-            </span>
-            <span>·</span>
             <span className="text-[#E2E0D5]/70">
               Payments secured via <strong className="text-[#E2E0D5]">Bachs</strong>
             </span>

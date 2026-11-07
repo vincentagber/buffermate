@@ -66,10 +66,10 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -92,18 +92,18 @@ export default function HowItWorksPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#6F9C3E]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/10 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#6F9C3E] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[#C8FF3D] animate-pulse" />
               <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
                 How It Works
               </span>
             </div>
 
             <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
-              How <span className="text-[#6F9C3E]">Buffermate</span> works.
+              How <span className="text-[#C8FF3D]">Buffermate</span> works.
             </h1>
 
             <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto">
@@ -118,12 +118,12 @@ export default function HowItWorksPage() {
         <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-24 border-b border-[#E2E0D5]">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Pillar 1: Connecting Channels */}
-            <div className="bg-white rounded-[28px] border border-[#E2E0D5] p-8 hover:border-[#6F9C3E]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
+            <div className="bg-white rounded-[28px] border border-[#E2E0D5] p-8 hover:border-[#C8FF3D]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
               <div>
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md bg-[#6F9C3E]">
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md bg-[#C8FF3D]">
                   <Cloud className="w-7 h-7" />
                 </div>
-                <div className="text-[11px] font-bold uppercase tracking-wider text-[#6F9C3E] mb-1">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#C8FF3D] mb-1">
                   Step 01 · 60 Seconds
                 </div>
                 <h2 className="font-extrabold text-[24px] text-[#1A202C] mb-3 leading-snug">
@@ -138,7 +138,7 @@ export default function HowItWorksPage() {
                 <span className="text-xs font-semibold text-[#1A202C]">AES-256 Tokens</span>
                 <Link
                   href="/integrations"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#6F9C3E] hover:underline"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#C8FF3D] hover:underline"
                 >
                   <span>View APIs</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@ export default function HowItWorksPage() {
             <div className="bg-white rounded-[28px] border border-[#E2E0D5] p-8 hover:border-[#3B82F6]/40 hover:shadow-xl transition-all duration-300 flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6 shadow-md bg-[#1A202C]">
-                  <Sparkles className="w-7 h-7 text-[#6F9C3E]" />
+                  <Sparkles className="w-7 h-7 text-[#C8FF3D]" />
                 </div>
                 <div className="text-[11px] font-bold uppercase tracking-wider text-[#3B82F6] mb-1">
                   Step 02 · Content Ideation
@@ -217,7 +217,7 @@ export default function HowItWorksPage() {
         <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-20 md:py-28 border-b border-[#E2E0D5]">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
             <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-[#6F9C3E] mb-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-[#C8FF3D] mb-2">
                 Buffermate Knowledge Base
               </div>
               <h2 className="font-extrabold text-[32px] md:text-[42px] text-[#1A202C] leading-tight">
@@ -230,7 +230,7 @@ export default function HowItWorksPage() {
 
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6F9C3E] hover:text-[#587e31] transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-[#C8FF3D] hover:text-[#587e31] transition-colors shrink-0"
             >
               <span>View all 9 guides</span>
               <ArrowRight className="w-4 h-4" />
@@ -246,7 +246,7 @@ export default function HowItWorksPage() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#6F9C3E]/10 text-[#6F9C3E] border border-[#6F9C3E]/20">
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#C8FF3D]/10 text-[#C8FF3D] border border-[#C8FF3D]/20">
                       {guide.category}
                     </span>
                     <span className="text-xs text-[#6B6B60] font-medium">
@@ -254,7 +254,7 @@ export default function HowItWorksPage() {
                     </span>
                   </div>
 
-                  <h3 className="font-bold text-[18px] text-[#1A202C] group-hover:text-[#6F9C3E] transition-colors leading-snug mb-3">
+                  <h3 className="font-bold text-[18px] text-[#1A202C] group-hover:text-[#C8FF3D] transition-colors leading-snug mb-3">
                     {guide.title}
                   </h3>
 

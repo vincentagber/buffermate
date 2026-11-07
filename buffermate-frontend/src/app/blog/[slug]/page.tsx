@@ -32,10 +32,10 @@ export default async function BlogPostPage({ params }: Props) {
   const relatedPosts = BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -103,14 +103,14 @@ export default async function BlogPostPage({ params }: Props) {
         <section className="max-w-[850px] mx-auto w-full px-5 md:px-10 py-16">
           {/* Key Takeaways Box */}
           <div className="bg-white rounded-[24px] p-6 md:p-8 border border-[#E2E0D5] mb-12 shadow-sm">
-            <div className="flex items-center gap-2 text-xs font-bold text-[#6F9C3E] uppercase tracking-wider mb-4">
+            <div className="flex items-center gap-2 text-xs font-bold text-[#C8FF3D] uppercase tracking-wider mb-4">
               <Sparkles className="w-4 h-4" />
               <span>Key Editorial Takeaways</span>
             </div>
             <div className="space-y-3">
               {post.keyTakeaways.map((takeaway, idx) => (
                 <div key={idx} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#6F9C3E]/10 text-[#6F9C3E] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-[#C8FF3D]/10 text-[#C8FF3D] flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                     ✓
                   </div>
                   <p className="text-sm md:text-[15px] font-semibold text-[#1A202C] leading-snug">
@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: Props) {
               </h2>
               <Link
                 href="/blog"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#6F9C3E] hover:underline"
+                className="inline-flex items-center gap-1 text-xs font-bold text-[#C8FF3D] hover:underline"
               >
                 <span>View All Articles</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -181,7 +181,7 @@ export default async function BlogPostPage({ params }: Props) {
                       </span>
                     </div>
 
-                    <h3 className="font-bold text-[18px] text-[#1A202C] group-hover:text-[#6F9C3E] transition-colors leading-snug mb-3">
+                    <h3 className="font-bold text-[18px] text-[#1A202C] group-hover:text-[#C8FF3D] transition-colors leading-snug mb-3">
                       {related.title}
                     </h3>
 
@@ -192,7 +192,7 @@ export default async function BlogPostPage({ params }: Props) {
 
                   <div className="pt-4 border-t border-[#EFECE5] flex items-center justify-between text-xs text-[#6B6B60]">
                     <span className="font-semibold text-[#1A202C]">{related.author}</span>
-                    <ArrowRight className="w-4 h-4 text-[#A0AEC0] group-hover:text-[#6F9C3E] transition-colors" />
+                    <ArrowRight className="w-4 h-4 text-[#A0AEC0] group-hover:text-[#C8FF3D] transition-colors" />
                   </div>
                 </Link>
               ))}

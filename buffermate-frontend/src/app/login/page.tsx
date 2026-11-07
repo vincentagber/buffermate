@@ -69,43 +69,43 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F4F0] font-sans antialiased text-[#1A202C] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+    <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[130px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/10 to-transparent blur-[130px]" />
       </div>
 
       {/* Centered Auth Card */}
-      <div className="w-full max-w-md bg-white rounded-[28px] border border-[#E2E0D5] shadow-xl p-7 sm:p-9 space-y-6 relative z-10">
+      <div className="w-full max-w-md bg-white rounded-[28px] border border-[#141416]/15 shadow-xl p-7 sm:p-9 space-y-6 relative z-10">
         {/* Brand Logo & Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 rounded-2xl bg-[#6F9C3E] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0">
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
+            <div className="w-9 h-9 rounded-2xl bg-[#C8FF3D] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#141416]/20">
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-[#141416] bg-transparent" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="font-extrabold text-[19px] text-[#1A202C] tracking-tight leading-tight">
+              <span className="font-extrabold text-[19px] text-[#000000] tracking-tight leading-tight">
                 Buffermate
               </span>
-              <span className="text-[10px] text-[#6B6B60] font-semibold tracking-tight">
+              <span className="text-[10px] text-[#141416]/70 font-semibold tracking-tight">
                 social media · automated
               </span>
             </div>
           </Link>
 
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-[#1A202C] mt-2">
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#000000] mt-2">
               Welcome back
             </h1>
-            <p className="text-xs text-[#6B6B60] mt-1 font-medium">
+            <p className="text-xs text-[#141416]/70 mt-1 font-medium">
               Enter your credentials to access your autonomous workspace
             </p>
           </div>
         </div>
 
         {/* Auth Method Segmented Control */}
-        <div className="inline-flex w-full bg-[#F5F4F0] p-1 rounded-2xl border border-[#E2E0D5]">
+        <div className="inline-flex w-full bg-[#E2E0D5]/50 p-1 rounded-2xl border border-[#141416]/10">
           <button
             type="button"
             onClick={() => {
@@ -114,8 +114,8 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
               authMethod === 'password'
-                ? 'bg-white text-[#1A202C] shadow-2xs'
-                : 'text-[#6B6B60] hover:text-[#1A202C]'
+                ? 'bg-[#141416] text-[#C8FF3D] shadow-2xs'
+                : 'text-[#141416]/70 hover:text-[#000000]'
             }`}
           >
             Password
@@ -128,8 +128,8 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
               authMethod === 'magic-link'
-                ? 'bg-white text-[#1A202C] shadow-2xs'
-                : 'text-[#6B6B60] hover:text-[#1A202C]'
+                ? 'bg-[#141416] text-[#C8FF3D] shadow-2xs'
+                : 'text-[#141416]/70 hover:text-[#000000]'
             }`}
           >
             Magic Link
@@ -137,20 +137,20 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Quick-Fill Pill Banner */}
-        <div className="bg-[#FAF8F4] border border-[#E2E0D5] rounded-2xl p-3 flex items-center justify-between text-xs shadow-2xs">
+        <div className="bg-[#E2E0D5]/30 border border-[#141416]/10 rounded-2xl p-3 flex items-center justify-between text-xs shadow-2xs">
           <div className="space-y-0.5">
-            <span className="font-bold text-[#1A202C] flex items-center space-x-1.5 text-[11px]">
-              <Key className="w-3.5 h-3.5 text-[#6F9C3E]" />
+            <span className="font-bold text-[#000000] flex items-center space-x-1.5 text-[11px]">
+              <Key className="w-3.5 h-3.5 text-[#141416]" />
               <span>Demo Credentials</span>
             </span>
-            <p className="text-[11px] text-[#6B6B60] font-mono">
+            <p className="text-[11px] text-[#141416]/70 font-mono">
               demo@buffermate.app • Demo@12345
             </p>
           </div>
           <button
             type="button"
             onClick={handleQuickDemoLogin}
-            className="px-2.5 py-1 text-[11px] font-bold text-[#6F9C3E] bg-[#6F9C3E]/10 hover:bg-[#6F9C3E]/20 rounded-lg transition-colors cursor-pointer"
+            className="px-2.5 py-1 text-[11px] font-bold text-[#000000] bg-[#C8FF3D] hover:bg-[#C8FF3D]/80 border border-[#141416]/20 rounded-lg transition-colors cursor-pointer"
           >
             Fill In
           </button>
@@ -166,17 +166,17 @@ export default function LoginPage() {
         {/* Magic Link Success View */}
         {magicLinkSent ? (
           <div className="space-y-4 text-center py-4">
-            <div className="w-12 h-12 bg-[#6F9C3E]/10 text-[#6F9C3E] rounded-2xl flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-6 h-6" />
+            <div className="w-12 h-12 bg-[#C8FF3D]/20 text-[#141416] border border-[#C8FF3D]/40 rounded-2xl flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-6 h-6 text-[#141416]" />
             </div>
-            <h3 className="font-extrabold text-base text-[#1A202C]">Check your inbox</h3>
-            <p className="text-xs text-[#6B6B60] leading-relaxed">
-              We sent an instant sign-in link to <span className="font-bold text-[#1A202C]">{email}</span>. Click the link to access your workspace.
+            <h3 className="font-extrabold text-base text-[#000000]">Check your inbox</h3>
+            <p className="text-xs text-[#141416]/70 leading-relaxed">
+              We sent an instant sign-in link to <span className="font-bold text-[#000000]">{email}</span>. Click the link to access your workspace.
             </p>
             <button
               type="button"
               onClick={() => setMagicLinkSent(false)}
-              className="text-xs font-bold text-[#6F9C3E] hover:underline"
+              className="text-xs font-bold text-[#141416] underline decoration-[#C8FF3D] decoration-2 hover:text-[#000000]"
             >
               Use a different sign-in method
             </button>
@@ -188,18 +188,18 @@ export default function LoginPage() {
             className="space-y-4"
           >
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#1A202C]">
+              <label className="text-xs font-bold text-[#000000]">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A0AEC0]" />
+                <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141416]/40" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E2E0D5] bg-[#F5F4F0]/40 text-xs sm:text-sm text-[#1A202C] font-medium focus:outline-none focus:border-[#6F9C3E] focus:ring-2 focus:ring-[#6F9C3E]/20 transition-all placeholder:text-[#A0AEC0]"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
                 />
               </div>
             </div>
@@ -207,30 +207,30 @@ export default function LoginPage() {
             {authMethod === 'password' && (
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-[#1A202C]">
+                  <label className="text-xs font-bold text-[#000000]">
                     Password
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-[11px] font-bold text-[#6F9C3E] hover:underline"
+                    className="text-[11px] font-bold text-[#141416] hover:underline decoration-[#C8FF3D]"
                   >
                     Forgot password?
                   </Link>
                 </div>
                 <div className="relative">
-                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A0AEC0]" />
+                  <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#141416]/40" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#E2E0D5] bg-[#F5F4F0]/40 text-xs sm:text-sm text-[#1A202C] font-medium focus:outline-none focus:border-[#6F9C3E] focus:ring-2 focus:ring-[#6F9C3E]/20 transition-all placeholder:text-[#A0AEC0]"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A0AEC0] hover:text-[#1A202C]"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#141416]/40 hover:text-[#000000]"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -241,7 +241,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-[#1A202C] hover:bg-[#2D3748] text-white rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 px-4 bg-[#141416] hover:bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -259,9 +259,9 @@ export default function LoginPage() {
         )}
 
         {/* Footer Link to Signup */}
-        <div className="pt-4 border-t border-[#EFECE5] text-center text-xs font-medium text-[#6B6B60]">
+        <div className="pt-4 border-t border-[#141416]/10 text-center text-xs font-medium text-[#141416]/70">
           Don&apos;t have an account yet?{' '}
-          <Link href="/signup" className="font-bold text-[#6F9C3E] hover:underline">
+          <Link href="/signup" className="font-bold text-[#000000] underline decoration-[#C8FF3D] decoration-2 hover:text-[#141416]">
             Start Free Workspace
           </Link>
         </div>
