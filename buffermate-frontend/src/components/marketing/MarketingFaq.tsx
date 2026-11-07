@@ -79,7 +79,7 @@ export default function MarketingFaq() {
 
         {/* Filter Switcher */}
         <div className="flex justify-center">
-          <div className="inline-flex p-1.5 rounded-full bg-[#141416] border border-[#141416] shadow-md">
+          <div className="inline-flex p-1.5 rounded-full bg-white border border-[#E2E0D5] shadow-xs">
             <button
               onClick={() => {
                 setSelectedCategory('business');
@@ -88,7 +88,7 @@ export default function MarketingFaq() {
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'business'
                   ? 'bg-[#00784D] text-white shadow-xs'
-                  : 'text-[#E2E0D5]/70 hover:text-white'
+                  : 'text-[#6B6B60] hover:text-[#1A202C]'
               }`}
             >
               <Building2 className="w-3.5 h-3.5" />
@@ -102,7 +102,7 @@ export default function MarketingFaq() {
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'creator'
                   ? 'bg-[#00784D] text-white shadow-xs'
-                  : 'text-[#E2E0D5]/70 hover:text-white'
+                  : 'text-[#6B6B60] hover:text-[#1A202C]'
               }`}
             >
               <User className="w-3.5 h-3.5" />
@@ -118,22 +118,22 @@ export default function MarketingFaq() {
             return (
               <div
                 key={idx}
-                className="bg-[#141416] rounded-[24px] border border-[#141416] p-6 hover:border-[#07B979]/40 transition-all text-[#E2E0D5]"
+                className="bg-white rounded-[24px] border border-[#E2E0D5] p-6 md:p-7 hover:border-[#C4C4B8] hover:shadow-md transition-all text-[#1A202C]"
               >
                 <button
                   onClick={() => toggle(idx)}
                   className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
                 >
-                  <span className="font-extrabold text-[17px] text-[#E2E0D5] leading-snug">
+                  <span className="font-extrabold text-[17px] md:text-[18px] text-[#1A202C] leading-snug">
                     {faq.q}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-[#000000] text-[#07B979] border border-[#07B979]/30 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#E2E0D5] text-[#1A202C] flex items-center justify-center shrink-0 transition-colors">
                     {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </div>
                 </button>
 
                 {isOpen && (
-                  <div className="mt-4 pt-4 border-t border-[#E2E0D5]/15 text-sm md:text-[15px] font-medium text-[#E2E0D5]/70 leading-relaxed">
+                  <div className="mt-4 pt-4 border-t border-[#EFECE5] text-sm md:text-[15px] font-medium text-[#6B6B60] leading-relaxed">
                     {faq.a}
                   </div>
                 )}
