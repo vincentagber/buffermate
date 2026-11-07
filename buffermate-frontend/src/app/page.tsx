@@ -6,6 +6,7 @@ import MarketingHero from '@/components/marketing/MarketingHero';
 import MarketingMarquee from '@/components/marketing/MarketingMarquee';
 import PlatformUseCases from '@/components/marketing/PlatformUseCases';
 import MarketingWorkflowSpeed from '@/components/marketing/MarketingWorkflowSpeed';
+import BufferMateSwissShowcase from '@/components/marketing/BufferMateSwissShowcase';
 import MarketingTrust from '@/components/marketing/MarketingTrust';
 import MarketingFaq from '@/components/marketing/MarketingFaq';
 import MarketingBlog from '@/components/marketing/MarketingBlog';
@@ -14,10 +15,10 @@ import MarketingFooter from '@/components/marketing/Footer';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#F5F4F0] text-[#1A202C] relative selection:bg-[#6F9C3E]/20 selection:text-[#6F9C3E]">
+    <div className="min-h-screen bg-[#F5F1EA] text-[#0A0A0A] relative selection:bg-[#C8FF3D]/30 selection:text-[#0A0A0A]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#6F9C3E]/10 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -25,7 +26,7 @@ export default function HomePage() {
       <MarketingNavbar />
 
       <main className="flex-1 flex flex-col w-full relative">
-        {/* 2. Hero Section */}
+        {/* 2. Restored BufferMate Hero Section with Swiss Editorial Typography */}
         <MarketingHero />
 
         {/* 3. Channels & Counting Marquee (Dual-Row Infinite Loop) */}
@@ -37,20 +38,23 @@ export default function HomePage() {
         {/* 5. Built for Speed (Interactive Multi-Step Workflows) */}
         <MarketingWorkflowSpeed />
 
-        {/* 6. Built on a Foundation of Absolute Trust (Enterprise Container) */}
+        {/* 6. Neo-Swiss Editorial Showcase (8 Bento Cards with Bold Grotesk, Italic Serif & Outline) */}
+        <BufferMateSwissShowcase />
+
+        {/* 7. Built on a Foundation of Absolute Trust (Enterprise Container) */}
         <MarketingTrust />
 
-        {/* 7. Frequently Asked Questions (FAQ with Filters) */}
+        {/* 8. Frequently Asked Questions (FAQ with Filters) */}
         <MarketingFaq />
 
-        {/* 8. Latest from the Blog (Editorial Knowledge Cards) */}
+        {/* 9. Latest from the Blog (Editorial Knowledge Cards) */}
         <MarketingBlog />
 
-        {/* 9. Dual Closing Call-to-Action Cards */}
+        {/* 10. Dual Closing Call-to-Action Cards */}
         <MarketingCta />
       </main>
 
-      {/* 10. Global Marketing Footer */}
+      {/* 11. Global Marketing Footer */}
       <MarketingFooter />
     </div>
   );

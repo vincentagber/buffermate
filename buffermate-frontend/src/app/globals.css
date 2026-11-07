@@ -1,30 +1,40 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Lora:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@200;300;400;500;600;700;800;900&family=Geist:wght@300;400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
 @import "tailwindcss";
 
 :root {
-  /* Kinetic & Editorial Typography Tokens */
-  --font-geist: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-geist-mono: 'Geist Mono', monospace;
-  --font-lora: 'Lora', Georgia, serif;
-  --font-editorial: 'Instrument Serif', 'Lora', Georgia, serif;
+  /* -------------------------------------------------------------------------
+     Neo-Swiss Editorial Minimalism Tokens (Sampled from Reference)
+  ------------------------------------------------------------------------- */
+  --color-lime: #C8FF3D;
+  --color-cream: #F5F1EA;
+  --color-black: #0A0A0A;
+  --color-charcoal: #353733;
+  --color-graphite: #1B1B1B;
 
-  /* Buffermate Warm Canvas & Forest Brand Palette */
-  --font-figtree: 'Figtree', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --color-warm-bg: #F5F4F0;
+  --font-heading: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-editorial: "Playfair Display", serif;
+  --font-outline: "Montserrat", sans-serif;
+  --font-geist: "Geist", "Inter", sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
+
+  /* Buffermate Brand Alignment */
+  --font-figtree: "Inter", "Figtree", sans-serif;
+  --color-warm-bg: #F5F1EA;
   --color-border-warm: #E2E0D5;
   --color-border-warm-hover: #C4C4B8;
-  --color-slate-dark: #1A202C;
+  --color-slate-dark: #0A0A0A;
   --color-slate-muted: #6B6B60;
   --color-brand-green: #6F9C3E;
   --color-brand-green-deep: #52832B;
   --color-brand-orange: #FF882A;
 
   /* App token mappings */
-  --color-bg-page: #F5F4F0;
+  --color-bg-page: #F5F1EA;
   --color-bg-card: #FFFFFF;
   --color-bg-sidebar: #FFFFFF;
   
-  --color-text-main: #1A202C;
+  --color-text-main: #0A0A0A;
   --color-text-muted: #6B6B60;
   --color-text-light: #94A3B8;
 
@@ -35,26 +45,87 @@
 body {
   background-color: var(--color-warm-bg);
   color: var(--color-slate-dark);
-  font-family: var(--font-figtree);
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Kinetic & Editorial Typography Utility Classes */
-.font-hero-sans {
-  font-family: var(--font-geist);
+/* ---------------------------------------------------------------------------
+   Neo-Swiss Editorial Typography Utility Classes
+--------------------------------------------------------------------------- */
+/* Style 1: Bold Grotesk Sans-Serif (Heavy/ExtraBold/Black, Tight Tracking) */
+.font-grotesk {
+  font-family: var(--font-heading);
+  font-weight: 800;
   letter-spacing: -0.04em;
 }
 
+.font-grotesk-black {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+
+.font-hero-sans {
+  font-family: var(--font-heading);
+  letter-spacing: -0.04em;
+}
+
+/* Style 2: Editorial High-Contrast Serif (Elegant Italic / Display Serif) */
 .font-editorial-italic {
   font-family: var(--font-editorial);
   font-style: italic;
   font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Style 3: Outline Geometric Sans-Serif (Thin Stroke / Hollow Uppercase) */
+.font-outline {
+  font-family: var(--font-outline);
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1.2px currentColor;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.font-outline-white {
+  font-family: var(--font-outline);
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1.2px #FFFFFF;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .font-hero-mono {
   font-family: var(--font-geist-mono);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+}
+
+/* Neo-Swiss Backgrounds & Colors */
+.bg-lime-neo {
+  background-color: var(--color-lime);
+}
+
+.text-lime-neo {
+  color: var(--color-lime);
+}
+
+.bg-cream-neo {
+  background-color: var(--color-cream);
+}
+
+.bg-black-neo {
+  background-color: var(--color-black);
+}
+
+.bg-charcoal-neo {
+  background-color: var(--color-charcoal);
+}
+
+.bg-graphite-neo {
+  background-color: var(--color-graphite);
 }
 
 .text-stroke-white {
