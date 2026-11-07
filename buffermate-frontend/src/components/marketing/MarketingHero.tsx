@@ -116,20 +116,20 @@ export default function MarketingHero() {
               </div>
             </div>
 
-            {/* FLOATING CARD 2: Bottom-Left Testimonial Card */}
-            <div className="absolute bottom-6 -left-3 sm:-left-6 bg-[#141416] text-white rounded-2xl p-3.5 shadow-2xl border border-[#E2E0D5]/20 z-20 max-w-[240px]">
-              <div className="flex items-center space-x-2">
+            {/* FLOATING CARD 2: Bottom-Right Testimonial Card */}
+            <div className="absolute -bottom-4 right-0 sm:right-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 max-w-[260px] animate-fade-in">
+              <div className="flex items-center space-x-2.5">
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
-                  alt="Chukwuka"
-                  className="w-8 h-8 rounded-full object-cover border border-[#E2E0D5]/30"
+                  alt="Chukwuka Obiosa"
+                  className="w-9 h-9 rounded-full object-cover border border-[#E2E0D5]/30"
                 />
                 <div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xs font-bold text-white">Chukwuka Obiosa</span>
-                    <CheckCircle2 className="w-3 h-3 text-[#07B979] fill-[#07B979]/20" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#07B979] fill-[#07B979]/20" />
                   </div>
-                  <div className="flex text-[#07B979] space-x-0.5">
+                  <div className="flex text-[#07B979] space-x-0.5 mt-0.5">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} className="w-2.5 h-2.5 fill-[#07B979]" />
                     ))}
@@ -140,28 +140,6 @@ export default function MarketingHero() {
               <p className="font-editorial-italic text-[13px] text-zinc-300 mt-2.5 leading-snug">
                 &ldquo;Consistently delivers 4x reach and 24/7 comment leads on Instagram &amp; TikTok.&rdquo;
               </p>
-            </div>
-
-            {/* FLOATING CARD 3: Bottom-Right "Active Queue Engine" */}
-            <div className="absolute -bottom-4 right-0 sm:right-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 w-56">
-              <div className="flex items-center justify-between pb-2">
-                <div className="w-7 h-7 rounded-xl bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/30 flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-[#07B979]" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-semibold text-[#07B979]">
-                  Just now
-                </span>
-              </div>
-              <h4 className="text-xs font-bold text-white leading-none">
-                Active Queue Engine
-              </h4>
-              <p className="text-[11px] text-zinc-400 mt-1">
-                Ready to publish on-demand
-              </p>
-              <div className="mt-3 pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
-                <span className="text-zinc-400">Available Channels</span>
-                <span className="font-bold text-[#07B979] font-mono">6 Connected</span>
-              </div>
             </div>
           </div>
         </div>
