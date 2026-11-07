@@ -70,3 +70,101 @@ export function GooglePaymentsIcon({ className = 'w-5 h-5', size, ...props }: Ic
   );
 }
 
+/**
+ * Tailwind Heroicons Document Chart / Analytics PDF Report Icon
+ * Official Tailwind Heroicons document-chart-bar
+ */
+export function TailwindDocumentChartIcon({ className = 'w-6 h-6', size, ...props }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.8}
+      stroke="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm-1.5 12.75h.008v.008H9.75v-.008Zm3-3h.008v.008h-.008v-.008Zm3-3h.008v.008h-.008v-.008Z"
+      />
+    </svg>
+  );
+}
+
+/**
+ * FontAwesome Chart Pie / Analytics Icon (solid)
+ * Official FontAwesome fa-chart-pie
+ */
+export function FontAwesomeChartPieIcon({ className = 'w-6 h-6', size, ...props }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 576 512"
+      fill="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path d="M304 240V16.7c0-9 7-16.7 16-16.7 141.4 0 256 114.6 256 256 0 9-7.7 16-16.7 16H320c-8.8 0-16-7.2-16-16zm-48 32v223.3c0 9-7.7 16.7-16.7 16.7C105.8 512 0 406.2 0 274.7c0-9 7-16.7 16-16.7h224c8.8 0 16 7.2 16 16zm-16-64H16.7c-9 0-16.7-7-16.7-16C0 105.8 105.8 0 237.3 0c9 0 16.7 7.7 16.7 16.7V224c0 8.8-7.2 16-16 16z" />
+    </svg>
+  );
+}
+
+/**
+ * Tailwind Heroicons Check Badge Icon
+ * Official Tailwind Heroicons check-badge
+ */
+export function TailwindCheckBadgeIcon({ className = 'w-7 h-7', size, ...props }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.8}
+      stroke="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z"
+      />
+    </svg>
+  );
+}
+
+/**
+ * Tailwind Heroicons Lock Closed / Token Encryption Icon
+ * Official Tailwind Heroicons lock-closed
+ */
+export function TailwindLockClosedIcon({ className = 'w-7 h-7', size, ...props }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.8}
+      stroke="currentColor"
+      width={size}
+      height={size}
+      className={className}
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+      />
+    </svg>
+  );
+}
+

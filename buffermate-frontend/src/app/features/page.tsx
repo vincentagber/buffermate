@@ -24,6 +24,7 @@ import {
   ChevronRight,
   ExternalLink
 } from 'lucide-react';
+import { TailwindDocumentChartIcon, TailwindCheckBadgeIcon } from '@/components/PaymentIcons';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
@@ -385,7 +386,7 @@ export default function FeaturesPage() {
                 <div>
                   <div className="flex items-start gap-5 mb-5">
                     <div className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 bg-[#EF4444]/10 border border-[#EF4444]/20 text-[#EF4444]">
-                      <ShieldCheck className="w-6 h-6" />
+                      <TailwindDocumentChartIcon className="w-6 h-6" />
                     </div>
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-[#EF4444] bg-[#EF4444]/10 px-2.5 py-0.5 rounded-full">
@@ -827,7 +828,7 @@ export default function FeaturesPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/5 border border-white/10 rounded-[24px] p-8 hover:bg-white/10 transition-all">
                 <div className="w-12 h-12 rounded-2xl bg-[#00784D]/30 text-[#07B979] flex items-center justify-center font-bold text-lg mb-6">
-                  <ShieldCheck className="w-6 h-6" />
+                  <TailwindCheckBadgeIcon className="w-6 h-6" />
                 </div>
                 <h3 className="font-bold text-xl text-white mb-2">
                   100% Official OAuth 2.0
