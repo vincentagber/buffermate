@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Minus, Building2, User } from 'lucide-react';
+import { Plus, Minus, Building2, User, ArrowRight } from 'lucide-react';
 
 interface FaqItem {
   q: string;
@@ -142,13 +142,14 @@ export default function MarketingFaq() {
           })}
         </div>
 
-        {/* View Full FAQ Link */}
-        <div className="text-center pt-2">
+        {/* View Full FAQ Button */}
+        <div className="text-center pt-4">
           <Link
             href="/faq"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#00784D] decoration-2"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#00784D] hover:bg-[#07B979] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 group"
           >
-            <span>View all questions in Knowledge Center →</span>
+            <span>View all questions in Knowledge Center</span>
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
         </div>
       </div>

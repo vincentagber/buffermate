@@ -66,7 +66,7 @@ export default function PlatformUseCases() {
           <span className="font-editorial-italic text-[#141416] font-normal tracking-tight pr-2 sm:pr-3">
             autonomous
           </span>
-          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#000000]">
+          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#00784D]">
             precision.
           </span>
         </h2>

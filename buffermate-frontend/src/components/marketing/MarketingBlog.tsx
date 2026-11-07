@@ -24,10 +24,10 @@ export default function MarketingBlog() {
 
         <Link
           href="/blog"
-          className="inline-flex items-center space-x-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#00784D] decoration-2 transition-colors self-start sm:self-auto shrink-0"
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#00784D] hover:bg-[#07B979] text-white text-xs sm:text-sm font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5 self-start sm:self-auto shrink-0 group"
         >
           <span>View all 9 guides</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
 
