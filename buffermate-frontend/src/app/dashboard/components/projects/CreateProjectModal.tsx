@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, FolderGit2, Check, Sparkles, Layers, CheckSquare } from 'lucide-react';
 import { Project, ProjectTemplate } from './types';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface CreateProjectModalProps {
   isOpen: boolean;
@@ -55,7 +56,7 @@ export default function CreateProjectModal({
     setError(null);
 
     try {
-      const res = await fetch('/api/projects', {
+      const { ok, status, data } = await safeFetchJson<any>('/api/projects', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -71,32 +72,18 @@ export default function CreateProjectModal({
         }),
       });
 
-      const contentType = res.headers.get('content-type') || '';
-      let data: any = null;
-
-      if (contentType.includes('application/json')) {
-        data = await res.json();
-      } else {
-        const text = await res.text();
-        throw new Error(
-          res.status === 422
-            ? 'Validation error on server. Please check the project key and details.'
-            : `Server response error (${res.status})`
-        );
-      }
-
-      if (res.ok && data?.success && data?.data) {
+      if (ok && data?.success && data?.data) {
         onProjectCreated(data.data);
         onClose();
       } else {
         const errorMsg =
           data?.message ||
           (data?.errors ? Object.values(data.errors).flat().join(' ') : null) ||
-          'Failed to create project';
+          (status === 422 ? 'Validation error on server. Please check the project key and details.' : `Failed to create project (${status})`);
         setError(errorMsg);
       }
     } catch (err: any) {
-      setError(err.message || 'Error communicating with server');
+      setError(err?.message || 'Error communicating with server');
     } finally {
       setIsSubmitting(false);
     }
