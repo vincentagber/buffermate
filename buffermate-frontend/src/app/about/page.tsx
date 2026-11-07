@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Zap,
   Layers,
-  ShieldCheck,
   ArrowRight,
   Sparkles,
   Users,
@@ -14,6 +13,7 @@ import {
   Award,
   Globe
 } from 'lucide-react';
+import { TailwindCheckBadgeIcon } from '@/components/PaymentIcons';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
@@ -33,8 +33,8 @@ export default function AboutPage() {
       description: 'An autonomous publishing engine built to handle 1 to 100+ social accounts seamlessly. Scale audience reach and inbound client pipeline without adding headcount or experiencing burnout.',
     },
     {
-      icon: <ShieldCheck className="w-7 h-7 text-[#3B82F6]" />,
-      bg: 'bg-[#3B82F6]/10 border-[#3B82F6]/20',
+      icon: <TailwindCheckBadgeIcon className="w-7 h-7 text-[#00784D]" />,
+      bg: 'bg-[#00784D]/10 border-[#07B979]/30',
       title: 'Transparent & Compliant',
       description: 'Official developer APIs only. Zero password storage, AES-256 encrypted authentication tokens, and strict rate limit safety guardrails that protect your brand and account health.',
     },

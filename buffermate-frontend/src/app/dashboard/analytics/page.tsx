@@ -39,7 +39,6 @@ import {
     Sparkles,
     Check,
     Zap,
-    ShieldCheck,
     Crown,
     Flame,
     TrendingUp,

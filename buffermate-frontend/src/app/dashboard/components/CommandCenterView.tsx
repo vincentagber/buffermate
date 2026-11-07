@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   TrendingUp,
   ArrowUpRight,
-  ShieldCheck,
   AlertTriangle,
   Sparkles,
   Bot,
@@ -896,7 +895,7 @@ export default function CommandCenterView({
           <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-7 border border-slate-100 shadow-2xl space-y-5 animate-scale-up max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-[#F1F5F9] pb-3">
               <div className="flex items-center space-x-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                <Sliders className="w-5 h-5 text-emerald-600" />
                 <h3 className="font-bold text-base text-[#0F172A]">Autopilot Safety Guardrails</h3>
               </div>
               <button
@@ -1182,7 +1181,7 @@ export default function CommandCenterView({
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
+                  <Activity className="w-4 h-4" />
                 </div>
                 <div>
                   <h3 className="font-bold text-base text-[#0F172A]">Publishing Queue Reliability</h3>

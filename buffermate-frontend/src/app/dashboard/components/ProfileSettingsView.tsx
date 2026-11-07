@@ -28,7 +28,6 @@ import {
   MessageSquare,
   ArrowUpRight,
   ChevronDown,
-  ShieldCheck,
   Activity,
   X,
   FileText,
@@ -645,7 +644,7 @@ export default function ProfileSettingsView() {
           <div className="flex items-center justify-between text-slate-700 mb-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-emerald-900">DM Safety Limit</span>
             <div className="w-7 h-7 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-800">
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <Sliders className="w-3.5 h-3.5" />
             </div>
           </div>
           <div>

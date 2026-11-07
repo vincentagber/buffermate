@@ -21,7 +21,6 @@ import {
   Calendar,
   Layers,
   Settings,
-  ShieldCheck,
   RefreshCw,
   ExternalLink,
   ChevronRight,

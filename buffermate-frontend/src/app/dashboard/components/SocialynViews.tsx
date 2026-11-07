@@ -35,7 +35,6 @@ import {
   Zap,
   BarChart3,
   Flame,
-  ShieldCheck,
   Eye,
   PieChart,
   Activity,

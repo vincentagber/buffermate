@@ -9,7 +9,8 @@ import {
   XIcon,
   WhatsAppIcon
 } from '@/components/SocialIcons';
-import { ShieldCheck, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Sparkles, CheckCircle2 } from 'lucide-react';
+import { TailwindCreditCardIcon } from '@/components/PaymentIcons';
 
 export default function MarqueeChannels() {
   const channels = [
@@ -20,7 +21,7 @@ export default function MarqueeChannels() {
     { name: 'X / Twitter', icon: <XIcon className="w-4 h-4 text-slate-900" />, badge: 'API v2' },
     { name: 'WhatsApp Direct', icon: <WhatsAppIcon className="w-4 h-4 text-emerald-600" />, badge: 'Lead Gateway' },
     { name: 'Google Gemini 2.0', icon: <Sparkles className="w-4 h-4 text-purple-600" />, badge: 'AI Engine' },
-    { name: 'Bachs Hosted Checkout', icon: <ShieldCheck className="w-4 h-4 text-indigo-600" />, badge: 'Global Billing' },
+    { name: 'Bachs Hosted Checkout', icon: <TailwindCreditCardIcon className="w-4 h-4 text-indigo-600" />, badge: 'Global Billing' },
   ];
 
   return (

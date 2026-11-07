@@ -8,7 +8,6 @@ import {
   RefreshCw,
   Copy,
   ExternalLink,
-  ShieldCheck,
   AlertCircle,
   CheckCircle2,
   Trash2,
@@ -674,7 +673,7 @@ export default function IntegrationsView() {
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-xs font-medium">Auto-Reply Uptime</span>
             <div className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <Activity className="w-3.5 h-3.5 text-emerald-600" />
             </div>
           </div>
           <div>
