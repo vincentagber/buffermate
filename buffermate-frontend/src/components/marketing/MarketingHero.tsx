@@ -19,17 +19,29 @@ export default function MarketingHero() {
               LEFT COLUMN: HERO COPY & CTAs (Consistent Swiss Palette)
           ========================================================================= */}
           <div className="lg:col-span-6 space-y-6 sm:space-y-8 animate-slide-up-fade">
-            <h1 className="text-[48px] sm:text-[68px] lg:text-[80px] font-hero-sans font-normal tracking-[-0.04em] text-[#000000] leading-[0.96]">
-              Social media that <br />
-              <span className="font-editorial-italic text-[#141416] font-normal tracking-tight pr-2 sm:pr-3">
-                really
-              </span>
-              <span className="font-hero-sans font-black tracking-[-0.04em] text-[#000000]">
-                moves.
+            <h1 className="text-[44px] sm:text-[64px] lg:text-[76px] font-hero-sans font-normal tracking-[-0.04em] text-[#000000] leading-[1.02]">
+              <span className="inline-block">Social media that</span>{' '}
+              <br className="hidden sm:inline" />
+              <span className="inline-block">
+                <span className="font-editorial-italic text-[#141416] font-normal tracking-tight pr-2 sm:pr-3">
+                  really
+                </span>
+                <span
+                  className="font-hero-sans font-black tracking-[-0.04em] inline-block"
+                  style={{
+                    backgroundImage: 'linear-gradient(to right bottom in oklab, rgb(0, 120, 77) 0%, rgb(7, 185, 121) 100%)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                  }}
+                >
+                  moves.
+                </span>
               </span>
             </h1>
 
-            <p className="font-hero-sans font-normal text-base sm:text-[19px] text-[#141416]/80 max-w-xl leading-relaxed tracking-tight">
+            <p className="font-hero-sans font-normal text-base sm:text-[18px] text-[#141416]/80 max-w-lg leading-relaxed tracking-tight text-balance">
               From raw creative ideas to an autonomous AI publishing engine across 6 channels. Turn viral post comments into direct paying clients 24/7.
             </p>
 
@@ -76,9 +88,9 @@ export default function MarketingHero() {
             {/* Tilted Photo Card */}
             <div className="relative w-full max-w-[460px] aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl border-4 border-[#141416] rotate-1 sm:rotate-2 hover:rotate-0 transition-transform duration-500">
               <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=900&auto=format&fit=crop&q=80"
-                alt="Social Media Creator working with Buffermate AI"
-                className="w-full h-full object-cover"
+                src="/marketing/hero-creator-man.jpg"
+                alt="Young creator managing multiple social media accounts with Buffermate AI"
+                className="w-full h-full object-cover object-center"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
             </div>
