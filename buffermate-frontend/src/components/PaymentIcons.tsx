@@ -69,3 +69,4 @@ export function GooglePaymentsIcon({ className = 'w-5 h-5', size, ...props }: Ic
     </svg>
   );
 }
+
