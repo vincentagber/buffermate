@@ -26,6 +26,7 @@ import CreateProjectModal from './CreateProjectModal';
 import CreateWorkItemModal from './CreateWorkItemModal';
 import WorkItemDetailModal from './WorkItemDetailModal';
 import AddNewButton from '@/components/ui/AddNewButton';
+import { safeFetchJson, parseResponseJson } from '@/lib/safe-fetch';
 
 export default function ProjectHub() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -69,9 +70,8 @@ export default function ProjectHub() {
   const fetchProjects = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/projects');
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+      const { data } = await safeFetchJson<any>('/api/projects');
+      if (data?.success && Array.isArray(data.data) && data.data.length > 0) {
         setProjects(data.data);
         if (!selectedProject) {
           setSelectedProject(data.data[0]);
@@ -93,16 +93,14 @@ export default function ProjectHub() {
   const loadProjectWorkspace = async (projectId: string) => {
     try {
       const [boardRes, sprintRes, issueRes] = await Promise.all([
-        fetch(`/api/projects/${projectId}/board`),
-        fetch(`/api/projects/${projectId}/sprints`),
-        fetch(`/api/projects/${projectId}/issues`),
+        safeFetchJson<any>(`/api/projects/${projectId}/board`),
+        safeFetchJson<any>(`/api/projects/${projectId}/sprints`),
+        safeFetchJson<any>(`/api/projects/${projectId}/issues`),
       ]);
 
-      const [boardData, sprintData, issueData] = await Promise.all([
-        boardRes.json().catch(() => ({})),
-        sprintRes.json().catch(() => ({})),
-        issueRes.json().catch(() => ({})),
-      ]);
+      const boardData = boardRes.data || {};
+      const sprintData = sprintRes.data || {};
+      const issueData = issueRes.data || {};
 
       if (boardData.success && boardData.data) {
         setBoard(boardData.data.board);
@@ -126,13 +124,12 @@ export default function ProjectHub() {
     );
 
     try {
-      const res = await fetch(`/api/issues/${issueId}`, {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issueId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus }),
       });
-      const data = await res.json();
-      if (data.success && data.data && selectedProject) {
+      if (data?.success && data.data && selectedProject) {
         loadProjectWorkspace(selectedProject.id);
         window.dispatchEvent(new CustomEvent('project-notification-refresh'));
       }

@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { WorkItem, Project, IssueStatus, IssuePriority, IssueType } from './types';
 import { IssueTypeIcon, IssuePriorityIcon, IssueStatusBadge } from './WorkItemIcons';
+import { safeFetchJson } from '@/lib/safe-fetch';
 import { triggerConfetti } from '@/components/ui/Confetti';
 
 interface WorkItemDetailModalProps {
@@ -89,9 +90,8 @@ export default function WorkItemDetailModal({
     if (!issueIdOrKey) return;
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/issues/${issueIdOrKey}`);
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issueIdOrKey}`);
+      if (data?.success && data.data) {
         setIssue(data.data);
         setTitleEdit(data.data.title);
         setDescEdit(data.data.description || '');
@@ -106,9 +106,8 @@ export default function WorkItemDetailModal({
 
   const fetchWatchers = async (issueId: string) => {
     try {
-      const res = await fetch(`/api/issues/${issueId}/watchers`);
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issueId}/watchers`);
+      if (data?.success && data.data) {
         setWatchersCount(data.data.count || 0);
         setIsWatching(!!data.data.is_watching);
         setWatchersList(data.data.watchers || []);
@@ -122,11 +121,10 @@ export default function WorkItemDetailModal({
     if (!issue) return;
     setIsTogglingWatcher(true);
     try {
-      const res = await fetch(`/api/issues/${issue.id}/watchers/toggle`, {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issue.id}/watchers/toggle`, {
         method: 'POST',
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data.data) {
         setIsWatching(data.data.is_watching);
         setWatchersCount(data.data.count);
       }
@@ -143,13 +141,12 @@ export default function WorkItemDetailModal({
     if (!issue) return;
     setIsSaving(true);
     try {
-      const res = await fetch(`/api/issues/${issue.id}`, {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issue.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fields),
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data.data) {
         setIssue(data.data);
         onIssueUpdated(data.data);
         window.dispatchEvent(new CustomEvent('project-notification-refresh'));
@@ -169,7 +166,7 @@ export default function WorkItemDetailModal({
     if (!issue || !newComment.trim()) return;
 
     try {
-      const res = await fetch(`/api/issues/${issue.id}/comments`, {
+      const { data } = await safeFetchJson<any>(`/api/issues/${issue.id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -177,8 +174,7 @@ export default function WorkItemDetailModal({
           author_name: 'Alex Morgan',
         }),
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data.data) {
         setIssue({
           ...issue,
           comments: [...(issue.comments || []), data.data],
@@ -198,7 +194,7 @@ export default function WorkItemDetailModal({
     if (!issue || !newSubtaskTitle.trim() || !projectId) return;
 
     try {
-      const res = await fetch(`/api/projects/${projectId}/issues`, {
+      const { data } = await safeFetchJson<any>(`/api/projects/${projectId}/issues`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -209,8 +205,7 @@ export default function WorkItemDetailModal({
           status: 'todo',
         }),
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data.data) {
         setIssue({
           ...issue,
           subtasks: [...(issue.subtasks || []), data.data],
@@ -226,13 +221,12 @@ export default function WorkItemDetailModal({
   const handleToggleSubtask = async (subtask: WorkItem) => {
     const nextStatus = subtask.status === 'done' ? 'todo' : 'done';
     try {
-      const res = await fetch(`/api/issues/${subtask.id}`, {
+      const { data } = await safeFetchJson<any>(`/api/issues/${subtask.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: nextStatus }),
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data.data) {
         setIssue((prev) => {
           if (!prev) return null;
           return {
