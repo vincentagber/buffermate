@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface ReportsViewProps {
   onOpenFlowAssist?: () => void;
@@ -163,9 +164,8 @@ export default function ReportsView({ onOpenFlowAssist }: ReportsViewProps) {
         search: searchQuery,
       });
 
-      const res = await fetch(`/api/reports/clinic-kpi?${params.toString()}`);
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>(`/api/reports/clinic-kpi?${params.toString()}`);
+      if (data?.success && data?.data) {
         if (data.data.kpi) setKpi(data.data.kpi);
         if (data.data.is_lift_applied) setSlotsLiftApplied(true);
 

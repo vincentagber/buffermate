@@ -28,6 +28,7 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import { Project, ProjectReportSummary } from './types';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface ProjectReportsViewProps {
   project: Project;
@@ -50,20 +51,18 @@ export default function ProjectReportsView({ project }: ProjectReportsViewProps)
     setLoading(true);
     try {
       const [burnRes, velRes, sumRes, cfdRes, epicRes] = await Promise.all([
-        fetch(`/api/projects/${project.id}/reports/burndown`),
-        fetch(`/api/projects/${project.id}/reports/velocity`),
-        fetch(`/api/projects/${project.id}/reports/summary`),
-        fetch(`/api/projects/${project.id}/reports/cfd`),
-        fetch(`/api/projects/${project.id}/reports/epics`),
+        safeFetchJson<any>(`/api/projects/${project.id}/reports/burndown`),
+        safeFetchJson<any>(`/api/projects/${project.id}/reports/velocity`),
+        safeFetchJson<any>(`/api/projects/${project.id}/reports/summary`),
+        safeFetchJson<any>(`/api/projects/${project.id}/reports/cfd`),
+        safeFetchJson<any>(`/api/projects/${project.id}/reports/epics`),
       ]);
 
-      const [burnJson, velJson, sumJson, cfdJson, epicJson] = await Promise.all([
-        burnRes.json().catch(() => ({})),
-        velRes.json().catch(() => ({})),
-        sumRes.json().catch(() => ({})),
-        cfdRes.json().catch(() => ({})),
-        epicRes.json().catch(() => ({})),
-      ]);
+      const burnJson = burnRes.data || {};
+      const velJson = velRes.data || {};
+      const sumJson = sumRes.data || {};
+      const cfdJson = cfdRes.data || {};
+      const epicJson = epicRes.data || {};
 
       if (burnJson.success) setBurndownData(burnJson.data);
       if (velJson.success) setVelocityData(velJson.data);

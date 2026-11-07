@@ -147,10 +147,16 @@ export async function apiClient<T = any>(
       return {} as T;
     }
 
-    // Attempt parsing JSON
-    const contentType = response.headers.get('content-type');
-    const isJson = contentType && contentType.includes('application/json');
-    const data = isJson ? await response.json() : await response.text();
+    // Safely parse JSON via text reader to avoid Safari syntax errors
+    const rawText = await response.text();
+    let data: any = {};
+    if (rawText && rawText.trim()) {
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        data = rawText;
+      }
+    }
 
     if (!response.ok) {
       const errorMessage =

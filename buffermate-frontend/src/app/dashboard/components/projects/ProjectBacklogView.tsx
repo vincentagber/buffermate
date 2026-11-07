@@ -17,6 +17,7 @@ import { WorkItem, Project, Sprint, IssueStatus } from './types';
 import { IssueTypeIcon, IssuePriorityIcon, IssueStatusBadge } from './WorkItemIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import AddNewButton from '@/components/ui/AddNewButton';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface ProjectBacklogViewProps {
   project: Project;
@@ -55,7 +56,7 @@ export default function ProjectBacklogView({
     if (!newSprintName.trim()) return;
 
     try {
-      const res = await fetch(`/api/projects/${project.id}/sprints`, {
+      const { data } = await safeFetchJson<any>(`/api/projects/${project.id}/sprints`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -63,8 +64,7 @@ export default function ProjectBacklogView({
           goal: newSprintGoal.trim() || null,
         }),
       });
-      const data = await res.json();
-      if (data.success) {
+      if (data?.success) {
         setIsCreatingSprint(false);
         setNewSprintName('');
         setNewSprintGoal('');
@@ -79,15 +79,14 @@ export default function ProjectBacklogView({
   const handleStartSprint = async (sprintId: string) => {
     setIsActionLoading(true);
     try {
-      const res = await fetch(`/api/sprints/${sprintId}/start`, {
+      const { data } = await safeFetchJson<any>(`/api/sprints/${sprintId}/start`, {
         method: 'POST',
       });
-      const data = await res.json();
-      if (data.success) {
+      if (data?.success) {
         triggerConfetti();
         onRefresh();
       } else {
-        alert(data.message || 'Failed to start sprint');
+        alert(data?.message || 'Failed to start sprint');
       }
     } catch (err) {
       console.error('Failed to start sprint:', err);
@@ -101,13 +100,12 @@ export default function ProjectBacklogView({
     if (!confirm('Complete this sprint? Incomplete issues will roll over to the backlog.')) return;
     setIsActionLoading(true);
     try {
-      const res = await fetch(`/api/sprints/${sprintId}/complete`, {
+      const { data } = await safeFetchJson<any>(`/api/sprints/${sprintId}/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ incomplete_destination: 'backlog' }),
       });
-      const data = await res.json();
-      if (data.success) {
+      if (data?.success) {
         triggerConfetti();
         onRefresh();
       }

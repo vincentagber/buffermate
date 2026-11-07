@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { Project, ProjectRole } from './types';
 import { IssueTypeIcon } from './WorkItemIcons';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface ProjectSettingsViewProps {
   project: Project;
@@ -99,7 +100,7 @@ export default function ProjectSettingsView({
     e.preventDefault();
     setIsSavingGeneral(true);
     try {
-      const res = await fetch(`/api/projects/${project.id}`, {
+      const { data } = await safeFetchJson<any>(`/api/projects/${project.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -110,8 +111,7 @@ export default function ProjectSettingsView({
         }),
       });
 
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data?.data) {
         onProjectUpdated(data.data);
         showNotification('General project settings saved successfully.');
       }
@@ -125,7 +125,7 @@ export default function ProjectSettingsView({
   const handleSaveWorkflow = async () => {
     setIsSavingWorkflow(true);
     try {
-      const res = await fetch(`/api/projects/${project.id}/workflow`, {
+      const { data } = await safeFetchJson<any>(`/api/projects/${project.id}/workflow`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -136,8 +136,7 @@ export default function ProjectSettingsView({
           },
         }),
       });
-      const data = await res.json();
-      if (data.success) {
+      if (data?.success) {
         showNotification('Custom workflow scheme saved successfully.');
       }
     } catch (err) {

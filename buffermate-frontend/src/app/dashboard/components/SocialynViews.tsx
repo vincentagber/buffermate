@@ -49,6 +49,7 @@ import {
 import { SocialPlatformIcon } from '@/components/SocialIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 // -------------------------------------------------------------
 // 1. GOALS VIEW
@@ -1483,20 +1484,14 @@ export function RoiRevenueView() {
     try {
       setIsLoading(true);
       const [leadsRes, statsRes] = await Promise.all([
-        fetch('/api/leads'),
-        fetch('/api/dashboard/stats'),
+        safeFetchJson<any>('/api/leads'),
+        safeFetchJson<any>('/api/dashboard/stats'),
       ]);
-      if (leadsRes.ok) {
-        const lData = await leadsRes.json();
-        if (lData.success && Array.isArray(lData.data)) {
-          setLeads(lData.data);
-        }
+      if (leadsRes.ok && leadsRes.data?.success && Array.isArray(leadsRes.data.data)) {
+        setLeads(leadsRes.data.data);
       }
-      if (statsRes.ok) {
-        const sData = await statsRes.json();
-        if (sData.success && sData.data) {
-          setDashboardStats(sData.data);
-        }
+      if (statsRes.ok && statsRes.data?.success && statsRes.data.data) {
+        setDashboardStats(statsRes.data.data);
       }
     } catch (e) {
       console.warn('Failed to load real attribution leads:', e);

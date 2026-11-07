@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Project } from './types';
 import { triggerConfetti } from '@/components/ui/Confetti';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 interface ProjectAutomationsViewProps {
   project: Project;
@@ -82,9 +83,8 @@ export default function ProjectAutomationsView({ project }: ProjectAutomationsVi
   const fetchAutomations = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`/api/projects/${project.id}/automations`);
-      const data = await res.json();
-      if (data.success && data.data) {
+      const { data } = await safeFetchJson<any>(`/api/projects/${project.id}/automations`);
+      if (data?.success && data?.data) {
         setRules(data.data.rules || []);
         setExecutions(data.data.executions || []);
       }
@@ -97,11 +97,10 @@ export default function ProjectAutomationsView({ project }: ProjectAutomationsVi
 
   const handleToggleRule = async (ruleId: string) => {
     try {
-      const res = await fetch(`/api/projects/${project.id}/automations/${ruleId}/toggle`, {
+      const { data } = await safeFetchJson<any>(`/api/projects/${project.id}/automations/${ruleId}/toggle`, {
         method: 'PATCH',
       });
-      const data = await res.json();
-      if (data.success && data.data) {
+      if (data?.success && data?.data) {
         setRules((prev) =>
           prev.map((r) => (r.id === ruleId ? { ...r, is_active: data.data.is_active } : r))
         );

@@ -85,6 +85,7 @@ import {
   INITIAL_POSTS,
 } from '@/lib/services/automation-store';
 import { createClient } from '@/lib/supabase/client';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -301,13 +302,10 @@ export default function DashboardPage() {
   // Fetch aggregated real-time metrics
   const fetchRealtimeStats = async () => {
     try {
-      const res = await fetch('/api/dashboard/stats');
-      if (res.ok) {
-        const body = await res.json();
-        if (body.success && body.data) {
-          setRealtimeStats(body.data);
-          setIsRealtimeConnected(true);
-        }
+      const { ok, data: body } = await safeFetchJson<any>('/api/dashboard/stats');
+      if (ok && body?.success && body?.data) {
+        setRealtimeStats(body.data);
+        setIsRealtimeConnected(true);
       }
     } catch (err) {
       console.error('Error fetching real-time dashboard stats:', err);
@@ -318,18 +316,16 @@ export default function DashboardPage() {
   const loadDatabaseData = async () => {
     try {
       const [autoRes, actRes, leadRes, postRes] = await Promise.all([
-        fetch('/api/automations'),
-        fetch('/api/activity'),
-        fetch('/api/leads'),
-        fetch('/api/posts'),
+        safeFetchJson<any>('/api/automations'),
+        safeFetchJson<any>('/api/activity'),
+        safeFetchJson<any>('/api/leads'),
+        safeFetchJson<any>('/api/posts'),
       ]);
 
-      const [autoData, actData, leadData, postData] = await Promise.all([
-        autoRes.json().catch(() => ({ success: false })),
-        actRes.json().catch(() => ({ success: false })),
-        leadRes.json().catch(() => ({ success: false })),
-        postRes.json().catch(() => []),
-      ]);
+      const autoData = autoRes.data || { success: false };
+      const actData = actRes.data || { success: false };
+      const leadData = leadRes.data || { success: false };
+      const postData = Array.isArray(postRes.data) ? postRes.data : (postRes.data?.data || []);
 
       if (autoData.success && Array.isArray(autoData.data) && autoData.data.length > 0) {
         setAutomations(autoData.data);

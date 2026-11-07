@@ -31,6 +31,7 @@ import {
 import { triggerConfetti } from '@/components/ui/Confetti';
 import { createClient } from '@/lib/supabase/client';
 import ChevronStepper, { ChevronStepItem } from '@/components/ui/ChevronStepper';
+import { safeFetchJson } from '@/lib/safe-fetch';
 
 const supabase = createClient();
 
@@ -143,14 +144,11 @@ export default function MembershipsRetentionView({ onOpenNewCampaign }: Membersh
       setIsAdmin(userIsAdmin);
 
       // 2. Fetch real-time users from backend
-      const res = await fetch('/api/admin/users');
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && Array.isArray(data.users)) {
-          setUsers(data.users);
-          if (data.kpis) {
-            setKpis(data.kpis);
-          }
+      const { ok, data } = await safeFetchJson<any>('/api/admin/users');
+      if (ok && data?.success && Array.isArray(data.users)) {
+        setUsers(data.users);
+        if (data.kpis) {
+          setKpis(data.kpis);
         }
       }
     } catch (error) {
