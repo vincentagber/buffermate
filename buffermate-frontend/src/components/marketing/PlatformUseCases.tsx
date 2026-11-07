@@ -66,7 +66,16 @@ export default function PlatformUseCases() {
           <span className="font-editorial-italic text-[#141416] font-normal tracking-tight pr-2 sm:pr-3">
             autonomous
           </span>
-          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#141416] underline decoration-[#C8FF3D] decoration-wavy decoration-2">
+          <span
+            className="font-hero-sans font-black tracking-[-0.04em] underline decoration-[#07B979] decoration-wavy decoration-2"
+            style={{
+              backgroundImage: 'linear-gradient(to right bottom in oklab, rgb(0, 120, 77) 0%, rgb(7, 185, 121) 100%)',
+              WebkitBackgroundClip: 'text',
+              backgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              color: 'transparent',
+            }}
+          >
             precision.
           </span>
         </h2>
@@ -84,11 +93,25 @@ export default function PlatformUseCases() {
           >
             <div>
               <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-[14px] bg-[#C8FF3D] border border-[#141416] flex items-center justify-center shrink-0 text-[#000000] transition-transform group-hover:scale-105 shadow-2xs">
+                <div
+                  className="w-12 h-12 rounded-[14px] border border-[#141416] flex items-center justify-center shrink-0 text-white transition-transform group-hover:scale-105 shadow-2xs"
+                  style={{
+                    background: 'linear-gradient(to right bottom in oklab, rgb(0, 120, 77) 0%, rgb(7, 185, 121) 100%)',
+                  }}
+                >
                   {uc.icon}
                 </div>
                 {uc.badge && (
-                  <span className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#141416] text-[#C8FF3D] border border-[#141416]">
+                  <span
+                    className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#141416] border border-[#141416]"
+                    style={{
+                      backgroundImage: 'linear-gradient(to right bottom in oklab, rgb(0, 120, 77) 0%, rgb(7, 185, 121) 100%)',
+                      WebkitBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      color: 'transparent',
+                    }}
+                  >
                     {uc.badge}
                   </span>
                 )}
