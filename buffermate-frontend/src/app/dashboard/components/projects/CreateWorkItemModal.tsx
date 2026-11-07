@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Check, Sparkles, Tag, Calendar, User, Layers } from 'lucide-react';
 import { WorkItem, Project, Sprint, IssueType, IssuePriority } from './types';
+import { safeFetchJson } from '@/lib/safe-fetch';
 import { IssueTypeIcon, IssuePriorityIcon } from './WorkItemIcons';
 import { triggerConfetti } from '@/components/ui/Confetti';
 
@@ -58,7 +59,7 @@ export default function CreateWorkItemModal({
       .filter((l) => l.length > 0);
 
     try {
-      const res = await fetch(`/api/projects/${project.id}/issues`, {
+      const { ok, status, data } = await safeFetchJson<any>(`/api/projects/${project.id}/issues`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,21 +78,7 @@ export default function CreateWorkItemModal({
         }),
       });
 
-      const contentType = res.headers.get('content-type') || '';
-      let data: any = null;
-
-      if (contentType.includes('application/json')) {
-        data = await res.json();
-      } else {
-        const text = await res.text();
-        throw new Error(
-          res.status === 422
-            ? 'Validation error on server. Please check the work item details.'
-            : `Server response error (${res.status})`
-        );
-      }
-
-      if (res.ok && data?.success && data?.data) {
+      if (ok && data?.success && data?.data) {
         triggerConfetti();
         onIssueCreated(data.data);
         onClose();
@@ -99,11 +86,11 @@ export default function CreateWorkItemModal({
         const errorMsg =
           data?.message ||
           (data?.errors ? Object.values(data.errors).flat().join(' ') : null) ||
-          'Failed to create issue';
+          (status === 422 ? 'Validation error on server. Please check the work item details.' : `Failed to create issue (${status})`);
         setError(errorMsg);
       }
     } catch (err: any) {
-      setError(err.message || 'Network error');
+      setError(err?.message || 'Network error');
     } finally {
       setIsSubmitting(false);
     }
