@@ -14,10 +14,11 @@ class GeminiDriver
     protected string $imageModel;
 
     /**
-     * Allowed audio MIME types for multimodal voice transcription
+     * Allowed audio and voice recording MIME types for multimodal voice transcription
      */
     protected const SUPPORTED_AUDIO_MIMES = [
         'audio/webm',
+        'video/webm',
         'audio/wav',
         'audio/x-wav',
         'audio/wave',
@@ -27,7 +28,10 @@ class GeminiDriver
         'audio/m4a',
         'audio/x-m4a',
         'audio/mp4',
+        'video/mp4',
         'audio/aac',
+        'audio/flac',
+        'audio/x-flac',
     ];
 
     public function __construct()
@@ -219,6 +223,22 @@ PROMPT;
     }
 
     /**
+     * Safely parse JSON text from Gemini responses, handling markdown code fences
+     */
+    protected function parseJsonPayload(?string $rawText): ?array
+    {
+        if (empty($rawText)) return null;
+        $clean = trim($rawText);
+        if (str_starts_with($clean, '```')) {
+            $clean = preg_replace('/^```(?:json)?\s*/i', '', $clean);
+            $clean = preg_replace('/\s*```$/', '', $clean);
+            $clean = trim($clean);
+        }
+        $parsed = json_decode($clean, true);
+        return is_array($parsed) ? $parsed : null;
+    }
+
+    /**
      * 2. VOICE FEATURE: Multimodal Audio Transcription and Structured Form Extraction
      */
     public function extractFromAudioOrText(string|UploadedFile $input, array $options = []): array
@@ -227,10 +247,28 @@ PROMPT;
 
         // Case A: Audio File Input (Multimodal)
         if ($input instanceof UploadedFile) {
-            $mimeType = strtolower($input->getMimeType() ?: $input->getClientMimeType() ?: '');
-            
-            // Check supported audio format
-            if (!in_array($mimeType, self::SUPPORTED_AUDIO_MIMES)) {
+            $rawMime = strtolower($input->getMimeType() ?: $input->getClientMimeType() ?: '');
+            $mimeType = trim(explode(';', $rawMime)[0]);
+            $clientExt = strtolower($input->getClientOriginalExtension() ?: pathinfo($input->getClientOriginalName(), PATHINFO_EXTENSION));
+
+            if (empty($mimeType) || $mimeType === 'application/octet-stream') {
+                $mimeType = match ($clientExt) {
+                    'webm' => 'audio/webm',
+                    'wav' => 'audio/wav',
+                    'mp3' => 'audio/mp3',
+                    'ogg', 'opus' => 'audio/ogg',
+                    'm4a' => 'audio/m4a',
+                    'mp4' => 'audio/mp4',
+                    'aac' => 'audio/aac',
+                    'flac' => 'audio/flac',
+                    default => $mimeType,
+                };
+            }
+
+            // Check supported audio format (including browser MediaRecorder WebM and MP4 recordings)
+            $isSupported = in_array($mimeType, self::SUPPORTED_AUDIO_MIMES) || in_array($clientExt, ['webm', 'wav', 'mp3', 'ogg', 'm4a', 'mp4', 'aac', 'flac']);
+
+            if (!$isSupported) {
                 return [
                     'success' => false,
                     'error' => "Unsupported audio format '{$mimeType}'. Supported formats: WebM, WAV, MP3, OGG, M4A, MP4.",
@@ -246,6 +284,13 @@ PROMPT;
                     'code' => 'AUDIO_FILE_TOO_LARGE',
                 ];
             }
+
+            // Gemini audio endpoint expects audio/* mime types; map video container to audio equivalents
+            $geminiMime = match ($mimeType) {
+                'video/webm' => 'audio/webm',
+                'video/mp4' => 'audio/mp4',
+                default => $mimeType,
+            };
 
             if ($this->isConfigured()) {
                 try {
@@ -282,7 +327,7 @@ PROMPT;
                                     ['text' => $prompt],
                                     [
                                         'inlineData' => [
-                                            'mimeType' => $mimeType,
+                                            'mimeType' => $geminiMime,
                                             'data' => $base64Audio,
                                         ],
                                     ],
@@ -297,7 +342,7 @@ PROMPT;
 
                     if ($response->successful()) {
                         $rawText = $response->json('candidates.0.content.parts.0.text', '');
-                        $parsed = json_decode($rawText, true);
+                        $parsed = $this->parseJsonPayload($rawText);
                         if (is_array($parsed) && isset($parsed['title'], $parsed['content'])) {
                             return [
                                 'success' => true,

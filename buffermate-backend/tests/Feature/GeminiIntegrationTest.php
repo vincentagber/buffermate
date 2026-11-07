@@ -210,6 +210,55 @@ class GeminiIntegrationTest extends TestCase
         $this->assertEquals('promotional', $response->json('data.tone'));
     }
 
+    public function test_voice_feature_accepts_browser_video_webm_audio_recording(): void
+    {
+        Http::fake([
+            'generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent*' => Http::response([
+                'candidates' => [
+                    [
+                        'finishReason' => 'STOP',
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => json_encode([
+                                        'transcript' => 'Post to Twitter and LinkedIn tomorrow afternoon announcing our beta launch',
+                                        'title' => '🚀 Launch Announcement: Beta Access',
+                                        'content' => "We are live with our closed beta! Comment below for early access.",
+                                        'platforms' => ['x', 'linkedin'],
+                                        'scheduledAt' => '2026-11-08T15:00:00Z',
+                                        'scheduledAtDisplay' => 'Tomorrow at 3:00 PM',
+                                        'tone' => 'promotional',
+                                        'mode' => 'text',
+                                        'hashtags' => ['#beta', '#launch'],
+                                        'suggestedMediaPrompt' => 'Futuristic dashboard mockup showing viral growth analytics',
+                                        'category' => 'Product Launch',
+                                        'callToAction' => 'Comment BETA below',
+                                        'confidence' => 0.99,
+                                    ]),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        // Browser MediaRecorder frequently saves audio in a WebM container detected as video/webm
+        $browserWebm = UploadedFile::fake()->create('recording.webm', 150, 'video/webm');
+
+        $response = $this->withHeaders($this->authenticatedHeaders())->post('/api/ai/extract-form', [
+            'audio' => $browserWebm,
+            'now' => '2026-11-07T14:00:00Z',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+        ]);
+        $response->assertJsonPath('data.title', '🚀 Launch Announcement: Beta Access');
+        $response->assertJsonPath('data.platforms', ['x', 'linkedin']);
+    }
+
     public function test_voice_feature_rejects_unsupported_audio_format(): void
     {
         $invalidFile = UploadedFile::fake()->create('malicious.exe', 50, 'application/x-msdownload');

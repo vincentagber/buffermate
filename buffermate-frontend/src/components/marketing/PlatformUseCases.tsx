@@ -66,7 +66,7 @@ export default function PlatformUseCases() {
           <span className="font-editorial-italic text-[#141416] font-normal tracking-tight pr-2 sm:pr-3">
             autonomous
           </span>
-          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#00784D]">
+          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#141416] underline decoration-[#C8FF3D] decoration-wavy decoration-2">
             precision.
           </span>
         </h2>
@@ -80,24 +80,24 @@ export default function PlatformUseCases() {
         {USE_CASES.map((uc, idx) => (
           <div
             key={idx}
-            className="bg-white rounded-[24px] p-8 border border-[#E2E0D5] hover:border-[#C4C4B8] hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col justify-between"
+            className="bg-white rounded-[24px] p-8 border border-[#E2E0D5] hover:border-[#141416] hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-[14px] bg-[#00784D]/10 border border-[#07B979]/30 flex items-center justify-center shrink-0 text-[#00784D] transition-transform group-hover:scale-105">
+                <div className="w-12 h-12 rounded-[14px] bg-[#C8FF3D] border border-[#141416] flex items-center justify-center shrink-0 text-[#000000] transition-transform group-hover:scale-105 shadow-2xs">
                   {uc.icon}
                 </div>
                 {uc.badge && (
-                  <span className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#00784D]/10 text-[#00784D] border border-[#07B979]/30">
+                  <span className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#141416] text-[#C8FF3D] border border-[#141416]">
                     {uc.badge}
                   </span>
                 )}
               </div>
               <div>
-                <h3 className="font-bold text-[20px] text-[#1A202C] mb-2 leading-snug group-hover:text-[#00784D] transition-colors">
+                <h3 className="font-bold text-[20px] text-[#000000] mb-2 leading-snug group-hover:text-[#141416] transition-colors">
                   {uc.title}
                 </h3>
-                <p className="font-medium text-[15px] text-[#6B6B60] leading-relaxed">
+                <p className="font-medium text-[15px] text-[#353733] leading-relaxed">
                   {uc.description}
                 </p>
               </div>

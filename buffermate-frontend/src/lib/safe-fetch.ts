@@ -36,3 +36,4 @@ export async function safeFetchJson<T = any>(
     return { ok: false, status: 0, data: fallback };
   }
 }
+

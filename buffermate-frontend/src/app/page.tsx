@@ -5,6 +5,7 @@ import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingHero from '@/components/marketing/MarketingHero';
 import MarketingMarquee from '@/components/marketing/MarketingMarquee';
 import PlatformUseCases from '@/components/marketing/PlatformUseCases';
+import KineticTypographyGallery from '@/components/marketing/KineticTypographyGallery';
 import MarketingWorkflowSpeed from '@/components/marketing/MarketingWorkflowSpeed';
 import MarketingTrust from '@/components/marketing/MarketingTrust';
 import MarketingFaq from '@/components/marketing/MarketingFaq';
@@ -33,6 +34,9 @@ export default function HomePage() {
 
         {/* 4. Platform Capabilities Use Cases (6 Cards) */}
         <PlatformUseCases />
+
+        {/* 4b. Kinetic Typography Gallery (Neo-Swiss Editorial Grid) */}
+        <KineticTypographyGallery />
 
         {/* 5. Built for Speed (Interactive Multi-Step Workflows) */}
         <MarketingWorkflowSpeed />

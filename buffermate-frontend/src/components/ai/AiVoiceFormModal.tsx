@@ -103,9 +103,11 @@ export default function AiVoiceFormModal({
       let response: Response;
 
       if (payload.audio) {
-        setProcessingStage('Transcribing with Whisper & analyzing with LLM...');
+        setProcessingStage('Transcribing with Gemini Speech AI & extracting fields...');
         const formData = new FormData();
-        formData.append('audio', payload.audio, 'recording.webm');
+        const rawType = payload.audio.type || '';
+        const ext = rawType.includes('mp4') ? 'mp4' : rawType.includes('ogg') ? 'ogg' : rawType.includes('wav') ? 'wav' : 'webm';
+        formData.append('audio', payload.audio, `recording.${ext}`);
         if (payload.clientTranscript) {
           formData.append('clientTranscript', payload.clientTranscript);
         }
