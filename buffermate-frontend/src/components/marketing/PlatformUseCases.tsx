@@ -80,21 +80,21 @@ export default function PlatformUseCases() {
         {USE_CASES.map((uc, idx) => (
           <div
             key={idx}
-            className="bg-[#141416] rounded-[24px] p-8 border border-[#141416] hover:border-[#C8FF3D]/50 transition-all hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between"
+            className="bg-[#141416] rounded-[24px] p-8 border border-[#141416] hover:border-[#07B979]/50 transition-all hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-6">
-                <div className="w-12 h-12 rounded-[14px] bg-[#C8FF3D]/10 border border-[#C8FF3D]/30 flex items-center justify-center shrink-0 text-[#C8FF3D] transition-transform group-hover:scale-105">
+                <div className="w-12 h-12 rounded-[14px] bg-[#00784D]/30 border border-[#07B979]/40 flex items-center justify-center shrink-0 text-[#07B979] transition-transform group-hover:scale-105">
                   {uc.icon}
                 </div>
                 {uc.badge && (
-                  <span className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#E2E0D5]/10 text-[#C8FF3D] border border-[#C8FF3D]/20">
+                  <span className="text-[10px] uppercase font-black tracking-widest px-2.5 py-1 rounded-full bg-[#E2E0D5]/10 text-[#07B979] border border-[#07B979]/30">
                     {uc.badge}
                   </span>
                 )}
               </div>
               <div>
-                <h3 className="font-bold text-[20px] text-[#E2E0D5] mb-2 leading-snug group-hover:text-[#C8FF3D] transition-colors">
+                <h3 className="font-bold text-[20px] text-[#E2E0D5] mb-2 leading-snug group-hover:text-[#07B979] transition-colors">
                   {uc.title}
                 </h3>
                 <p className="font-medium text-[15px] text-[#E2E0D5]/70 leading-relaxed">

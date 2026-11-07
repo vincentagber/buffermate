@@ -131,10 +131,14 @@ export class GeminiService {
   }
 
   /**
-   * Get configured model name from env or default
+   * Get configured model name from env or default (normalizing invalid strings)
    */
   public static getTextModelName(): string {
-    return process.env.NEWSPILOT_GEMINI_MODEL || process.env.GEMINI_TEXT_MODEL || 'gemini-3.1-flash-lite';
+    const raw = process.env.NEWSPILOT_GEMINI_MODEL || process.env.GEMINI_TEXT_MODEL || 'gemini-1.5-flash';
+    if (!raw || raw.includes('3.1') || raw.includes('nonexistent')) {
+      return 'gemini-1.5-flash';
+    }
+    return raw;
   }
 
   public static getImageModelName(): string {

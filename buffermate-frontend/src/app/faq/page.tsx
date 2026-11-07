@@ -97,10 +97,10 @@ export default function FaqPage() {
   }, [searchQuery, selectedCategory]);
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#00784D]/30 selection:text-[#00784D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -120,18 +120,18 @@ export default function FaqPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#07B979]/15 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#C8FF3D] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[#07B979] animate-pulse" />
               <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
                 Support &amp; Documentation
               </span>
             </div>
 
             <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
-              Frequently Asked <span className="text-[#C8FF3D]">Questions</span>.
+              Frequently Asked <span className="text-[#00784D]">Questions</span>.
             </h1>
 
             <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto mb-8">
@@ -146,7 +146,7 @@ export default function FaqPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by keyword, topic, or feature..."
-                className="w-full pl-12 pr-4 py-3.5 rounded-full bg-white border border-[#E2E0D5] text-sm text-[#1A202C] font-medium shadow-xs focus:outline-none focus:border-[#C8FF3D] focus:ring-2 focus:ring-[#C8FF3D]/20 transition-all placeholder:text-[#A0AEC0]"
+                className="w-full pl-12 pr-4 py-3.5 rounded-full bg-white border border-[#E2E0D5] text-sm text-[#1A202C] font-medium shadow-xs focus:outline-none focus:border-[#07B979] focus:ring-2 focus:ring-[#07B979]/20 transition-all placeholder:text-[#A0AEC0]"
               />
             </div>
           </div>
@@ -208,7 +208,7 @@ export default function FaqPage() {
                       className="w-full flex items-center justify-between text-left gap-4 cursor-pointer"
                     >
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#C8FF3D]">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#00784D]">
                           {faq.category}
                         </span>
                         <h3 className="font-extrabold text-[17px] md:text-[18px] text-[#1A202C] leading-snug">
@@ -237,7 +237,7 @@ export default function FaqPage() {
         {/* ========================================================================= */}
         <section className="max-w-[850px] mx-auto w-full px-5 md:px-10 pb-16">
           <div className="bg-white rounded-[28px] p-8 md:p-10 border border-[#E2E0D5] shadow-sm text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#C8FF3D]/10 text-[#C8FF3D] flex items-center justify-center mx-auto border border-[#C8FF3D]/20">
+            <div className="w-12 h-12 rounded-2xl bg-[#00784D]/10 text-[#00784D] flex items-center justify-center mx-auto border border-[#07B979]/30">
               <Mail className="w-6 h-6" />
             </div>
             <h3 className="font-extrabold text-[22px] text-[#1A202C]">

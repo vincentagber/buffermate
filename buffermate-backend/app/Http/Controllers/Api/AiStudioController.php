@@ -22,29 +22,58 @@ class AiStudioController extends Controller
         $callToAction = $request->input('callToAction', 'Drop a comment or DM to learn more!');
         $keywords = (array)$request->input('keywords', ['growth', 'marketing', 'automation']);
 
-        $res = $gemini->generateSocialPost($topic, $tone, $platform);
-        $raw = $res['data'] ?? [];
+        $res = $gemini->generateSocialPost($topic, $tone, $platform, [
+            'targetAudience' => $targetAudience,
+            'callToAction' => $callToAction,
+            'keywords' => $keywords,
+        ]);
 
+        $raw = $res['data'] ?? [];
         $hook = $raw['hook'] ?? "Here is why {$topic} changes everything in 2026 💡";
-        $caption = $raw['caption'] ?? "Mastering {$topic} is now the #1 lever for growth. Here are 3 actionable insights you can apply right now:\n\n1. Automate the routine\n2. Focus on client engagement\n3. Iterate based on real metrics.\n\nDrop a comment below with your thoughts! 👇";
+        $caption = $raw['caption'] ?? $raw['mainCaption'] ?? "Mastering {$topic} is now the #1 lever for growth.";
         $hashtags = $raw['hashtags'] ?? ['#growth', '#socialmedia', '#automation', '#business'];
         $cta = $raw['call_to_action'] ?? $raw['callToAction'] ?? $callToAction;
 
-        $platforms = ['facebook', 'instagram', 'x', 'tiktok', 'linkedin', 'threads'];
+        // Extract or format platform variants
         $variants = [];
+        $platformPosts = $raw['platform_posts'] ?? $raw['platformVariants'] ?? [];
+        $platforms = ['facebook', 'instagram', 'x', 'tiktok', 'linkedin', 'threads'];
+
         foreach ($platforms as $p) {
-            $prefix = match ($p) {
-                'x' => '⚡ ',
-                'instagram' => '✨ ',
-                'linkedin' => '💼 Strategic insight: ',
-                'tiktok' => '🔥 Quick tip: ',
-                default => '',
-            };
-            $variants[$p] = [
-                'caption' => $prefix . $caption,
-                'hashtags' => $hashtags,
-            ];
+            if (isset($platformPosts[$p])) {
+                $pData = $platformPosts[$p];
+                $pCaption = is_array($pData) ? ($pData['caption'] ?? $caption) : (string)$pData;
+                $variants[$p] = [
+                    'platform' => $p,
+                    'caption' => $pCaption,
+                    'hook' => is_array($pData) ? ($pData['hook'] ?? $hook) : $hook,
+                    'body' => is_array($pData) ? ($pData['body'] ?? $caption) : $caption,
+                    'callToAction' => is_array($pData) ? ($pData['callToAction'] ?? $cta) : $cta,
+                    'hashtags' => is_array($pData) ? ($pData['hashtags'] ?? $hashtags) : $hashtags,
+                    'characterCount' => mb_strlen($pCaption),
+                ];
+            } else {
+                $prefix = match ($p) {
+                    'x' => '⚡ ',
+                    'instagram' => '✨ ',
+                    'linkedin' => '💼 Strategic insight: ',
+                    'tiktok' => '🔥 Quick tip: ',
+                    default => '',
+                };
+                $variants[$p] = [
+                    'platform' => $p,
+                    'caption' => $prefix . $caption,
+                    'hook' => $hook,
+                    'body' => $caption,
+                    'callToAction' => $cta,
+                    'hashtags' => $hashtags,
+                    'characterCount' => mb_strlen($prefix . $caption),
+                ];
+            }
         }
+
+        $imagePrompt = $raw['image_prompt'] ?? $raw['imagePrompt'] ?? "Modern aesthetic visual representing {$topic}, premium studio lighting, 8k resolution, minimalist elegance";
+        $imageUrl = $gemini->generateImage($imagePrompt)['imageUrl'] ?? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&h=1080&auto=format&fit=crop&q=85';
 
         $formatted = [
             'mainCaption' => $caption,
@@ -54,95 +83,80 @@ class AiStudioController extends Controller
             'callToAction' => $cta,
             'call_to_action' => $cta,
             'hashtags' => $hashtags,
-            'suggestedMedia' => 'image',
-            'imagePrompt' => "Modern aesthetic visual representing {$topic}, premium cinematic lighting, 8k resolution, minimalist elegance",
-            'imageUrl' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&h=1080&auto=format&fit=crop&q=85',
+            'suggestedMedia' => $raw['suggested_media'] ?? $raw['suggestedMedia'] ?? 'image',
+            'imagePrompt' => $imagePrompt,
+            'imageUrl' => $imageUrl,
             'platformVariants' => $variants,
-            'aiModel' => $res['model'] ?? 'gemini-2.5-flash',
+            'aiModel' => $res['model'] ?? $gemini->getModel(),
         ];
 
         return response()->json([
-            'success' => true,
+            'success' => $res['success'] ?? true,
             'data' => $formatted,
-            'model' => $res['model'] ?? 'gemini-2.5-flash',
+            'model' => $res['model'] ?? $gemini->getModel(),
+            'error' => $res['error'] ?? null,
+            'code' => $res['code'] ?? null,
         ]);
     }
 
-    public function generateSuggestions(Request $request, OpenAiDriver $openai): JsonResponse
+    public function generateSuggestions(Request $request, GeminiDriver $gemini): JsonResponse
     {
-        $topic = $request->input('topic', 'Brand awareness');
+        $topic = $request->input('topic', 'Social media growth');
         $tone = $request->input('tone', 'engaging');
 
-        $result = $openai->generateSuggestions($topic, $tone);
+        $res = $gemini->generateSocialPost($topic, $tone, 'all');
+        $data = $res['data'] ?? [];
 
-        // Normalize output so both data and suggestions keys exist
-        $list = $result['data'] ?? [];
-        if (empty($list)) {
-            $list = [
+        $suggestions = [];
+        if (!empty($data['caption'])) {
+            $suggestions[] = ['text' => $data['caption'], 'content' => $data['caption']];
+        }
+        if (!empty($data['platform_posts'])) {
+            foreach ($data['platform_posts'] as $platKey => $platVal) {
+                if (!empty($platVal['caption'])) {
+                    $suggestions[] = ['text' => $platVal['caption'], 'content' => $platVal['caption']];
+                }
+            }
+        }
+
+        if (empty($suggestions)) {
+            $suggestions = [
                 ['content' => "🚀 3 simple tactics to elevate your {$topic} today.\n\nComment below to get our free playbook! 👇", 'text' => "🚀 3 simple tactics to elevate your {$topic} today."],
                 ['content' => "💡 The biggest mistake businesses make with {$topic} (and how to fix it in 5 minutes).", 'text' => "💡 The biggest mistake businesses make with {$topic} (and how to fix it in 5 minutes)."],
                 ['content' => "⚡ Real results: How our clients unlocked 3x growth using automated {$topic}.", 'text' => "⚡ Real results: How our clients unlocked 3x growth using automated {$topic}."],
             ];
         }
 
-        $formattedSuggestions = array_map(function ($item) {
-            $text = is_array($item) ? ($item['content'] ?? $item['text'] ?? '') : (string)$item;
-            return ['text' => $text, 'content' => $text];
-        }, $list);
-
         return response()->json([
             'success' => true,
-            'data' => $formattedSuggestions,
-            'suggestions' => $formattedSuggestions,
+            'data' => $suggestions,
+            'suggestions' => $suggestions,
+            'model' => $res['model'] ?? $gemini->getModel(),
         ]);
     }
 
     /**
      * POST /api/ai/image
-     * Generates or retrieves AI media asset for content studio.
+     * Generates or retrieves AI media asset for content studio with Gemini/Imagen.
      */
-    public function generateImage(Request $request): JsonResponse
+    public function generateImage(Request $request, GeminiDriver $gemini): JsonResponse
     {
-        $prompt = $request->input('prompt', 'Aesthetic modern clinic interior');
+        $prompt = $request->input('prompt', 'Aesthetic modern workspace with analytics dashboard');
         $style = $request->input('style', 'photorealistic');
+        $aspectRatio = $request->input('aspectRatio', '1:1');
 
-        $openaiKey = env('OPENAI_API_KEY');
-        $imageUrl = null;
-
-        if (!empty($openaiKey) && !str_contains($openaiKey, 'your_')) {
-            try {
-                $res = Http::withToken($openaiKey)->timeout(8)->post('https://api.openai.com/v1/images/generations', [
-                    'model' => 'dall-e-3',
-                    'prompt' => $prompt,
-                    'n' => 1,
-                    'size' => '1024x1024',
-                ]);
-                if ($res->successful()) {
-                    $imageUrl = $res->json('data.0.url');
-                }
-            } catch (\Throwable $e) {
-                Log::warning('DALL-E generation failed, using fallback', ['error' => $e->getMessage()]);
-            }
-        }
-
-        if (!$imageUrl) {
-            $stockImages = [
-                'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1080&h=1080&auto=format&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1080&h=1080&auto=format&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=1080&h=1080&auto=format&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1080&h=1080&auto=format&fit=crop&q=85',
-                'https://images.unsplash.com/photo-1512290900672-1f02e6a0d3df?w=1080&h=1080&auto=format&fit=crop&q=85',
-            ];
-            $imageUrl = $stockImages[abs(crc32($prompt)) % count($stockImages)];
-        }
+        $res = $gemini->generateImage($prompt, $style, $aspectRatio);
 
         return response()->json([
-            'success' => true,
-            'imageUrl' => $imageUrl,
-            'image_url' => $imageUrl,
-            'prompt' => $prompt,
-            'style' => $style,
-            'model' => 'imagen-3.0-generate-002',
+            'success' => $res['success'] ?? true,
+            'imageUrl' => $res['imageUrl'] ?? $res['image_url'],
+            'image_url' => $res['imageUrl'] ?? $res['image_url'],
+            'prompt' => $res['prompt'] ?? $prompt,
+            'style' => $res['style'] ?? $style,
+            'aspectRatio' => $res['aspectRatio'] ?? $aspectRatio,
+            'model' => $res['model'] ?? 'imagen-3.0-generate-002',
+            'error' => $res['error'] ?? null,
+            'code' => $res['code'] ?? null,
         ]);
     }
 
@@ -275,37 +289,60 @@ class AiStudioController extends Controller
     /**
      * POST /api/ai/extract-form
      * Extracts structured form parameters (title, content, platforms, scheduledAt, tone, mode, hashtags, etc.)
-     * from voice transcripts or user input text.
+     * from voice audio recordings, transcripts, or user input text briefs.
      */
-    public function extractForm(Request $request): JsonResponse
+    public function extractForm(Request $request, GeminiDriver $gemini): JsonResponse
     {
-        $prompt = trim((string)$request->input('text') ?: (string)$request->input('clientTranscript'));
+        $now = $request->input('now');
+        $options = [
+            'now' => $now,
+            'clientTranscript' => $request->input('clientTranscript'),
+        ];
 
-        if (empty($prompt) && $request->hasFile('audio')) {
-            $prompt = 'Schedule an exciting announcement post for tomorrow at 3pm on Twitter and LinkedIn. Mention we are launching our new AI features and offer 20% off with promo code LAUNCH20.';
+        // 1. Audio input
+        if ($request->hasFile('audio')) {
+            $audioFile = $request->file('audio');
+            $res = $gemini->extractFromAudioOrText($audioFile, $options);
+
+            if (!($res['success'] ?? false) && isset($res['code']) && $res['code'] === 'UNSUPPORTED_AUDIO_FORMAT') {
+                return response()->json([
+                    'success' => false,
+                    'error' => $res['error'] ?? 'Unsupported audio format.',
+                    'code' => 'UNSUPPORTED_AUDIO_FORMAT',
+                ], 422);
+            }
+
+            if (!($res['success'] ?? false) && isset($res['code']) && $res['code'] === 'AUDIO_FILE_TOO_LARGE') {
+                return response()->json([
+                    'success' => false,
+                    'error' => $res['error'] ?? 'Audio file exceeds 25MB limit.',
+                    'code' => 'AUDIO_FILE_TOO_LARGE',
+                ], 422);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $res['data'] ?? [],
+                'model' => $res['model'] ?? $gemini->getModel(),
+            ]);
         }
 
-        if (empty($prompt)) {
+        // 2. Text or transcript input
+        $text = trim((string)$request->input('text') ?: (string)$request->input('clientTranscript'));
+        if (empty($text)) {
             return response()->json([
                 'success' => false,
-                'error' => 'Please provide instructions or text to extract form fields.',
+                'error' => 'Please provide speech audio or text instructions to extract post parameters.',
+                'code' => 'EMPTY_INPUT',
             ], 422);
         }
 
-        $nowInput = $request->input('now');
-        $now = $nowInput ? Carbon::parse($nowInput) : now();
-
-        // 1. Attempt LLM structured extraction if API key configured
-        $extracted = $this->tryLlmExtraction($prompt, $now);
-
-        // 2. Fallback to robust deterministic rule engine if LLM unavailable or timed out
-        if (!$extracted) {
-            $extracted = $this->deterministicExtraction($prompt, $now);
-        }
+        $res = $gemini->extractFromAudioOrText($text, $options);
 
         return response()->json([
             'success' => true,
-            'data' => $extracted,
+            'data' => $res['data'] ?? [],
+            'model' => $res['model'] ?? $gemini->getModel(),
         ]);
     }
 

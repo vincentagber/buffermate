@@ -9,7 +9,7 @@ export default function MarketingHero() {
   return (
     <section className="relative pt-10 sm:pt-16 pb-16 lg:pb-24 overflow-hidden border-b border-[#E2E0D5]">
       {/* Decorative Sparkle */}
-      <div className="absolute top-12 right-1/3 text-[#C8FF3D] opacity-80 pointer-events-none hidden lg:block">
+      <div className="absolute top-12 right-1/3 text-[#07B979] opacity-80 pointer-events-none hidden lg:block">
         <Sparkles className="w-8 h-8" />
       </div>
 
@@ -58,7 +58,7 @@ export default function MarketingHero() {
                   src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop&crop=face"
                   alt="Creator"
                 />
-                <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-[#141416] text-[#C8FF3D] text-[11px] font-bold ring-2 ring-[#E2E0D5]">
+                <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-[#00784D] text-[#07B979] text-[11px] font-bold ring-2 ring-[#E2E0D5]">
                   +2.4k
                 </div>
               </div>
@@ -86,20 +86,20 @@ export default function MarketingHero() {
             {/* FLOATING CARD 1: Top-Left "Posts Processed" with lime trend */}
             <div className="absolute -top-4 -left-2 sm:left-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 animate-fade-in w-44">
               <div className="flex items-center space-x-1.5 text-zinc-400 text-[11px] font-semibold">
-                <TrendingUp className="w-3.5 h-3.5 text-[#C8FF3D]" />
+                <TrendingUp className="w-3.5 h-3.5 text-[#07B979]" />
                 <span>Posts Processed</span>
               </div>
               <div className="mt-1 flex items-baseline justify-between">
                 <span className="text-2xl font-black text-white tracking-tight">
                   1,420
                 </span>
-                <svg className="w-16 h-6 stroke-[#C8FF3D] fill-none" viewBox="0 0 60 20">
+                <svg className="w-16 h-6 stroke-[#07B979] fill-none" viewBox="0 0 60 20">
                   <path
                     d="M 2 16 Q 15 18, 25 10 T 45 6 T 58 2"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                   />
-                  <circle cx="58" cy="2" r="2.5" className="fill-[#C8FF3D]" />
+                  <circle cx="58" cy="2" r="2.5" className="fill-[#07B979]" />
                 </svg>
               </div>
             </div>
@@ -115,11 +115,11 @@ export default function MarketingHero() {
                 <div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xs font-bold text-white">Chukwuka Obiosa</span>
-                    <CheckCircle2 className="w-3 h-3 text-[#C8FF3D] fill-[#C8FF3D]/20" />
+                    <CheckCircle2 className="w-3 h-3 text-[#07B979] fill-[#07B979]/20" />
                   </div>
-                  <div className="flex text-[#C8FF3D] space-x-0.5">
+                  <div className="flex text-[#07B979] space-x-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-2.5 h-2.5 fill-[#C8FF3D]" />
+                      <Star key={i} className="w-2.5 h-2.5 fill-[#07B979]" />
                     ))}
                     <span className="text-[10px] text-zinc-400 ml-1 font-semibold">(5.0)</span>
                   </div>
@@ -133,10 +133,10 @@ export default function MarketingHero() {
             {/* FLOATING CARD 3: Bottom-Right "Active Queue Engine" */}
             <div className="absolute -bottom-4 right-0 sm:right-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 w-56">
               <div className="flex items-center justify-between pb-2">
-                <div className="w-7 h-7 rounded-xl bg-[#C8FF3D]/15 text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center">
-                  <CheckCircle2 className="w-4 h-4 text-[#C8FF3D]" />
+                <div className="w-7 h-7 rounded-xl bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/30 flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4 text-[#07B979]" />
                 </div>
-                <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-semibold text-[#C8FF3D]">
+                <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] font-semibold text-[#07B979]">
                   Just now
                 </span>
               </div>
@@ -148,7 +148,7 @@ export default function MarketingHero() {
               </p>
               <div className="mt-3 pt-2 border-t border-zinc-800 flex items-center justify-between text-[11px]">
                 <span className="text-zinc-400">Available Channels</span>
-                <span className="font-bold text-[#C8FF3D] font-mono">6 Connected</span>
+                <span className="font-bold text-[#07B979] font-mono">6 Connected</span>
               </div>
             </div>
           </div>

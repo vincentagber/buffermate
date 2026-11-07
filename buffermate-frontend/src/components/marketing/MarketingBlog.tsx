@@ -15,7 +15,7 @@ export default function MarketingBlog() {
         <div className="space-y-2">
           <h2 className="text-3xl sm:text-5xl font-hero-sans font-normal tracking-tight text-[#000000]">
             Latest from the <span className="font-editorial-italic text-[#141416]">blog</span>
-            <span className="text-[#C8FF3D] font-black">.</span>
+            <span className="text-[#00784D] font-black">.</span>
           </h2>
           <p className="font-medium text-base text-[#141416]/75 max-w-xl">
             Guides, tutorials, and algorithmic insights on social media management, automation, and audience growth.
@@ -24,7 +24,7 @@ export default function MarketingBlog() {
 
         <Link
           href="/blog"
-          className="inline-flex items-center space-x-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#C8FF3D] decoration-2 transition-colors self-start sm:self-auto shrink-0"
+          className="inline-flex items-center space-x-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#00784D] decoration-2 transition-colors self-start sm:self-auto shrink-0"
         >
           <span>View all 9 guides</span>
           <ArrowRight className="w-4 h-4" />
@@ -37,12 +37,12 @@ export default function MarketingBlog() {
           <Link
             key={article.slug}
             href={`/blog/${article.slug}`}
-            className="group bg-[#141416] rounded-[28px] p-8 border border-[#141416] hover:border-[#C8FF3D]/50 hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between"
+            className="group bg-[#141416] rounded-[28px] p-8 border border-[#141416] hover:border-[#07B979]/50 hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col justify-between"
           >
             <div>
               {/* Category & Read Time */}
               <div className="flex items-center justify-between mb-5">
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#C8FF3D]/10 text-[#C8FF3D] border border-[#C8FF3D]/30">
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/30">
                   {article.category}
                 </span>
                 <span className="text-xs text-[#E2E0D5]/60 font-medium">
@@ -51,7 +51,7 @@ export default function MarketingBlog() {
               </div>
 
               {/* Title */}
-              <h3 className="font-bold text-[19px] text-[#E2E0D5] group-hover:text-[#C8FF3D] transition-colors leading-snug mb-3">
+              <h3 className="font-bold text-[19px] text-[#E2E0D5] group-hover:text-[#07B979] transition-colors leading-snug mb-3">
                 {article.title}
               </h3>
 
@@ -79,7 +79,7 @@ export default function MarketingBlog() {
                 </div>
               </div>
 
-              <div className="w-8 h-8 rounded-full bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 group-hover:bg-[#C8FF3D] group-hover:text-[#000000] flex items-center justify-center transition-colors">
+              <div className="w-8 h-8 rounded-full bg-[#000000] text-[#07B979] border border-[#07B979]/30 group-hover:bg-[#00784D] group-hover:text-white flex items-center justify-center transition-colors">
                 <ArrowRight className="w-4 h-4" />
               </div>
             </div>

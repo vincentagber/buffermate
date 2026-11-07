@@ -54,7 +54,7 @@ export default function PricingCards({ showTitle = true }: PricingCardsProps) {
                 onClick={() => setBillingCycle('annual')}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer flex items-center space-x-1.5 ${
                   billingCycle === 'annual'
-                    ? 'bg-[#141416] text-[#C8FF3D] shadow-2xs'
+                    ? 'bg-[#00784D] text-white shadow-2xs'
                     : 'text-slate-500 hover:text-slate-800'
                 }`}
               >

@@ -156,10 +156,10 @@ export default function FeaturesPage() {
   const activePost = currentDemo[activePlatform];
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#00784D]/20 selection:text-[#00784D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -187,12 +187,12 @@ export default function FeaturesPage() {
           </div>
 
           {/* Radial soft glow behind hero badge */}
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#00784D]/10 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[850px] mx-auto text-center animate-slide-up-fade">
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#C8FF3D] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[#07B979] animate-pulse" />
               <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
                 Platform Features
               </span>
@@ -201,7 +201,7 @@ export default function FeaturesPage() {
             {/* Massive Headline */}
             <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
               Every channel, <br className="hidden sm:inline" />
-              <span className="text-[#C8FF3D]">one autonomous engine.</span>
+              <span className="text-[#00784D]">one autonomous engine.</span>
             </h1>
 
             {/* Subtitle */}
@@ -234,7 +234,7 @@ export default function FeaturesPage() {
               <div className="max-w-[620px]">
                 <h2 className="font-extrabold text-[34px] md:text-[46px] text-[#1A202C] leading-[1.12] mb-4">
                   Scale operations with <br />
-                  <span className="text-[#C8FF3D]">autonomous precision.</span>
+                  <span className="text-[#00784D]">autonomous precision.</span>
                 </h2>
                 <p className="font-medium text-[17px] text-[#6B6B60] leading-relaxed">
                   Engineered for solo creators, fast-moving agencies, and high-growth brands that cannot afford fragmented tools, missed peak times, or lost comment leads.
@@ -254,11 +254,11 @@ export default function FeaturesPage() {
               <div className="bg-white rounded-[24px] p-8 border border-[#E2E0D5] hover:border-[#C4C4B8] transition-all hover:shadow-xl hover:-translate-y-1 group flex flex-col justify-between">
                 <div>
                   <div className="flex items-start gap-5 mb-5">
-                    <div className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 bg-[#C8FF3D]/10 border border-[#C8FF3D]/20 text-[#C8FF3D]">
+                    <div className="w-14 h-14 rounded-[16px] flex items-center justify-center shrink-0 bg-[#00784D]/10 border border-[#07B979]/30 text-[#00784D]">
                       <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#C8FF3D] bg-[#C8FF3D]/10 px-2.5 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#00784D] bg-[#00784D]/10 px-2.5 py-0.5 rounded-full">
                         Gemini 2.0 &amp; GPT-4
                       </span>
                       <h3 className="font-bold text-[20px] text-[#1A202C] mt-1">
@@ -272,7 +272,7 @@ export default function FeaturesPage() {
                 </div>
                 <div className="pt-4 border-t border-[#EFECE5] flex items-center justify-between text-xs font-semibold text-[#1A202C]">
                   <span>Curiosity Hook Scoring</span>
-                  <span className="text-[#C8FF3D]">98% Match Rate →</span>
+                  <span className="text-[#00784D]">98% Match Rate →</span>
                 </div>
               </div>
 
@@ -416,7 +416,7 @@ export default function FeaturesPage() {
           <div className="max-w-[1200px] mx-auto px-5 md:px-10">
             {/* Header */}
             <div className="text-center max-w-[700px] mx-auto mb-14">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E2E0D5] text-[11px] font-bold text-[#C8FF3D] uppercase tracking-wider mb-4 shadow-2xs">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E2E0D5] text-[11px] font-bold text-[#00784D] uppercase tracking-wider mb-4 shadow-2xs">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Live Interactive Demonstration</span>
               </div>
@@ -452,8 +452,8 @@ export default function FeaturesPage() {
                   </div>
 
                   {/* Model Engine Badge */}
-                  <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#C8FF3D] bg-[#C8FF3D]/10 px-3 py-1.5 rounded-full border border-[#C8FF3D]/20 self-start md:self-auto">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#C8FF3D] animate-ping" />
+                  <div className="flex items-center gap-2 text-xs font-mono font-semibold text-[#00784D] bg-[#00784D]/10 px-3 py-1.5 rounded-full border border-[#07B979]/30 self-start md:self-auto">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#07B979] animate-ping" />
                     <span>Gemini 2.0 Viral Architecture</span>
                   </div>
                 </div>
@@ -499,7 +499,7 @@ export default function FeaturesPage() {
                 <div className="lg:col-span-8 space-y-6">
                   {/* Viral Score & Reach Projection */}
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#C8FF3D]/10 border border-[#C8FF3D]/30 text-xs font-bold text-[#C8FF3D]">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00784D]/10 border border-[#07B979]/30 text-xs font-bold text-[#00784D]">
                       <Zap className="w-3.5 h-3.5" />
                       <span>Viral Hook Score: {activePost.score}/100</span>
                     </div>
@@ -533,9 +533,9 @@ export default function FeaturesPage() {
                     <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B6B60]">
                       Automated Lead Trigger CTA:
                     </span>
-                    <div className="p-3.5 rounded-xl bg-[#C8FF3D]/5 border border-[#C8FF3D]/20 text-xs md:text-sm font-semibold text-[#1A202C] flex items-center justify-between">
+                    <div className="p-3.5 rounded-xl bg-[#00784D]/5 border border-[#07B979]/30 text-xs md:text-sm font-semibold text-[#1A202C] flex items-center justify-between">
                       <span>{activePost.cta}</span>
-                      <span className="shrink-0 ml-3 text-[10px] font-bold uppercase bg-[#C8FF3D] text-white px-2 py-0.5 rounded-md">
+                      <span className="shrink-0 ml-3 text-[10px] font-bold uppercase bg-[#00784D] text-white px-2 py-0.5 rounded-md">
                         Auto-DM Ready
                       </span>
                     </div>
@@ -553,13 +553,13 @@ export default function FeaturesPage() {
                       onClick={() => handleCopy(`${activePost.hook}\n\n${activePost.body}\n\n${activePost.cta}`)}
                       className="w-full py-3 px-4 bg-white hover:bg-slate-50 text-[#1A202C] rounded-xl font-bold text-xs border border-[#E2E0D5] flex items-center justify-center gap-2 shadow-2xs transition-all cursor-pointer"
                     >
-                      {isCopied ? <Check className="w-4 h-4 text-[#C8FF3D]" /> : <Copy className="w-4 h-4" />}
+                      {isCopied ? <Check className="w-4 h-4 text-[#00784D]" /> : <Copy className="w-4 h-4" />}
                       <span>{isCopied ? 'Copied to Clipboard!' : 'Copy Formatted Text'}</span>
                     </button>
 
                     <Link
                       href="/signup"
-                      className="w-full py-3.5 px-4 bg-[#C8FF3D] hover:bg-[#5e8733] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                      className="w-full py-3.5 px-4 bg-[#00784D] hover:bg-[#07B979] text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
                     >
                       <span>Add to Smart Queue Now</span>
                       <ArrowRight className="w-4 h-4" />
@@ -571,15 +571,15 @@ export default function FeaturesPage() {
                       Autonomous Checklist
                     </div>
                     <div className="space-y-2 text-xs font-medium text-[#4A5568]">
-                      <div className="flex items-center gap-2 text-[#C8FF3D]">
+                      <div className="flex items-center gap-2 text-[#00784D]">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Platform character limit verified</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[#C8FF3D]">
+                      <div className="flex items-center gap-2 text-[#00784D]">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Curiosity gap algorithm optimized</span>
                       </div>
-                      <div className="flex items-center gap-2 text-[#C8FF3D]">
+                      <div className="flex items-center gap-2 text-[#00784D]">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Comment keyword trigger verified</span>
                       </div>
@@ -606,7 +606,7 @@ export default function FeaturesPage() {
 
                 <h2 className="font-extrabold text-[34px] md:text-[44px] text-[#1A202C] leading-[1.12]">
                   Publish when your audience is <br />
-                  <span className="text-[#C8FF3D]">actually scrolling.</span>
+                  <span className="text-[#00784D]">actually scrolling.</span>
                 </h2>
 
                 <p className="font-medium text-[16px] text-[#6B6B60] leading-relaxed">
@@ -615,7 +615,7 @@ export default function FeaturesPage() {
 
                 <div className="space-y-3 pt-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#C8FF3D]/10 text-[#C8FF3D] flex items-center justify-center font-bold text-xs mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-[#00784D]/10 text-[#00784D] flex items-center justify-center font-bold text-xs mt-0.5">
                       ✓
                     </div>
                     <p className="text-sm font-medium text-[#4A5568]">
@@ -623,7 +623,7 @@ export default function FeaturesPage() {
                     </p>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-6 h-6 rounded-full bg-[#C8FF3D]/10 text-[#C8FF3D] flex items-center justify-center font-bold text-xs mt-0.5">
+                    <div className="w-6 h-6 rounded-full bg-[#00784D]/10 text-[#00784D] flex items-center justify-center font-bold text-xs mt-0.5">
                       ✓
                     </div>
                     <p className="text-sm font-medium text-[#4A5568]">
@@ -682,12 +682,12 @@ export default function FeaturesPage() {
                       key={idx}
                       className={`p-3.5 rounded-xl border flex items-center justify-between transition-all ${
                         slot.highlight
-                          ? 'bg-[#C8FF3D]/5 border-[#C8FF3D]/30 shadow-2xs'
+                          ? 'bg-[#00784D]/5 border-[#07B979]/30 shadow-2xs'
                           : 'bg-[#E2E0D5]/60 border-[#E2E0D5]'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <Clock className={`w-4 h-4 ${slot.highlight ? 'text-[#C8FF3D]' : 'text-[#6B6B60]'}`} />
+                        <Clock className={`w-4 h-4 ${slot.highlight ? 'text-[#00784D]' : 'text-[#6B6B60]'}`} />
                         <span className="text-xs md:text-sm font-bold text-[#1A202C]">
                           {slot.time}
                         </span>
@@ -698,14 +698,14 @@ export default function FeaturesPage() {
                         <div className="w-24 md:w-32 h-2.5 bg-[#E2E0D5] rounded-full overflow-hidden hidden sm:block">
                           <div
                             className={`h-full rounded-full ${
-                              slot.highlight ? 'bg-[#C8FF3D]' : 'bg-[#A0AEC0]'
+                              slot.highlight ? 'bg-[#00784D]' : 'bg-[#A0AEC0]'
                             }`}
                             style={{ width: `${slot.density}%` }}
                           />
                         </div>
                         <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
                           slot.highlight
-                            ? 'bg-[#C8FF3D] text-white'
+                            ? 'bg-[#00784D] text-white'
                             : 'bg-[#E2E0D5] text-[#4A5568]'
                         }`}>
                           {slot.status}
@@ -717,7 +717,7 @@ export default function FeaturesPage() {
 
                 <div className="mt-6 pt-5 border-t border-[#E2E0D5] flex items-center justify-between text-xs text-[#6B6B60]">
                   <span>Optimized for Africa/Lagos (UTC+1)</span>
-                  <span className="font-bold text-[#C8FF3D]">Automated Queue Active</span>
+                  <span className="font-bold text-[#00784D]">Automated Queue Active</span>
                 </div>
               </div>
             </div>
@@ -745,7 +745,7 @@ export default function FeaturesPage() {
                     <tr>
                       <th className="py-5 px-6 md:px-8 text-[#1A202C]">Operational Capability</th>
                       <th className="py-5 px-6 text-[#6B6B60]">Manual Social Routine</th>
-                      <th className="py-5 px-6 md:px-8 text-[#C8FF3D] font-extrabold bg-[#C8FF3D]/5">
+                      <th className="py-5 px-6 md:px-8 text-[#00784D] font-extrabold bg-[#00784D]/5">
                         Buffermate AI Stack
                       </th>
                     </tr>
@@ -790,9 +790,9 @@ export default function FeaturesPage() {
                         <td className="py-5 px-6 text-[#6B6B60] text-xs md:text-sm leading-relaxed">
                           {row.manual}
                         </td>
-                        <td className="py-5 px-6 md:px-8 font-medium text-[#1A202C] text-xs md:text-sm leading-relaxed bg-[#C8FF3D]/5">
+                        <td className="py-5 px-6 md:px-8 font-medium text-[#1A202C] text-xs md:text-sm leading-relaxed bg-[#00784D]/5">
                           <div className="flex items-start gap-2">
-                            <span className="text-[#C8FF3D] font-bold text-base mt-[-2px]">✓</span>
+                            <span className="text-[#00784D] font-bold text-base mt-[-2px]">✓</span>
                             <span>{row.buffermate}</span>
                           </div>
                         </td>
@@ -817,7 +817,7 @@ export default function FeaturesPage() {
               </div>
               <h2 className="font-extrabold text-[34px] md:text-[48px] text-white leading-tight mb-5">
                 Built on a foundation of <br />
-                <span className="text-[#C8FF3D]">absolute reliability.</span>
+                <span className="text-[#07B979]">absolute reliability.</span>
               </h2>
               <p className="font-normal text-[16px] md:text-[18px] text-slate-300 leading-relaxed">
                 We know your social channels and creator accounts are your lifeblood. That is why we never scrape, never store passwords, and connect strictly through verified developer endpoints.
@@ -826,7 +826,7 @@ export default function FeaturesPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white/5 border border-white/10 rounded-[24px] p-8 hover:bg-white/10 transition-all">
-                <div className="w-12 h-12 rounded-2xl bg-[#C8FF3D]/20 text-[#C8FF3D] flex items-center justify-center font-bold text-lg mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-[#00784D]/30 text-[#07B979] flex items-center justify-center font-bold text-lg mb-6">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <h3 className="font-bold text-xl text-white mb-2">

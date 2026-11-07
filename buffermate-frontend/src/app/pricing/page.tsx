@@ -58,10 +58,10 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#00784D]/30 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/10 to-transparent blur-[130px]" />
       </div>
 
@@ -81,7 +81,7 @@ export default function PricingPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/15 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#07B979]/15 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#141416]/15 shadow-xs mb-6 mx-auto">
@@ -107,12 +107,12 @@ export default function PricingPage() {
                 onClick={() => setBillingCycle('annual')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                   billingCycle === 'annual'
-                    ? 'bg-[#141416] text-[#C8FF3D] shadow-xs'
+                    ? 'bg-[#00784D] text-white shadow-xs'
                     : 'text-[#141416]/70 hover:text-[#000000]'
                 }`}
               >
                 <span>Annual Billing</span>
-                <span className="text-[10px] font-extrabold bg-[#C8FF3D] text-[#000000] px-2 py-0.5 rounded-full border border-[#141416]/20">
+                <span className="text-[10px] font-extrabold bg-[#07B979] text-[#000000] px-2 py-0.5 rounded-full border border-[#141416]/20">
                   Save 20%
                 </span>
               </button>
@@ -121,7 +121,7 @@ export default function PricingPage() {
                 onClick={() => setBillingCycle('monthly')}
                 className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                   billingCycle === 'monthly'
-                    ? 'bg-[#141416] text-[#C8FF3D] shadow-xs'
+                    ? 'bg-[#00784D] text-white shadow-xs'
                     : 'text-[#141416]/70 hover:text-[#000000]'
                 }`}
               >
@@ -181,14 +181,14 @@ export default function PricingPage() {
             </div>
 
             {/* Tier 2: Pro Growth (Popular) */}
-            <div className="bg-[#141416] text-[#E2E0D5] rounded-[28px] border-2 border-[#C8FF3D] p-8 md:p-9 flex flex-col justify-between shadow-2xl relative">
+            <div className="bg-[#141416] text-[#E2E0D5] rounded-[28px] border-2 border-[#07B979] p-8 md:p-9 flex flex-col justify-between shadow-2xl relative">
               {/* Popular Pill */}
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#C8FF3D] text-[#000000] text-[10px] font-black uppercase tracking-widest shadow-md border border-[#141416]/20">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#07B979] text-[#000000] text-[10px] font-black uppercase tracking-widest shadow-md border border-[#141416]/20">
                 Most Popular
               </div>
 
               <div>
-                <div className="text-[11px] font-black uppercase tracking-wider text-[#C8FF3D] mb-2">
+                <div className="text-[11px] font-black uppercase tracking-wider text-[#07B979] mb-2">
                   High-Growth Creators
                 </div>
                 <h3 className="font-extrabold text-[26px] text-[#E2E0D5] mb-2">
@@ -219,7 +219,7 @@ export default function PricingPage() {
                     'Priority Email Support',
                   ].map((feat, idx) => (
                     <div key={idx} className="flex items-center gap-3 text-xs md:text-sm font-semibold text-[#E2E0D5]">
-                      <div className="w-5 h-5 rounded-full bg-[#C8FF3D] text-[#000000] flex items-center justify-center font-black text-[10px] shrink-0">
+                      <div className="w-5 h-5 rounded-full bg-[#07B979] text-[#000000] flex items-center justify-center font-black text-[10px] shrink-0">
                         ✓
                       </div>
                       <span>{feat}</span>
@@ -230,7 +230,7 @@ export default function PricingPage() {
 
               <Link
                 href="/signup?plan=pro"
-                className="w-full py-4 text-center rounded-full bg-[#C8FF3D] hover:bg-white text-[#000000] font-black text-sm shadow-lg hover:shadow-xl transition-all"
+                className="w-full py-4 text-center rounded-full bg-[#00784D] hover:bg-[#07B979] text-white font-black text-sm shadow-lg hover:shadow-xl transition-all"
               >
                 Upgrade to Pro Growth
               </Link>
@@ -291,7 +291,7 @@ export default function PricingPage() {
           {/* Bachs Payment Security Badge */}
           <div className="mt-12 p-6 rounded-2xl bg-[#141416] text-[#E2E0D5] border border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#C8FF3D]/10 text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-xl bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/40 flex items-center justify-center font-bold">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
@@ -308,7 +308,7 @@ export default function PricingPage() {
               href="https://docs.bachs.io"
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-bold text-[#C8FF3D] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-bold text-[#07B979] hover:underline flex items-center gap-1 shrink-0"
             >
               <span>Learn About Bachs Security</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -336,7 +336,7 @@ export default function PricingPage() {
                   <tr>
                     <th className="py-5 px-6 md:px-8 text-[#E2E0D5]">Capability</th>
                     <th className="py-5 px-6 text-[#E2E0D5]/60">Starter Free</th>
-                    <th className="py-5 px-6 text-[#C8FF3D] font-extrabold bg-[#C8FF3D]/10">
+                    <th className="py-5 px-6 text-[#07B979] font-extrabold bg-[#00784D]/20">
                       Pro Growth ($23/mo)
                     </th>
                     <th className="py-5 px-6 text-[#E2E0D5] font-extrabold">
@@ -353,7 +353,7 @@ export default function PricingPage() {
                       <td className="py-4 px-6 text-[#E2E0D5]/70 text-xs md:text-sm font-medium">
                         {row.free}
                       </td>
-                      <td className="py-4 px-6 font-bold text-[#C8FF3D] text-xs md:text-sm bg-[#C8FF3D]/10">
+                      <td className="py-4 px-6 font-bold text-[#07B979] text-xs md:text-sm bg-[#00784D]/20">
                         {row.pro}
                       </td>
                       <td className="py-4 px-6 font-bold text-[#E2E0D5] text-xs md:text-sm">

@@ -51,8 +51,8 @@ export default function SignUpPage() {
     return (
       <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 relative overflow-hidden">
         <div className="max-w-md w-full bg-white rounded-[28px] p-8 md:p-10 border border-[#141416]/15 shadow-xl text-center space-y-4">
-          <div className="w-14 h-14 bg-[#C8FF3D]/20 text-[#141416] border border-[#C8FF3D]/40 rounded-2xl flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-7 h-7 text-[#141416]" />
+          <div className="w-14 h-14 bg-[#00784D]/15 text-[#00784D] border border-[#07B979]/40 rounded-2xl flex items-center justify-center mx-auto">
+            <CheckCircle2 className="w-7 h-7 text-[#00784D]" />
           </div>
           <h2 className="text-2xl font-extrabold text-[#000000]">Check your email</h2>
           <p className="text-xs sm:text-sm text-[#141416]/70 leading-relaxed">
@@ -60,7 +60,7 @@ export default function SignUpPage() {
           </p>
           <Link
             href="/login"
-            className="w-full inline-flex justify-center py-3.5 px-4 bg-[#141416] hover:bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer"
+            className="w-full inline-flex justify-center py-3.5 px-4 bg-[#00784D] hover:bg-[#07B979] text-white border border-[#07B979]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all cursor-pointer"
           >
             Back to Login
           </Link>
@@ -70,10 +70,10 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
+    <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#00784D]/30 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/10 to-transparent blur-[130px]" />
       </div>
 
@@ -82,8 +82,8 @@ export default function SignUpPage() {
         {/* Brand Logo & Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 rounded-2xl bg-[#C8FF3D] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#141416]/20">
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-[#141416] bg-transparent" />
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00784D] to-[#07B979] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#00784D]/20">
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
             </div>
             <div className="flex flex-col text-left">
               <span className="font-extrabold text-[19px] text-[#000000] tracking-tight leading-tight">
@@ -126,7 +126,7 @@ export default function SignUpPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@company.com"
                 required
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#00784D] focus:ring-2 focus:ring-[#07B979]/40 transition-all placeholder:text-[#141416]/40"
               />
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function SignUpPage() {
                 placeholder="Minimum 8 characters"
                 required
                 minLength={8}
-                className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
+                className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#00784D] focus:ring-2 focus:ring-[#07B979]/40 transition-all placeholder:text-[#141416]/40"
               />
               <button
                 type="button"
@@ -169,7 +169,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-4 bg-[#141416] hover:bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3.5 px-4 bg-[#00784D] hover:bg-[#07B979] text-white border border-[#07B979]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {loading ? (
               <>
@@ -188,7 +188,7 @@ export default function SignUpPage() {
         {/* Footer Link to Login */}
         <div className="pt-4 border-t border-[#141416]/10 text-center text-xs font-medium text-[#141416]/70">
           Already have an account?{' '}
-          <Link href="/login" className="font-bold text-[#000000] underline decoration-[#C8FF3D] decoration-2 hover:text-[#141416]">
+          <Link href="/login" className="font-bold text-[#000000] underline decoration-[#00784D] decoration-2 hover:text-[#141416]">
             Sign In
           </Link>
         </div>

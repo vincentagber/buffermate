@@ -69,10 +69,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
+    <div className="min-h-screen bg-[#E2E0D5] font-sans antialiased text-[#000000] flex items-center justify-center p-4 sm:p-6 relative overflow-hidden selection:bg-[#00784D]/30 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/10 to-transparent blur-[130px]" />
       </div>
 
@@ -81,8 +81,8 @@ export default function LoginPage() {
         {/* Brand Logo & Header */}
         <div className="text-center space-y-3">
           <Link href="/" className="inline-flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 rounded-2xl bg-[#C8FF3D] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#141416]/20">
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-[#141416] bg-transparent" />
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00784D] to-[#07B979] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#00784D]/20">
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
             </div>
             <div className="flex flex-col text-left">
               <span className="font-extrabold text-[19px] text-[#000000] tracking-tight leading-tight">
@@ -114,7 +114,7 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
               authMethod === 'password'
-                ? 'bg-[#141416] text-[#C8FF3D] shadow-2xs'
+                ? 'bg-[#00784D] text-white shadow-2xs'
                 : 'text-[#141416]/70 hover:text-[#000000]'
             }`}
           >
@@ -128,7 +128,7 @@ export default function LoginPage() {
             }}
             className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
               authMethod === 'magic-link'
-                ? 'bg-[#141416] text-[#C8FF3D] shadow-2xs'
+                ? 'bg-[#00784D] text-white shadow-2xs'
                 : 'text-[#141416]/70 hover:text-[#000000]'
             }`}
           >
@@ -150,7 +150,7 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={handleQuickDemoLogin}
-            className="px-2.5 py-1 text-[11px] font-bold text-[#000000] bg-[#C8FF3D] hover:bg-[#C8FF3D]/80 border border-[#141416]/20 rounded-lg transition-colors cursor-pointer"
+            className="px-2.5 py-1 text-[11px] font-bold text-white bg-[#00784D] hover:bg-[#07B979] border border-[#07B979]/40 rounded-lg transition-colors cursor-pointer"
           >
             Fill In
           </button>
@@ -166,8 +166,8 @@ export default function LoginPage() {
         {/* Magic Link Success View */}
         {magicLinkSent ? (
           <div className="space-y-4 text-center py-4">
-            <div className="w-12 h-12 bg-[#C8FF3D]/20 text-[#141416] border border-[#C8FF3D]/40 rounded-2xl flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-6 h-6 text-[#141416]" />
+            <div className="w-12 h-12 bg-[#00784D]/15 text-[#00784D] border border-[#07B979]/40 rounded-2xl flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-6 h-6 text-[#00784D]" />
             </div>
             <h3 className="font-extrabold text-base text-[#000000]">Check your inbox</h3>
             <p className="text-xs text-[#141416]/70 leading-relaxed">
@@ -176,7 +176,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setMagicLinkSent(false)}
-              className="text-xs font-bold text-[#141416] underline decoration-[#C8FF3D] decoration-2 hover:text-[#000000]"
+              className="text-xs font-bold text-[#00784D] underline decoration-[#07B979] decoration-2 hover:text-[#000000]"
             >
               Use a different sign-in method
             </button>
@@ -199,7 +199,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@company.com"
                   required
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#00784D] focus:ring-2 focus:ring-[#07B979]/40 transition-all placeholder:text-[#141416]/40"
                 />
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function LoginPage() {
                   </label>
                   <Link
                     href="/forgot-password"
-                    className="text-[11px] font-bold text-[#141416] hover:underline decoration-[#C8FF3D]"
+                    className="text-[11px] font-bold text-[#141416] hover:underline decoration-[#00784D]"
                   >
                     Forgot password?
                   </Link>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#141416] focus:ring-2 focus:ring-[#C8FF3D]/40 transition-all placeholder:text-[#141416]/40"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-[#141416]/15 bg-white text-xs sm:text-sm text-[#000000] font-medium focus:outline-none focus:border-[#00784D] focus:ring-2 focus:ring-[#07B979]/40 transition-all placeholder:text-[#141416]/40"
                   />
                   <button
                     type="button"
@@ -241,7 +241,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 px-4 bg-[#141416] hover:bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3.5 px-4 bg-[#00784D] hover:bg-[#07B979] text-white border border-[#07B979]/30 rounded-full text-xs sm:text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>
@@ -261,7 +261,7 @@ export default function LoginPage() {
         {/* Footer Link to Signup */}
         <div className="pt-4 border-t border-[#141416]/10 text-center text-xs font-medium text-[#141416]/70">
           Don&apos;t have an account yet?{' '}
-          <Link href="/signup" className="font-bold text-[#000000] underline decoration-[#C8FF3D] decoration-2 hover:text-[#141416]">
+          <Link href="/signup" className="font-bold text-[#000000] underline decoration-[#00784D] decoration-2 hover:text-[#141416]">
             Start Free Workspace
           </Link>
         </div>

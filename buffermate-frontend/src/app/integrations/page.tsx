@@ -41,7 +41,7 @@ const INTEGRATIONS: IntegrationChannel[] = [
     name: 'Instagram Graph API',
     category: 'Meta Verified',
     status: 'Verified Partner',
-    badgeColor: 'bg-[#C8FF3D]/10 text-[#C8FF3D] border-[#C8FF3D]/20',
+    badgeColor: 'bg-[#00784D]/10 text-[#00784D] border-[#07B979]/20',
     description: 'Direct publishing for Reels, multi-image carousels, and feed photos. Reads real-time comments to trigger sub-15s direct message funnels.',
     capabilities: [
       'Reels & Video Publishing',
@@ -116,7 +116,7 @@ const INTEGRATIONS: IntegrationChannel[] = [
     name: 'WhatsApp Direct Cloud API',
     category: 'Direct Messaging',
     status: 'Official API',
-    badgeColor: 'bg-[#C8FF3D]/10 text-[#C8FF3D] border-[#C8FF3D]/20',
+    badgeColor: 'bg-[#00784D]/10 text-[#00784D] border-[#07B979]/20',
     description: 'Direct messaging connection for sending verified lead alerts, customer onboarding links, and priority client hand-offs directly to WhatsApp.',
     capabilities: [
       'Instant Inbound Lead Alerts',
@@ -146,10 +146,10 @@ const INTEGRATIONS: IntegrationChannel[] = [
 
 export default function IntegrationsPage() {
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#00784D]/30 selection:text-[#00784D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -169,11 +169,11 @@ export default function IntegrationsPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#07B979]/15 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#C8FF3D] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[#07B979] animate-pulse" />
               <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
                 Official Integrations
               </span>
@@ -181,7 +181,7 @@ export default function IntegrationsPage() {
 
             <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
               Connect every channel with <br className="hidden sm:inline" />
-              <span className="text-[#C8FF3D]">verified developer APIs</span>.
+              <span className="text-[#00784D]">verified developer APIs</span>.
             </h1>
 
             <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto">
@@ -224,7 +224,7 @@ export default function IntegrationsPage() {
                   <div className="space-y-2 mb-6">
                     {item.capabilities.map((cap, cIdx) => (
                       <div key={cIdx} className="flex items-center gap-2 text-xs font-semibold text-[#4A5568]">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#C8FF3D] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#07B979] shrink-0" />
                         <span>{cap}</span>
                       </div>
                     ))}
@@ -233,7 +233,7 @@ export default function IntegrationsPage() {
 
                 <div className="pt-4 border-t border-[#EFECE5] flex items-center justify-between text-xs font-semibold text-[#1A202C]">
                   <span>Status: Operational</span>
-                  <span className="text-[#C8FF3D]">99.98% Dispatches →</span>
+                  <span className="text-[#00784D]">99.98% Dispatches →</span>
                 </div>
               </div>
             ))}
@@ -245,7 +245,7 @@ export default function IntegrationsPage() {
         {/* ========================================================================= */}
         <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-20">
           <div className="bg-[#1A202C] text-white rounded-[32px] p-8 md:p-14 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#C8FF3D]/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#07B979]/15 rounded-full blur-[80px] pointer-events-none" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-8 space-y-4">
@@ -255,7 +255,7 @@ export default function IntegrationsPage() {
                 </div>
                 <h3 className="font-extrabold text-[28px] md:text-[38px] text-white leading-tight">
                   Your credentials are never stored. <br />
-                  <span className="text-[#C8FF3D]">Direct OAuth 2.0 handshake only.</span>
+                  <span className="text-[#07B979]">Direct OAuth 2.0 handshake only.</span>
                 </h3>
                 <p className="font-normal text-[15px] md:text-[16px] text-slate-300 leading-relaxed max-w-2xl">
                   Buffermate never asks for your social passwords. Authentication happens directly on the verified login portals of Meta, TikTok, and X. Access tokens are encrypted at rest with AES-256 GCM encryption.
@@ -265,7 +265,7 @@ export default function IntegrationsPage() {
               <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
                 <Link
                   href="/signup"
-                  className="px-7 py-3.5 bg-[#C8FF3D] hover:bg-[#5f8734] text-white text-center font-bold text-sm rounded-full shadow-lg transition-all"
+                  className="px-7 py-3.5 bg-[#00784D] hover:bg-[#07B979] text-white text-center font-bold text-sm rounded-full shadow-lg transition-all"
                 >
                   Connect Your First Channel
                 </Link>

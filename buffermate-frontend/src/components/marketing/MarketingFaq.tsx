@@ -87,7 +87,7 @@ export default function MarketingFaq() {
               }}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'business'
-                  ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                  ? 'bg-[#00784D] text-white shadow-xs'
                   : 'text-[#E2E0D5]/70 hover:text-white'
               }`}
             >
@@ -101,7 +101,7 @@ export default function MarketingFaq() {
               }}
               className={`flex items-center space-x-2 px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                 selectedCategory === 'creator'
-                  ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                  ? 'bg-[#00784D] text-white shadow-xs'
                   : 'text-[#E2E0D5]/70 hover:text-white'
               }`}
             >
@@ -118,7 +118,7 @@ export default function MarketingFaq() {
             return (
               <div
                 key={idx}
-                className="bg-[#141416] rounded-[24px] border border-[#141416] p-6 hover:border-[#C8FF3D]/40 transition-all text-[#E2E0D5]"
+                className="bg-[#141416] rounded-[24px] border border-[#141416] p-6 hover:border-[#07B979]/40 transition-all text-[#E2E0D5]"
               >
                 <button
                   onClick={() => toggle(idx)}
@@ -127,7 +127,7 @@ export default function MarketingFaq() {
                   <span className="font-extrabold text-[17px] text-[#E2E0D5] leading-snug">
                     {faq.q}
                   </span>
-                  <div className="w-8 h-8 rounded-full bg-[#000000] text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-[#000000] text-[#07B979] border border-[#07B979]/30 flex items-center justify-center shrink-0">
                     {isOpen ? <Minus className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                   </div>
                 </button>
@@ -146,7 +146,7 @@ export default function MarketingFaq() {
         <div className="text-center pt-2">
           <Link
             href="/faq"
-            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#C8FF3D] decoration-2"
+            className="inline-flex items-center gap-1.5 text-sm font-bold text-[#141416] hover:text-[#000000] underline decoration-[#00784D] decoration-2"
           >
             <span>View all questions in Knowledge Center →</span>
           </Link>

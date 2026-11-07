@@ -44,9 +44,9 @@ export default function MarketingNavbar() {
       <div className="max-w-[1200px] mx-auto px-5 md:px-10 h-[72px] flex items-center justify-between">
         {/* Buffermate Brand Logo */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          {/* Rounded Lime Squircle with inner ring */}
-          <div className="w-9 h-9 rounded-2xl bg-[#C8FF3D] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#141416]/15">
-            <div className="w-3.5 h-3.5 rounded-full border-2 border-[#141416] bg-transparent" />
+          {/* Rounded Brand Squircle with inner ring */}
+          <div className="w-9 h-9 rounded-2xl bg-gradient-to-br from-[#00784D] to-[#07B979] flex items-center justify-center shadow-xs transition-transform group-hover:scale-105 shrink-0 border border-[#00784D]/20">
+            <div className="w-3.5 h-3.5 rounded-full border-2 border-white bg-transparent" />
           </div>
           <div className="flex flex-col">
             <span className="font-extrabold text-[19px] text-[#000000] tracking-tight leading-tight">
@@ -67,7 +67,7 @@ export default function MarketingNavbar() {
                 key={link.label}
                 href={link.href}
                 className={`transition-colors hover:text-[#000000] ${
-                  isActive ? 'text-[#000000] font-black underline underline-offset-4 decoration-[#C8FF3D] decoration-2' : 'text-[#141416]/80'
+                  isActive ? 'text-[#000000] font-black underline underline-offset-4 decoration-[#00784D] decoration-2' : 'text-[#141416]/80'
                 }`}
               >
                 {link.label}
@@ -94,7 +94,7 @@ export default function MarketingNavbar() {
         <div className="lg:hidden flex items-center space-x-2">
           <Link
             href="/signup"
-            className="px-3.5 py-1.5 rounded-full bg-[#141416] text-[#C8FF3D] text-xs font-bold border border-[#C8FF3D]/30"
+            className="px-3.5 py-1.5 rounded-full bg-[#00784D] hover:bg-[#07B979] text-white text-xs font-bold border border-[#07B979]/30 transition-colors"
           >
             Start Free
           </Link>
@@ -131,7 +131,7 @@ export default function MarketingNavbar() {
             </Link>
             <Link
               href="/signup"
-              className="w-full py-2.5 text-center text-sm font-bold bg-[#141416] text-[#C8FF3D] rounded-full shadow-md border border-[#C8FF3D]/40"
+              className="w-full py-2.5 text-center text-sm font-bold bg-[#00784D] hover:bg-[#07B979] text-white rounded-full shadow-md border border-[#07B979]/40 transition-colors"
             >
               Start Free Workspace
             </Link>

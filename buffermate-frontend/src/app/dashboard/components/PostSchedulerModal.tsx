@@ -20,6 +20,7 @@ import {
   Bookmark,
   CheckCircle2,
   Zap,
+  Loader2,
 } from 'lucide-react';
 import { Post, SocialChannel } from '@/lib/types';
 import { SocialPlatformIcon } from '@/components/SocialIcons';
@@ -71,6 +72,7 @@ export default function PostSchedulerModal({
   const [isDragging, setIsDragging] = useState(false);
   const [activePreview, setActivePreview] = useState<SocialChannel>('instagram');
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [isImageGenerating, setIsImageGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showAiModal, setShowAiModal] = useState(false);
   const [modalStep, setModalStep] = useState<number>(0);
@@ -123,17 +125,21 @@ export default function PostSchedulerModal({
   const handleAiSuggest = async () => {
     setIsAiGenerating(true);
     try {
-      const res = await fetch('/api/ai/suggest', {
+      const res = await fetch('/api/ai/social-post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          topic: content || 'Lead Generation Comment Automation',
+          topic: content || 'Social Media Lead Generation & Automation',
+          platform: activePreview,
           channels: selectedChannels,
         }),
       });
       const data = await res.json();
-      if (data.success && data.data?.[0]?.content) {
-        setContent(data.data[0].content);
+      if (data.data?.caption) {
+        setContent(data.data.caption);
+        if (data.data.imageUrl && !imageUrl) {
+          setImageUrl(data.data.imageUrl);
+        }
       } else {
         setContent(
           `🚀 3 Simple automation strategies that saved our team 20+ hours this week:\n\n1. Instant keyword comment-to-DM triggers\n2. AI multi-channel post queuing\n3. 24/7 lead capture on autopilot\n\nDrop "PLAYBOOK" below to get our free step-by-step setup guide! 👇\n\n#buffermate #growthhacks #automation #marketingtools`
@@ -145,6 +151,31 @@ export default function PostSchedulerModal({
       );
     } finally {
       setIsAiGenerating(false);
+    }
+  };
+
+  const handleGenerateAiImage = async () => {
+    if (isImageGenerating) return;
+    setIsImageGenerating(true);
+    try {
+      const res = await fetch('/api/ai/image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: content ? content.slice(0, 100) : 'Modern aesthetic workspace with social analytics',
+          style: 'photorealistic',
+          aspectRatio: '1:1',
+        }),
+      });
+      const data = await res.json();
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+        setUploadedFileName('Gemini Imagen Visual');
+      }
+    } catch (err) {
+      console.warn('Image generation error:', err);
+    } finally {
+      setIsImageGenerating(false);
     }
   };
 
@@ -411,29 +442,41 @@ export default function PostSchedulerModal({
               <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 Media Attachment
               </label>
-              <div className="flex items-center bg-slate-100 p-0.5 rounded-full text-[10px] font-semibold">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setUploadMode('upload')}
-                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-                    uploadMode === 'upload'
-                      ? 'bg-[#141416] text-white shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-900'
-                  }`}
+                  onClick={handleGenerateAiImage}
+                  disabled={isImageGenerating}
+                  className="px-2.5 py-1 rounded-full bg-[#141416] hover:bg-black text-[#07B979] border border-[#07B979]/40 text-[10px] font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                  title="Generate matching image with Gemini Imagen"
                 >
-                  Upload File
+                  {isImageGenerating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                  <span>{isImageGenerating ? 'Synthesizing...' : 'AI Visual (Gemini)'}</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setUploadMode('url')}
-                  className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
-                    uploadMode === 'url'
-                      ? 'bg-[#141416] text-white shadow-2xs'
-                      : 'text-slate-500 hover:text-slate-900'
-                  }`}
-                >
-                  Paste URL
-                </button>
+                <div className="flex items-center bg-slate-100 p-0.5 rounded-full text-[10px] font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode('upload')}
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                      uploadMode === 'upload'
+                        ? 'bg-[#141416] text-white shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode('url')}
+                    className={`px-3 py-1 rounded-full transition-all cursor-pointer ${
+                      uploadMode === 'url'
+                        ? 'bg-[#141416] text-white shadow-2xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    URL
+                  </button>
+                </div>
               </div>
             </div>
 

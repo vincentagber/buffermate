@@ -21,8 +21,8 @@ import MarketingFooter from '@/components/marketing/Footer';
 export default function AboutPage() {
   const values = [
     {
-      icon: <Zap className="w-7 h-7 text-[#C8FF3D]" />,
-      bg: 'bg-[#C8FF3D]/10 border-[#C8FF3D]/20',
+      icon: <Zap className="w-7 h-7 text-[#00784D]" />,
+      bg: 'bg-[#00784D]/10 border-[#07B979]/30',
       title: 'Built for Speed',
       description: 'From drafting an opening curiosity hook to multi-channel dispatch, every micro-step is engineered for throughput. Content reaches active follower feeds at peak velocity without manual lag.',
     },
@@ -41,10 +41,10 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#C8FF3D]/20 selection:text-[#C8FF3D]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#1A202C] relative selection:bg-[#00784D]/20 selection:text-[#00784D]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/12 to-transparent blur-[130px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[130px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#FF882A]/8 to-transparent blur-[130px]" />
       </div>
 
@@ -64,11 +64,11 @@ export default function AboutPage() {
             </svg>
           </div>
 
-          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8FF3D]/10 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#00784D]/10 blur-[100px] rounded-full pointer-events-none" />
 
           <div className="relative z-10 max-w-[800px] mx-auto text-center animate-slide-up-fade">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 backdrop-blur-sm border border-[#E2E0D5] shadow-xs mb-6 mx-auto">
-              <div className="w-2 h-2 rounded-full bg-[#C8FF3D] animate-pulse" />
+              <div className="w-2 h-2 rounded-full bg-[#07B979] animate-pulse" />
               <span className="font-bold text-[12px] text-[#1A202C] tracking-wide uppercase">
                 About Buffermate
               </span>
@@ -76,7 +76,7 @@ export default function AboutPage() {
 
             <h1 className="font-extrabold text-[42px] sm:text-[56px] md:text-[68px] text-[#1A202C] leading-[1.08] mb-6 tracking-tight">
               Social intelligence, <br className="hidden sm:inline" />
-              <span className="text-[#C8FF3D]">delivered at scale</span>.
+              <span className="text-[#00784D]">delivered at scale</span>.
             </h1>
 
             <p className="font-medium text-[18px] md:text-[20px] text-[#6B6B60] leading-relaxed max-w-[700px] mx-auto">
@@ -94,7 +94,7 @@ export default function AboutPage() {
             <div className="flex-1 space-y-6">
               <h2 className="font-extrabold text-[36px] md:text-[46px] leading-[1.12] text-[#1A202C]">
                 The Modern Creator <br />
-                <span className="text-[#C8FF3D]">Workflow</span>, solved.
+                <span className="text-[#00784D]">Workflow</span>, solved.
               </h2>
 
               <div className="space-y-5 font-medium text-[17px] text-[#6B6B60] leading-relaxed">
@@ -147,7 +147,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div>
-                <div className="font-extrabold text-[40px] md:text-[52px] text-[#C8FF3D] tracking-tight">
+                <div className="font-extrabold text-[40px] md:text-[52px] text-[#00784D] tracking-tight">
                   1.2M+
                 </div>
                 <div className="text-sm font-semibold text-[#6B6B60] mt-1">

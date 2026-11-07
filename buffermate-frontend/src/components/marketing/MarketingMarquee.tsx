@@ -19,23 +19,23 @@ interface MarqueePill {
 }
 
 const ROW_1: MarqueePill[] = [
-  { label: 'Instagram Graph API', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
-  { label: 'TikTok Creator v2', dotColor: 'bg-[#000000]', bgColor: 'bg-[#C8FF3D]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]' },
-  { label: 'Meta Threads API', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'Instagram Graph API', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'TikTok Creator v2', dotColor: 'bg-white', bgColor: 'bg-[#00784D]', textColor: 'text-white', borderColor: 'border-[#00784D]' },
+  { label: 'Meta Threads API', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
   { label: 'Facebook Pages', dotColor: 'bg-[#141416]', bgColor: 'bg-[#E2E0D5]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]/30' },
-  { label: 'X / Twitter API v2', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
-  { label: 'WhatsApp Business', dotColor: 'bg-[#000000]', bgColor: 'bg-[#C8FF3D]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]' },
-  { label: 'LinkedIn Marketing', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'X / Twitter API v2', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'WhatsApp Business', dotColor: 'bg-[#00784D]', bgColor: 'bg-[#07B979]', textColor: 'text-[#000000]', borderColor: 'border-[#07B979]' },
+  { label: 'LinkedIn Marketing', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
   { label: 'YouTube Shorts Sync', dotColor: 'bg-[#141416]', bgColor: 'bg-[#E2E0D5]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]/30' },
 ];
 
 const ROW_2: MarqueePill[] = [
-  { label: '24/7 Comment Keyword Auto-DMs', dotColor: 'bg-[#000000]', bgColor: 'bg-[#C8FF3D]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]' },
-  { label: 'AI Viral Script Studio (Gemini 2.0)', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: '24/7 Comment Keyword Auto-DMs', dotColor: 'bg-white', bgColor: 'bg-[#00784D]', textColor: 'text-white', borderColor: 'border-[#00784D]' },
+  { label: 'AI Viral Script Studio (Gemini 2.0)', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
   { label: 'Predictive Peak Engagement Heatmaps', dotColor: 'bg-[#141416]', bgColor: 'bg-[#E2E0D5]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]/30' },
-  { label: 'Multi-Channel Aspect Resizing', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
-  { label: 'Bachs Hosted Payment Checkout', dotColor: 'bg-[#000000]', bgColor: 'bg-[#C8FF3D]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]' },
-  { label: 'Unified CRM & Social Inbox', dotColor: 'bg-[#C8FF3D]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'Multi-Channel Aspect Resizing', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
+  { label: 'Bachs Hosted Payment Checkout', dotColor: 'bg-[#00784D]', bgColor: 'bg-[#07B979]', textColor: 'text-[#000000]', borderColor: 'border-[#07B979]' },
+  { label: 'Unified CRM & Social Inbox', dotColor: 'bg-[#07B979]', bgColor: 'bg-[#141416]', textColor: 'text-[#E2E0D5]', borderColor: 'border-[#141416]' },
   { label: 'White-Label Client PDF Reports', dotColor: 'bg-[#141416]', bgColor: 'bg-[#E2E0D5]', textColor: 'text-[#000000]', borderColor: 'border-[#141416]/30' },
 ];
 

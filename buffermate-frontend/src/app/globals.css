@@ -3,21 +3,25 @@
 
 :root {
   /* -------------------------------------------------------------------------
-     The 4 Consistent Color Tokens:
-     #C8FF3D - Electric Lime / Neon Chartreuse Accent
+     Brand Color Tokens:
+     #00784D - Deep Forest Emerald (Primary Brand)
+     #07B979 - Vibrant Emerald Mint Accent
      #141416 - Dark Surface / Card / Container / Pill
      #E2E0D5 - Canvas / Border / Divider / Muted Tone
      #000000 - Pure Black (High Contrast Text & Deep Tone)
   ------------------------------------------------------------------------- */
-  --color-lime: #C8FF3D;
+  --color-green-deep: #00784D;
+  --color-green-bright: #07B979;
+  --color-lime: #00784D;
   --color-dark: #141416;
   --color-border: #E2E0D5;
   --color-black: #000000;
 
   /* Universal Brand Color Mappings */
-  --color-brand-green: #C8FF3D;
-  --color-brand-green-deep: #141416;
-  --color-brand-orange: #C8FF3D;
+  --color-brand-green: #00784D;
+  --color-brand-green-deep: #00784D;
+  --color-brand-green-accent: #07B979;
+  --color-brand-orange: #07B979;
 
   --color-warm-bg: #E2E0D5;
   --color-border-warm: #E2E0D5;
@@ -215,7 +219,7 @@ body {
 }
 
 .brand-card:hover {
-  border-color: #C8FF3D;
+  border-color: #07B979;
   transform: translateY(-2px);
   box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.25);
 }
@@ -263,8 +267,8 @@ body {
 }
 
 /* =========================================================================
-   From Uiverse.io by gharsh11032000 — Animated Interactive Button
-   Theme: #C8FF3D (Lime), #141416 (Dark), #E2E0D5 (Border), #000000 (Black)
+   Interactive Animated Button Component
+   Theme: #00784D (Deep Green), #07B979 (Vibrant Emerald), #FFFFFF, #141416
    ========================================================================= */
 .animated-button {
   position: relative;
@@ -275,11 +279,11 @@ body {
   padding: 14px 34px;
   border: 4px solid transparent;
   font-size: 15px;
-  background-color: #141416;
+  background-color: #00784D;
   border-radius: 100px;
   font-weight: 700;
-  color: #C8FF3D;
-  box-shadow: 0 0 0 2px #C8FF3D;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 2px #07B979;
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;
@@ -292,7 +296,7 @@ body {
   position: absolute;
   width: 22px;
   height: 22px;
-  fill: #C8FF3D;
+  fill: #FFFFFF;
   z-index: 9;
   transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
 }
@@ -312,7 +316,7 @@ body {
   transform: translate(-50%, -50%);
   width: 20px;
   height: 20px;
-  background-color: #C8FF3D;
+  background-color: #07B979;
   border-radius: 50%;
   opacity: 0;
   pointer-events: none;
@@ -328,7 +332,7 @@ body {
 
 .animated-button:hover {
   box-shadow: 0 0 0 12px transparent;
-  color: #000000;
+  color: #FFFFFF;
   border-radius: 14px;
 }
 
@@ -345,12 +349,12 @@ body {
 }
 
 .animated-button:hover svg {
-  fill: #000000;
+  fill: #FFFFFF;
 }
 
 .animated-button:active {
   scale: 0.95;
-  box-shadow: 0 0 0 4px #C8FF3D;
+  box-shadow: 0 0 0 4px #07B979;
 }
 
 .animated-button:hover .circle {
@@ -388,22 +392,23 @@ body {
 
 /* Brand Theme Modifiers */
 .animated-button.btn-brand {
-  color: #C8FF3D;
-  box-shadow: 0 0 0 2px #C8FF3D;
+  background-color: #00784D;
+  color: #FFFFFF;
+  box-shadow: 0 0 0 2px #07B979;
 }
 .animated-button.btn-brand svg {
-  fill: #C8FF3D;
+  fill: #FFFFFF;
 }
 .animated-button.btn-brand .circle {
-  background-color: #C8FF3D;
+  background-color: #07B979;
 }
 .animated-button.btn-brand:hover {
-  color: #000000;
+  color: #FFFFFF;
 }
 .animated-button.btn-brand:hover svg {
-  fill: #000000;
+  fill: #FFFFFF;
 }
 .animated-button.btn-brand:active {
-  box-shadow: 0 0 0 4px #C8FF3D;
+  box-shadow: 0 0 0 4px #07B979;
 }
 

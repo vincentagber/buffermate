@@ -37,9 +37,9 @@ export default function MarketingWorkflowSpeed() {
           {/* Left: Interactive Phone Mockup Card */}
           <div className="lg:col-span-6 flex justify-center">
             <div className="w-full max-w-md bg-[#141416] rounded-[28px] p-6 sm:p-8 shadow-2xl border border-[#141416] space-y-6 text-[#E2E0D5]">
-              {/* Lime Success Badge */}
+              {/* Green Success Badge */}
               <div className="flex flex-col items-center text-center space-y-3 pt-2">
-                <div className="w-14 h-14 rounded-2xl bg-[#C8FF3D]/10 text-[#C8FF3D] border border-[#C8FF3D]/30 flex items-center justify-center">
+                <div className="w-14 h-14 rounded-2xl bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/40 flex items-center justify-center">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
                 <div>
@@ -58,18 +58,18 @@ export default function MarketingWorkflowSpeed() {
                 </div>
                 <div className="space-y-0.5 border-x border-[#E2E0D5]/15">
                   <div className="text-xs text-[#E2E0D5]/60 font-medium">Dispatch</div>
-                  <div className="text-base font-extrabold text-[#C8FF3D]">7:45 PM</div>
+                  <div className="text-base font-extrabold text-[#07B979]">7:45 PM</div>
                 </div>
                 <div className="space-y-0.5">
                   <div className="text-xs text-[#E2E0D5]/60 font-medium">Auto-DM</div>
-                  <div className="text-base font-extrabold text-[#C8FF3D]">Active</div>
+                  <div className="text-base font-extrabold text-[#07B979]">Active</div>
                 </div>
               </div>
 
               {/* Preview Snippet */}
               <div className="p-4 bg-[#000000]/40 rounded-2xl border border-[#E2E0D5]/15 space-y-2">
                 <div className="flex items-center space-x-2 text-xs font-bold text-[#E2E0D5]">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C8FF3D]" />
+                  <Sparkles className="w-3.5 h-3.5 text-[#07B979]" />
                   <span>AI Hook Score: 98/100 · High Curiosity</span>
                 </div>
                 <p className="text-xs text-[#E2E0D5]/70 line-clamp-2 italic font-medium">
@@ -79,9 +79,9 @@ export default function MarketingWorkflowSpeed() {
             </div>
           </div>
 
-          {/* Right: Stage 1 Copy & Lime Number 1 */}
+          {/* Right: Stage 1 Copy & Number 1 */}
           <div className="lg:col-span-6 space-y-6">
-            <div className="w-10 h-10 rounded-full bg-[#C8FF3D] text-[#000000] font-black text-base flex items-center justify-center shadow-xs border border-[#141416]/20">
+            <div className="w-10 h-10 rounded-full bg-[#00784D] text-white font-black text-base flex items-center justify-center shadow-xs border border-[#07B979]/30">
               1
             </div>
 
@@ -96,19 +96,19 @@ export default function MarketingWorkflowSpeed() {
 
             <ul className="space-y-2.5 pt-2 text-xs sm:text-sm text-[#141416]/80 font-semibold">
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>6+ connected social networks with one click</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>AI voice &amp; prompt-powered copy generation</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>Automatic 9:16 and 1:1 image and video aspect ratio formatting</span>
@@ -119,9 +119,9 @@ export default function MarketingWorkflowSpeed() {
 
         {/* STAGE 2: Review work. Publish with confidence. */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center pt-8">
-          {/* Left: Stage 2 Copy & Dark Number 2 */}
+          {/* Left: Stage 2 Copy & Number 2 */}
           <div className="lg:col-span-6 space-y-6 order-2 lg:order-1">
-            <div className="w-10 h-10 rounded-full bg-[#141416] text-[#C8FF3D] font-black text-base flex items-center justify-center shadow-xs border border-[#C8FF3D]/30">
+            <div className="w-10 h-10 rounded-full bg-[#00784D] text-white font-black text-base flex items-center justify-center shadow-xs border border-[#07B979]/30">
               2
             </div>
 
@@ -136,19 +136,19 @@ export default function MarketingWorkflowSpeed() {
 
             <ul className="space-y-2.5 pt-2 text-xs sm:text-sm text-[#141416]/80 font-semibold">
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>Approve or edit each submission before dispatch</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>Dispatches released only at verified peak audience heatmaps</span>
               </li>
               <li className="flex items-center space-x-2.5">
-                <div className="w-5 h-5 rounded-full bg-[#141416] text-[#C8FF3D] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-full bg-[#00784D] text-white flex items-center justify-center shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <span>Autonomous 24/7 comment keyword DM funnels active</span>
@@ -167,7 +167,7 @@ export default function MarketingWorkflowSpeed() {
                     onClick={() => setActiveTab('pending')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       activeTab === 'pending'
-                        ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                        ? 'bg-[#00784D] text-white shadow-xs'
                         : 'text-[#E2E0D5]/60 hover:text-[#E2E0D5]'
                     }`}
                   >
@@ -177,7 +177,7 @@ export default function MarketingWorkflowSpeed() {
                     onClick={() => setActiveTab('published')}
                     className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       activeTab === 'published'
-                        ? 'bg-[#C8FF3D] text-[#000000] shadow-xs'
+                        ? 'bg-[#00784D] text-white shadow-xs'
                         : 'text-[#E2E0D5]/60 hover:text-[#E2E0D5]'
                     }`}
                   >
@@ -190,15 +190,15 @@ export default function MarketingWorkflowSpeed() {
               <div className="p-3.5 rounded-2xl border border-[#E2E0D5]/15 bg-[#000000]/40 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="w-7 h-7 rounded-lg bg-[#C8FF3D]/10 border border-[#C8FF3D]/20 flex items-center justify-center">
-                      <InstagramIcon className="w-4 h-4 text-[#C8FF3D]" />
+                    <div className="w-7 h-7 rounded-lg bg-[#00784D]/30 border border-[#07B979]/40 flex items-center justify-center">
+                      <InstagramIcon className="w-4 h-4 text-[#07B979]" />
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[#E2E0D5]">Instagram Reel</div>
                       <div className="text-[10px] text-[#E2E0D5]/60">Scheduled for 7:45 PM</div>
                     </div>
                   </div>
-                  <span className="text-[10px] font-bold text-[#000000] bg-[#C8FF3D] px-2.5 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold text-white bg-[#00784D] px-2.5 py-0.5 rounded-full">
                     Approved
                   </span>
                 </div>
@@ -211,8 +211,8 @@ export default function MarketingWorkflowSpeed() {
               <div className="p-3.5 rounded-2xl border border-[#E2E0D5]/15 bg-[#000000]/40 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <div className="w-7 h-7 rounded-lg bg-[#C8FF3D]/10 border border-[#C8FF3D]/20 flex items-center justify-center">
-                      <TikTokIcon className="w-4 h-4 text-[#C8FF3D]" />
+                    <div className="w-7 h-7 rounded-lg bg-[#00784D]/30 border border-[#07B979]/40 flex items-center justify-center">
+                      <TikTokIcon className="w-4 h-4 text-[#07B979]" />
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[#E2E0D5]">TikTok Short</div>
@@ -220,13 +220,13 @@ export default function MarketingWorkflowSpeed() {
                     </div>
                   </div>
                   {approvedPosts.includes('post-tiktok') ? (
-                    <span className="text-[10px] font-bold text-[#000000] bg-[#C8FF3D] px-2.5 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold text-white bg-[#00784D] px-2.5 py-0.5 rounded-full">
                       Approved
                     </span>
                   ) : (
                     <button
                       onClick={() => handleApprove('post-tiktok')}
-                      className="text-[10px] font-bold text-[#000000] bg-[#C8FF3D] hover:bg-white px-3 py-1 rounded-full transition-colors cursor-pointer"
+                      className="text-[10px] font-bold text-white bg-[#00784D] hover:bg-[#07B979] px-3 py-1 rounded-full transition-colors cursor-pointer"
                     >
                       Approve Post
                     </button>

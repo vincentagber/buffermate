@@ -14,10 +14,10 @@ import MarketingFooter from '@/components/marketing/Footer';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#C8FF3D]/40 selection:text-[#000000]">
+    <div className="min-h-screen bg-[#E2E0D5] text-[#000000] relative selection:bg-[#00784D]/30 selection:text-[#000000]">
       {/* Ambient Gradient Glow Layers */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#C8FF3D]/15 to-transparent blur-[140px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-gradient-to-br from-[#07B979]/15 to-transparent blur-[140px]" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tl from-[#141416]/8 to-transparent blur-[140px]" />
       </div>
 
