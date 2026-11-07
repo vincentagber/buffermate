@@ -6,11 +6,8 @@ import {
   Check,
   Crown,
   Sparkles,
-  Zap,
-  ArrowRight,
-  ShieldCheck,
-  HelpCircle
 } from 'lucide-react';
+import { TailwindCreditCardIcon } from '@/components/PaymentIcons';
 import AnimatedButton from '../ui/AnimatedButton';
 
 interface PricingCardsProps {
@@ -283,7 +280,7 @@ export default function PricingCards({ showTitle = true }: PricingCardsProps) {
       {/* Bachs Payments Trust Strip */}
       <div className="mt-8 pt-6 border-t border-slate-200/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
         <div className="flex items-center space-x-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <TailwindCreditCardIcon className="w-4 h-4 text-[#00784D]" />
           <span>
             Secure checkout hosted via <strong>Bachs</strong> (<a href="https://docs.bachs.io" target="_blank" rel="noreferrer" className="underline hover:text-slate-800">docs.bachs.io</a>).
           </span>

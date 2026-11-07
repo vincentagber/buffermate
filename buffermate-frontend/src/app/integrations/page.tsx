@@ -2,9 +2,9 @@
 
 import React from 'react';
 import {
-  ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
+import { TailwindCreditCardIcon } from '@/components/PaymentIcons';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
@@ -131,7 +131,7 @@ const INTEGRATIONS: IntegrationChannel[] = [
       'Automated Recurring Subscriptions',
       'Multi-Currency Settlement'
     ],
-    icon: <ShieldCheck className="w-7 h-7 text-[#FF882A]" />,
+    icon: <TailwindCreditCardIcon className="w-7 h-7 text-[#FF882A]" />,
     iconBg: 'bg-amber-50 border-amber-100',
   },
 ];

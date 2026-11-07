@@ -3,15 +3,11 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import {
-  Check,
-  Crown,
-  Sparkles,
-  ShieldCheck,
-  ArrowRight,
   ExternalLink,
   Plus,
   Minus
 } from 'lucide-react';
+import { TailwindCreditCardIcon } from '@/components/PaymentIcons';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingCta from '@/components/marketing/MarketingCta';
 import MarketingFooter from '@/components/marketing/Footer';
@@ -289,16 +285,16 @@ export default function PricingPage() {
           </div>
 
           {/* Bachs Payment Security Badge */}
-          <div className="mt-12 p-6 rounded-2xl bg-[#141416] text-[#E2E0D5] border border-[#141416] flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="mt-12 p-6 rounded-2xl bg-white text-[#1A202C] border border-[#E2E0D5] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#00784D]/30 text-[#07B979] border border-[#07B979]/40 flex items-center justify-center font-bold">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-[#00784D]/10 text-[#00784D] border border-[#07B979]/30 flex items-center justify-center font-bold">
+                <TailwindCreditCardIcon className="w-5 h-5" />
               </div>
               <div>
-                <div className="font-bold text-sm text-[#E2E0D5]">
+                <div className="font-bold text-sm text-[#1A202C]">
                   Hosted Payment Infrastructure: Bachs (docs.bachs.io)
                 </div>
-                <div className="text-xs text-[#E2E0D5]/70">
+                <div className="text-xs text-[#6B6B60]">
                   International Cards · African Bank Transfers (NGN, GHS, KES, ZAR) · Mobile Money · Crypto
                 </div>
               </div>
@@ -308,7 +304,7 @@ export default function PricingPage() {
               href="https://docs.bachs.io"
               target="_blank"
               rel="noreferrer"
-              className="text-xs font-bold text-[#07B979] hover:underline flex items-center gap-1 shrink-0"
+              className="text-xs font-bold text-[#00784D] hover:text-[#07B979] hover:underline flex items-center gap-1 shrink-0"
             >
               <span>Learn About Bachs Security</span>
               <ExternalLink className="w-3.5 h-3.5" />

@@ -4,6 +4,8 @@
   "private": true,
   "description": "BufferMate AI - Full-Stack Social Media Automation (Next.js React Frontend + Laravel 11 Backend)",
   "scripts": {
+    "build": "npm run build --prefix buffermate-frontend",
+    "start": "npm run start --prefix buffermate-frontend",
     "frontend:dev": "cd buffermate-frontend && npm run dev",
     "frontend:build": "cd buffermate-frontend && npm run build",
     "frontend:lint": "cd buffermate-frontend && npm run lint",
