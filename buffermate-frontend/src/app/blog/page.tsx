@@ -109,7 +109,7 @@ export default function BlogPage() {
         {/* 2. CATEGORY PILL FILTER */}
         {/* ========================================================================= */}
         <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 pt-10 pb-4">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center justify-center flex-wrap gap-2 pb-2">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -119,7 +119,7 @@ export default function BlogPage() {
                 }}
                 className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                   selectedCategory === cat
-                    ? 'bg-[#1A202C] text-white shadow-md'
+                    ? 'bg-[#00784D] text-white shadow-md'
                     : 'bg-white hover:bg-slate-50 text-[#6B6B60] border border-[#E2E0D5]'
                 }`}
               >

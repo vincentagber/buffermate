@@ -62,7 +62,7 @@ return new class extends Migration
             $table->foreignUuid('workspace_id')->constrained('workspaces')->onDelete('cascade');
             $table->foreignUuid('project_id')->constrained('projects')->onDelete('cascade');
             $table->foreignUuid('sprint_id')->nullable()->constrained('sprints')->nullOnDelete();
-            $table->foreignUuid('parent_id')->nullable()->constrained('work_items')->nullOnDelete();
+            $table->uuid('parent_id')->nullable();
             $table->string('key', 20)->index(); // e.g. "BM-10"
             $table->integer('issue_number')->index();
             $table->string('title');
@@ -87,6 +87,10 @@ return new class extends Migration
 
             $table->index(['project_id', 'status']);
             $table->index(['project_id', 'sprint_id']);
+        });
+
+        Schema::table('work_items', function (Blueprint $table) {
+            $table->foreign('parent_id')->references('id')->on('work_items')->nullOnDelete();
         });
 
         // 5. Work Item Links (Dependencies & Relations)

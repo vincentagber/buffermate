@@ -1,17 +1,9 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import {
   ShieldCheck,
   CheckCircle2,
-  Lock,
-  ArrowRight,
-  ExternalLink,
-  Sparkles,
-  Zap,
-  Globe,
-  Layers
 } from 'lucide-react';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingCta from '@/components/marketing/MarketingCta';
@@ -241,50 +233,7 @@ export default function IntegrationsPage() {
         </section>
 
         {/* ========================================================================= */}
-        {/* 3. SECURITY & TOKEN ENCRYPTION NOTICE */}
-        {/* ========================================================================= */}
-        <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-16 md:py-20">
-          <div className="bg-[#1A202C] text-white rounded-[32px] p-8 md:p-14 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#07B979]/15 rounded-full blur-[80px] pointer-events-none" />
-
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-8 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-bold text-emerald-400">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Enterprise Security Standard</span>
-                </div>
-                <h3 className="font-extrabold text-[28px] md:text-[38px] text-white leading-tight">
-                  Your credentials are never stored. <br />
-                  <span className="text-[#07B979]">Direct OAuth 2.0 handshake only.</span>
-                </h3>
-                <p className="font-normal text-[15px] md:text-[16px] text-slate-300 leading-relaxed max-w-2xl">
-                  Buffermate never asks for your social passwords. Authentication happens directly on the verified login portals of Meta, TikTok, and X. Access tokens are encrypted at rest with AES-256 GCM encryption.
-                </p>
-              </div>
-
-              <div className="lg:col-span-4 flex flex-col sm:flex-row lg:flex-col gap-3">
-                <Link
-                  href="/signup"
-                  className="px-7 py-3.5 bg-[#00784D] hover:bg-[#07B979] text-white text-center font-bold text-sm rounded-full shadow-lg transition-all"
-                >
-                  Connect Your First Channel
-                </Link>
-                <a
-                  href="https://docs.bachs.io"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-7 py-3.5 bg-white/10 hover:bg-white/15 border border-white/20 text-white text-center font-bold text-sm rounded-full transition-all inline-flex items-center justify-center gap-1.5"
-                >
-                  <span>Bachs Payment Security Docs</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ========================================================================= */}
-        {/* 4. DUAL CLOSING CALL-TO-ACTION */}
+        {/* 3. DUAL CLOSING CALL-TO-ACTION */}
         {/* ========================================================================= */}
         <MarketingCta />
       </main>
