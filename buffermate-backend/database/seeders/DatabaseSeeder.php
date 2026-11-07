@@ -28,19 +28,19 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 1. Create Lumière Aesthetics Workspace
+        // 1. Create BufferMate Workspace
         $workspace = Workspace::firstOrCreate(
-            ['slug' => 'lumiere_aesthetics'],
+            ['slug' => 'buffermate_creator_studio'],
             [
                 'id' => '11111111-2222-3333-4444-555555555555',
-                'name' => 'Lumière Aesthetics',
+                'name' => 'BufferMate Creator Studio',
                 'timezone' => 'America/New_York',
                 'default_locale' => 'en',
                 'plan_id' => 'pro',
                 'owner_user_id' => $userId,
                 'settings' => [
-                    'location' => 'Soho, New York',
-                    'clinic' => 'Soho Clinic',
+                    'location' => 'BufferMate Studio',
+                    'clinic' => 'Creator Studio',
                     'autopilot_enabled' => true,
                     'autopilot_killed' => false,
                     'require_approval' => true,
@@ -76,13 +76,13 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 3. Add Connected Social Channels for Lumière Aesthetics
+        // 3. Add Connected Social Channels for BufferMate Workspace
         foreach ([SocialChannel::INSTAGRAM, SocialChannel::FACEBOOK, SocialChannel::TIKTOK, SocialChannel::X] as $channel) {
             $isFacebook = $channel === SocialChannel::FACEBOOK;
-            $providerUserId = $isFacebook ? '111006725414026' : '@lumiere.' . $channel->value;
+            $providerUserId = $isFacebook ? '111006725414026' : '@buffermate.' . $channel->value;
             $token = $isFacebook 
                 ? (env('NEWSPILOT_FB_PAGE_ACCESS_TOKEN') ?: env('FACEBOOK_PAGE_ACCESS_TOKEN') ?: 'EAAecOATPTb4BS3XuYgflY3SSTYl71cW5KtSyWivQRbbF7Q3ukcARtb98ZA6l2wHYZCD1ri0ltDnAZC1x39sbJaVFEZClEOVEAIbpNc7ZCFQKI1lZCZBJWRSGvIvWlKxhK5w1RE5pIcZCjybdJrRvV1eXxOLAsrAvaZBrLgznTF6kxV9gWwuiZBE4x5HdfnRZA0Kh99qlgprRtuxQlTOFgdXQUZBK1nxmjh359ozvERBtpGgHAcJJHIlV9LjwkwfizaKcQZAuPrUrBtlfba5usf7xSryJZA2RK6oK4o9Lwi2wOqs2UZD')
-                : 'lumiere_token_' . $channel->value;
+                : 'buffermate_token_' . $channel->value;
             $meta = $isFacebook
                 ? [
                     'name' => 'Jija-Bokoti Media',
@@ -117,8 +117,8 @@ class DatabaseSeeder extends Seeder
                 'trigger_type' => 'comment_keyword',
                 'keywords' => ['book', 'botox', 'rebook'],
                 'reply_comment' => 'Thanks for checking in! Check your DM for our priority booking calendar.',
-                'dm_message' => 'Hi, we noticed it has been 10 weeks since your last visit. We saved a spot for you at Lumière Soho!',
-                'link_url' => 'https://lumiere.com/book-botox',
+                'dm_message' => 'Hi, we noticed it has been 10 weeks since your last visit. We saved a spot for you at BufferMate Studio!',
+                'link_url' => 'https://buffermate.ai/book',
                 'status' => 'active',
                 'runs_today' => 12,
                 'runs_total' => 340,
@@ -129,9 +129,9 @@ class DatabaseSeeder extends Seeder
                 'channel' => 'instagram',
                 'trigger_type' => 'dm_received',
                 'keywords' => ['aftercare', 'recovery'],
-                'reply_comment' => 'Sending you the medical aftercare guide right now!',
-                'dm_message' => 'Hi from Lumière Aesthetics! Here is your post-treatment care guide: stay hydrated and avoid sun exposure for 48h.',
-                'link_url' => 'https://lumiere.com/aftercare',
+                'reply_comment' => 'Sending you the creator aftercare guide right now!',
+                'dm_message' => 'Hi from BufferMate! Here is your post-launch care guide: track your reach heatmaps and review conversion funnels.',
+                'link_url' => 'https://buffermate.ai/aftercare',
                 'status' => 'active',
                 'runs_today' => 8,
                 'runs_total' => 210,
@@ -143,8 +143,8 @@ class DatabaseSeeder extends Seeder
                 'trigger_type' => 'comment_keyword',
                 'keywords' => ['membership', 'credits', 'renew'],
                 'reply_comment' => 'Your VIP membership renewal perks have been sent to your inbox!',
-                'dm_message' => 'Your Lumière VIP Membership renews in 7 days. You have 2 treatment credits available to redeem this month.',
-                'link_url' => 'https://lumiere.com/vip-membership',
+                'dm_message' => 'Your BufferMate VIP Membership renews in 7 days. You have 2 strategy credits available to redeem this month.',
+                'link_url' => 'https://buffermate.ai/vip-membership',
                 'status' => 'active',
                 'runs_today' => 5,
                 'runs_total' => 95,
@@ -154,10 +154,10 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Win-back Campaign',
                 'channel' => 'tiktok',
                 'trigger_type' => 'comment_keyword',
-                'keywords' => ['offer', 'promo', 'lumiere'],
-                'reply_comment' => 'We miss you at Lumière! Use code VIPWELCOME for 15% off your next session.',
-                'dm_message' => 'It has been 90 days since your last facial. Book by Friday and get a complimentary hydration boost on us!',
-                'link_url' => 'https://lumiere.com/welcome-back',
+                'keywords' => ['offer', 'promo', 'buffermate'],
+                'reply_comment' => 'We miss you at BufferMate! Use code VIPWELCOME for 15% off your next session.',
+                'dm_message' => 'It has been 90 days since your last campaign. Reconnect by Friday and get a complimentary AI viral boost on us!',
+                'link_url' => 'https://buffermate.ai/welcome-back',
                 'status' => 'active',
                 'runs_today' => 3,
                 'runs_total' => 64,
@@ -281,7 +281,7 @@ class DatabaseSeeder extends Seeder
                 'channel' => 'instagram',
                 'title' => 'Scheduled Reel Published',
                 'description' => 'Successfully published "5 Tips for Better Productivity in 2026" to Instagram & Facebook.',
-                'user_handle' => '@lumiere.instagram',
+                'user_handle' => '@buffermate.creator',
                 'post_reference' => '5 Tips for Better Productivity in 2026',
             ],
         ];

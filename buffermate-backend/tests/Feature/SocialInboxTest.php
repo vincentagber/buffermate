@@ -23,8 +23,8 @@ class SocialInboxTest extends TestCase
         $this->workspace = Workspace::firstOrCreate(
             ['id' => '11111111-2222-3333-4444-555555555555'],
             [
-                'name' => 'Lumière Aesthetics',
-                'slug' => 'lumiere_aesthetics',
+                'name' => 'BufferMate Creator Studio',
+                'slug' => 'buffermate_creator_studio',
                 'timezone' => 'America/New_York',
                 'default_locale' => 'en',
                 'plan_id' => 'pro',

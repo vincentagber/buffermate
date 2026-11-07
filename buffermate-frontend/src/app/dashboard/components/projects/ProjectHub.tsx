@@ -257,11 +257,11 @@ export default function ProjectHub() {
 
           <AddNewButton
             title="Create New Project"
-            size={22}
+            size={20}
             onClick={() => setIsCreateProjectOpen(true)}
             label="New Project"
-            iconClassName="stroke-emerald-400 group-hover:stroke-white"
-            className="px-3.5 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-full shadow-2xs transition-all flex items-center space-x-1.5"
+            iconClassName="stroke-emerald-400 group-hover:stroke-white group-active:stroke-white"
+            className="px-3.5 py-1.5 bg-[#141416] hover:bg-black active:bg-black text-white hover:text-white active:text-white text-xs font-semibold rounded-full shadow-2xs transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
           />
         </div>
       </div>

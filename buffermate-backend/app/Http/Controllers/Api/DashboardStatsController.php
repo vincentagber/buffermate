@@ -61,7 +61,7 @@ class DashboardStatsController extends Controller
         $contract = [
             'workspace' => [
                 'id' => $workspace?->id,
-                'name' => $workspace?->name ?: 'Lumière Aesthetics',
+                'name' => $workspace?->name ?: 'BufferMate Creator Studio',
                 'timezone' => $workspace?->timezone ?: 'America/New_York',
                 'role' => 'owner',
             ],

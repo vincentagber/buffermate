@@ -22,6 +22,14 @@ const nextConfig = {
         protocol: "https",
         hostname: "picsum.photos",
       },
+      {
+        protocol: "https",
+        hostname: "app.helicarrier.xyz",
+      },
+      {
+        protocol: "https",
+        hostname: "**.helicarrier.xyz",
+      },
     ],
   },
 

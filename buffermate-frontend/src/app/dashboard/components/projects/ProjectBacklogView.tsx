@@ -184,14 +184,14 @@ export default function ProjectBacklogView({
 
         <AddNewButton
           title="Create New Sprint"
-          size={22}
+          size={20}
           onClick={() => {
             setNewSprintName(`${project.key} Sprint ${sprints.length + 1}`);
             setIsCreatingSprint(true);
           }}
           label="Create Sprint"
-          iconClassName="stroke-white group-hover:stroke-emerald-400"
-          className="px-4 py-2 bg-[#141416] hover:bg-black text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5"
+          iconClassName="stroke-white group-hover:stroke-emerald-400 group-active:stroke-white"
+          className="px-4 py-2 bg-[#141416] hover:bg-black active:bg-black text-white hover:text-white active:text-white rounded-full text-xs font-semibold shadow-2xs transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0"
         />
       </div>
 

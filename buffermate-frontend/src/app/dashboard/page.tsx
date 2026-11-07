@@ -867,11 +867,7 @@ export default function DashboardPage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                   </span>
-                  <span className="font-semibold text-slate-900">Live Realtime Streaming</span>
-                  <span className="text-slate-300 hidden sm:inline">•</span>
-                  <span className="text-slate-500 text-[11px] hidden sm:inline">
-                    Supabase Postgres WebSockets & Multi-Channel Event Stream Active
-                  </span>
+                  <span className="font-semibold text-slate-900">Live Realtime Performance Stream</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
