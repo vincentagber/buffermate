@@ -199,7 +199,15 @@ export default function MarketingFooter() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-white/15 flex flex-col sm:flex-row items-center justify-between text-xs text-white/70 gap-4">
           <p>© 2026 Buffermate AI Technologies Inc. All rights reserved.</p>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Link href="/privacy" className="hover:text-white transition-colors underline underline-offset-2">
+              Privacy Policy
+            </Link>
+            <span className="text-white/30">•</span>
+            <Link href="/terms" className="hover:text-white transition-colors underline underline-offset-2">
+              Terms of Service
+            </Link>
+            <span className="text-white/30">•</span>
             <span className="text-white/80">
               Payments secured via <strong className="text-white">Bachs</strong>
             </span>
