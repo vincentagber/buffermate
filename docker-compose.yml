@@ -24,3 +24,4 @@ services:
       - APP_ENV=production
       - APP_URL=https://app.helicarrier.xyz
       - SANCTUM_STATEFUL_DOMAINS=app.helicarrier.xyz
+
