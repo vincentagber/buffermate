@@ -16,9 +16,10 @@ export default function MarketingTrust() {
             <span>ENTERPRISE-GRADE RELIABILITY</span>
           </div>
 
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-hero-sans font-normal tracking-[-0.04em] text-white leading-tight">
             Built on a foundation of <br className="hidden sm:inline" />
-            <span className="text-[#6F9C3E]">absolute trust.</span>
+            <span className="font-editorial-italic text-[#a3e635] font-normal tracking-tight pr-2">absolute</span>
+            <span className="font-hero-sans font-black tracking-[-0.04em] text-white">trust.</span>
           </h2>
 
           <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">

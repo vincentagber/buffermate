@@ -16,18 +16,21 @@ export default function MarketingHero() {
       <div className="max-w-[1200px] mx-auto px-5 md:px-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* =========================================================================
-              LEFT COLUMN: HERO COPY & CTAs
+              LEFT COLUMN: HERO COPY & CTAs (Kinetic & Editorial Font Pairing)
           ========================================================================= */}
           <div className="lg:col-span-6 space-y-6 sm:space-y-8 animate-slide-up-fade">
-            <h1 className="text-[42px] sm:text-[60px] lg:text-[66px] font-extrabold tracking-tight text-[#1A202C] leading-[1.06]">
-              Your Social Media. <br />
-              <span className="text-[#6F9C3E]">
-                Smarter. Automated.
+            <h1 className="text-[48px] sm:text-[68px] lg:text-[80px] font-hero-sans font-normal tracking-[-0.04em] text-[#1A202C] leading-[0.96]">
+              Social media that <br />
+              <span className="font-editorial-italic text-[#52832B] font-normal tracking-tight pr-2 sm:pr-3">
+                really
+              </span>
+              <span className="font-hero-sans font-black tracking-[-0.04em] text-[#1A202C]">
+                moves.
               </span>
             </h1>
 
-            <p className="font-medium text-base sm:text-[18px] text-[#6B6B60] max-w-xl leading-relaxed">
-              Connect with an autonomous AI network engineered to craft, schedule, and distribute high-converting content across 6 channels. Turn viral post comments into direct paying clients 24/7.
+            <p className="font-hero-sans font-normal text-base sm:text-[19px] text-[#6B6B60] max-w-xl leading-relaxed tracking-tight">
+              From raw creative ideas to an autonomous AI publishing engine across 6 channels. Turn viral post comments into direct paying clients 24/7.
             </p>
 
             {/* Animated Interactive CTA Button */}
@@ -122,7 +125,7 @@ export default function MarketingHero() {
                   </div>
                 </div>
               </div>
-              <p className="text-[11px] text-[#6B6B60] mt-2 italic leading-snug">
+              <p className="font-editorial-italic text-[13px] text-[#1A202C] mt-2.5 leading-snug">
                 &ldquo;Consistently delivers 4x reach and 24/7 comment leads on Instagram &amp; TikTok.&rdquo;
               </p>
             </div>

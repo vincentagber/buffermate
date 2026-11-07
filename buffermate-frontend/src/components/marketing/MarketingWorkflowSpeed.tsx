@@ -24,10 +24,10 @@ export default function MarketingWorkflowSpeed() {
       <div className="max-w-[1200px] mx-auto px-5 md:px-10 space-y-20 sm:space-y-28">
         {/* Section Title */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1A202C] leading-tight">
-            Built for speed.
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-hero-sans font-normal tracking-[-0.04em] text-[#1A202C] leading-tight">
+            Built for <span className="font-editorial-italic text-[#52832B] font-normal tracking-tight">speed.</span>
           </h2>
-          <p className="font-medium text-base sm:text-lg text-[#6B6B60] leading-relaxed">
+          <p className="font-hero-sans font-normal text-base sm:text-lg text-[#6B6B60] leading-relaxed tracking-tight">
             Our platform is designed to make scheduling and scaling your social publishing as fast and frictionless as possible.
           </p>
         </div>

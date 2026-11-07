@@ -12,11 +12,11 @@ export default function MarketingCta() {
         <div className="rounded-[32px] p-8 md:p-14 flex flex-col items-start justify-between bg-white border border-[#E2E0D5] relative overflow-hidden hover:shadow-xl hover:border-[#C4C4B8] transition-all">
           <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#6F9C3E]/10 rounded-full blur-[60px] pointer-events-none" />
           <div className="relative z-10 mb-8">
-            <h3 className="font-extrabold text-[30px] md:text-[38px] text-[#1A202C] mb-4 leading-tight">
+            <h3 className="font-hero-sans font-normal text-[32px] md:text-[42px] text-[#1A202C] mb-4 leading-[1.05] tracking-[-0.04em]">
               Ready to scale <br />
-              your operations?
+              your <span className="font-editorial-italic text-[#52832B] font-normal tracking-tight">operations?</span>
             </h3>
-            <p className="font-medium text-[16px] md:text-[17px] text-[#6B6B60] max-w-[360px] leading-relaxed">
+            <p className="font-hero-sans font-normal text-[16px] md:text-[17px] text-[#6B6B60] max-w-[360px] leading-relaxed tracking-tight">
               Launch your first workspace today and get autonomous multi-channel scheduling with AI-driven content generation.
             </p>
           </div>
@@ -32,11 +32,11 @@ export default function MarketingCta() {
         <div className="rounded-[32px] p-8 md:p-14 flex flex-col items-start justify-between bg-white border border-[#E2E0D5] relative overflow-hidden hover:shadow-xl hover:border-[#C4C4B8] transition-all">
           <div className="absolute top-0 right-0 w-[200px] h-[200px] bg-[#FF882A]/10 rounded-full blur-[60px] pointer-events-none" />
           <div className="relative z-10 mb-8">
-            <h3 className="font-extrabold text-[30px] md:text-[38px] text-[#1A202C] mb-4 leading-tight">
+            <h3 className="font-hero-sans font-normal text-[32px] md:text-[42px] text-[#1A202C] mb-4 leading-[1.05] tracking-[-0.04em]">
               Need an agency <br />
-              solution?
+              <span className="font-editorial-italic text-[#FF882A] font-normal tracking-tight">solution?</span>
             </h3>
-            <p className="font-medium text-[16px] md:text-[17px] text-[#6B6B60] max-w-[360px] leading-relaxed">
+            <p className="font-hero-sans font-normal text-[16px] md:text-[17px] text-[#6B6B60] max-w-[360px] leading-relaxed tracking-tight">
               Custom multi-brand workspaces, 10 team member seats, white-label client PDF reports, and dedicated account management.
             </p>
           </div>

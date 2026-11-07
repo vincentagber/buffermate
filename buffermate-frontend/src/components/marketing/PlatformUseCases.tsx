@@ -74,12 +74,17 @@ export default function PlatformUseCases() {
   return (
     <section className="max-w-[1200px] mx-auto w-full px-5 md:px-10 py-20 md:py-28 border-b border-[#E2E0D5]">
       {/* Section Heading */}
-      <div className="max-w-[650px] mb-16">
-        <h2 className="font-extrabold text-[34px] md:text-[46px] text-[#1A202C] leading-[1.12] mb-4">
+      <div className="max-w-[680px] mb-16">
+        <h2 className="font-hero-sans font-normal text-[36px] md:text-[50px] text-[#1A202C] leading-[1.04] tracking-[-0.04em] mb-4">
           Scale your social presence with <br />
-          <span className="text-[#6F9C3E]">autonomous precision.</span>
+          <span className="font-editorial-italic text-[#52832B] font-normal tracking-tight pr-2 sm:pr-3">
+            autonomous
+          </span>
+          <span className="font-hero-sans font-black tracking-[-0.04em] text-[#1A202C]">
+            precision.
+          </span>
         </h2>
-        <p className="font-medium text-[17px] text-[#6B6B60] leading-relaxed">
+        <p className="font-hero-sans font-normal text-[17px] text-[#6B6B60] leading-relaxed tracking-tight">
           Deploy autonomous AI agents and scheduling algorithms for operations requiring contextual nuance, viral curiosity hooks, and sub-15s speed-to-lead.
         </p>
       </div>

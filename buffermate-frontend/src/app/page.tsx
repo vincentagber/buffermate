@@ -3,7 +3,6 @@
 import React from 'react';
 import MarketingNavbar from '@/components/marketing/Navbar';
 import MarketingHero from '@/components/marketing/MarketingHero';
-import KineticTypeShowcase from '@/components/marketing/KineticTypeShowcase';
 import MarketingMarquee from '@/components/marketing/MarketingMarquee';
 import PlatformUseCases from '@/components/marketing/PlatformUseCases';
 import MarketingWorkflowSpeed from '@/components/marketing/MarketingWorkflowSpeed';
@@ -26,8 +25,8 @@ export default function HomePage() {
       <MarketingNavbar />
 
       <main className="flex-1 flex flex-col w-full relative">
-        {/* 2. Kinetic Editorial Hero & Typography Showcase (Kinet Style) */}
-        <KineticTypeShowcase />
+        {/* 2. Hero Section */}
+        <MarketingHero />
 
         {/* 3. Channels & Counting Marquee (Dual-Row Infinite Loop) */}
         <MarketingMarquee />
