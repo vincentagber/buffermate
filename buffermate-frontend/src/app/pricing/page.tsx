@@ -325,34 +325,34 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="bg-[#141416] text-[#E2E0D5] rounded-[28px] border border-[#141416] shadow-xl overflow-hidden">
+          <div className="bg-white text-[#141416] rounded-[28px] border border-[#141416]/12 shadow-[0_20px_50px_rgba(20,20,22,0.06)] overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#000000] border-b border-[#E2E0D5]/15 text-xs font-bold text-[#E2E0D5]/60 uppercase tracking-wider">
+                <thead className="bg-[#F7F6F2] border-b border-[#E2E0D5] text-xs font-bold text-[#62645F] uppercase tracking-wider">
                   <tr>
-                    <th className="py-5 px-6 md:px-8 text-[#E2E0D5]">Capability</th>
-                    <th className="py-5 px-6 text-[#E2E0D5]/60">Starter Free</th>
-                    <th className="py-5 px-6 text-[#07B979] font-extrabold bg-[#00784D]/20">
+                    <th className="py-5 px-6 md:px-8 text-[#141416]">Capability</th>
+                    <th className="py-5 px-6 text-[#62645F]">Starter Free</th>
+                    <th className="py-5 px-6 text-[#00784D] font-extrabold bg-[#00784D]/10 border-x border-[#00784D]/15">
                       Pro Growth ($23/mo)
                     </th>
-                    <th className="py-5 px-6 text-[#E2E0D5] font-extrabold">
+                    <th className="py-5 px-6 text-[#141416] font-extrabold">
                       Scale &amp; Agency ($63/mo)
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#E2E0D5]/15">
+                <tbody className="divide-y divide-[#E2E0D5]">
                   {comparisonRows.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-[#000000]/40 transition-colors">
-                      <td className="py-4 px-6 md:px-8 font-bold text-[#E2E0D5] text-sm">
+                    <tr key={idx} className="hover:bg-[#F7F6F2]/70 transition-colors">
+                      <td className="py-4 px-6 md:px-8 font-bold text-[#141416] text-sm">
                         {row.feature}
                       </td>
-                      <td className="py-4 px-6 text-[#E2E0D5]/70 text-xs md:text-sm font-medium">
+                      <td className="py-4 px-6 text-[#62645F] text-xs md:text-sm font-medium">
                         {row.free}
                       </td>
-                      <td className="py-4 px-6 font-bold text-[#07B979] text-xs md:text-sm bg-[#00784D]/20">
+                      <td className="py-4 px-6 font-bold text-[#00784D] text-xs md:text-sm bg-[#00784D]/10 border-x border-[#00784D]/15">
                         {row.pro}
                       </td>
-                      <td className="py-4 px-6 font-bold text-[#E2E0D5] text-xs md:text-sm">
+                      <td className="py-4 px-6 font-bold text-[#141416] text-xs md:text-sm">
                         {row.agency}
                       </td>
                     </tr>

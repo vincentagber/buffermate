@@ -86,26 +86,26 @@ export default function MarketingHero() {
           ========================================================================= */}
           <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
             {/* Tilted Photo Card */}
-            <div className="relative w-full max-w-[460px] aspect-[4/5] rounded-[32px] overflow-hidden shadow-2xl border-4 border-[#141416] rotate-1 sm:rotate-2 hover:rotate-0 transition-transform duration-500">
+            <div className="relative w-full max-w-[460px] aspect-[4/5] rounded-[32px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(20,20,22,0.18)] border-4 border-white ring-1 ring-[#141416]/10 rotate-1 sm:rotate-2 hover:rotate-0 transition-transform duration-500">
               <img
                 src="/marketing/hero-creator-man.jpg"
                 alt="Young creator managing multiple social media accounts with Buffermate AI"
                 className="w-full h-full object-cover object-center"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* FLOATING CARD 1: Top-Left "Posts Processed" with lime trend */}
-            <div className="absolute -top-4 -left-2 sm:left-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 animate-fade-in w-44">
-              <div className="flex items-center space-x-1.5 text-zinc-400 text-[11px] font-semibold">
-                <TrendingUp className="w-3.5 h-3.5 text-[#07B979]" />
+            {/* FLOATING CARD 1: Top-Left "Posts Processed" (Crisp White SaaS Style) */}
+            <div className="absolute -top-4 -left-2 sm:left-4 bg-white text-[#141416] rounded-2xl p-4 shadow-[0_20px_40px_rgba(20,20,22,0.12)] border border-[#141416]/10 z-20 animate-fade-in w-44">
+              <div className="flex items-center space-x-1.5 text-[#62645F] text-[11px] font-semibold">
+                <TrendingUp className="w-3.5 h-3.5 text-[#00784D]" />
                 <span>Posts Processed</span>
               </div>
               <div className="mt-1 flex items-baseline justify-between">
-                <span className="text-2xl font-black text-white tracking-tight">
+                <span className="text-2xl font-black text-[#141416] tracking-tight">
                   1,420
                 </span>
-                <svg className="w-16 h-6 stroke-[#07B979] fill-none" viewBox="0 0 60 20">
+                <svg className="w-16 h-6 stroke-[#00784D] fill-none" viewBox="0 0 60 20">
                   <path
                     d="M 2 16 Q 15 18, 25 10 T 45 6 T 58 2"
                     strokeWidth="2.5"
@@ -116,28 +116,28 @@ export default function MarketingHero() {
               </div>
             </div>
 
-            {/* FLOATING CARD 2: Bottom-Right Testimonial Card */}
-            <div className="absolute -bottom-4 right-0 sm:right-4 bg-[#141416] text-white rounded-2xl p-4 shadow-2xl border border-[#E2E0D5]/20 z-20 max-w-[260px] animate-fade-in">
+            {/* FLOATING CARD 2: Bottom-Right Testimonial Card (Crisp White SaaS Style) */}
+            <div className="absolute -bottom-4 right-0 sm:right-4 bg-white text-[#141416] rounded-2xl p-4 shadow-[0_20px_40px_rgba(20,20,22,0.12)] border border-[#141416]/10 z-20 max-w-[260px] animate-fade-in">
               <div className="flex items-center space-x-2.5">
                 <img
                   src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
                   alt="Chukwuka Obiosa"
-                  className="w-9 h-9 rounded-full object-cover border border-[#E2E0D5]/30"
+                  className="w-9 h-9 rounded-full object-cover border border-[#E2E0D5]"
                 />
                 <div>
                   <div className="flex items-center space-x-1">
-                    <span className="text-xs font-bold text-white">Chukwuka Obiosa</span>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#07B979] fill-[#07B979]/20" />
+                    <span className="text-xs font-bold text-[#141416]">Chukwuka Obiosa</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#00784D] fill-[#00784D]/15" />
                   </div>
-                  <div className="flex text-[#07B979] space-x-0.5 mt-0.5">
+                  <div className="flex text-[#00784D] space-x-0.5 mt-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-2.5 h-2.5 fill-[#07B979]" />
+                      <Star key={i} className="w-2.5 h-2.5 fill-[#00784D]" />
                     ))}
-                    <span className="text-[10px] text-zinc-400 ml-1 font-semibold">(5.0)</span>
+                    <span className="text-[10px] text-[#62645F] ml-1 font-semibold">(5.0)</span>
                   </div>
                 </div>
               </div>
-              <p className="font-editorial-italic text-[13px] text-zinc-300 mt-2.5 leading-snug">
+              <p className="font-editorial-italic text-[13px] text-[#141416]/85 mt-2.5 leading-snug">
                 &ldquo;Consistently delivers 4x reach and 24/7 comment leads on Instagram &amp; TikTok.&rdquo;
               </p>
             </div>
