@@ -7,12 +7,12 @@ return [
     |--------------------------------------------------------------------------
     |
     | Supported environments:
-    | Sandbox: https://sandbox-api.bachs.io/v1
-    | Production: https://api.bachs.io/v1
+    | Production (Live): https://api.bachs.io/v1
+    | Sandbox (Test):    https://sandbox-api.bachs.io/v1
     |
     */
-    'api_key' => env('BACHS_API_KEY', 'bachs_test_key_sandbox'),
-    'api_base_url' => env('BACHS_API_BASE_URL', 'https://sandbox-api.bachs.io/v1'),
+    'api_key' => env('BACHS_API_KEY'),
+    'api_base_url' => env('BACHS_API_BASE_URL', 'https://api.bachs.io/v1'),
 
     /*
     |--------------------------------------------------------------------------
@@ -20,9 +20,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Used to verify HMAC-SHA256 signatures in the X-Bachs-Signature header.
+    | Obtain from your Bachs Dashboard -> Webhooks.
     |
     */
-    'webhook_secret' => env('BACHS_WEBHOOK_SECRET', 'whsec_bachs_sandbox_secret'),
+    'webhook_secret' => env('BACHS_WEBHOOK_SECRET'),
 
     /*
     |--------------------------------------------------------------------------
@@ -35,6 +36,9 @@ return [
     |--------------------------------------------------------------------------
     | BufferMate Subscription Plans & Product Cart Mapping
     |--------------------------------------------------------------------------
+    |
+    | Map the plan IDs to product IDs configured in your Bachs live dashboard.
+    |
     */
     'plans' => [
         'pro' => [

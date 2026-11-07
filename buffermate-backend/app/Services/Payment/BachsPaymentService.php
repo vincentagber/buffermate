@@ -17,17 +17,22 @@ class BachsPaymentService
 
     public function __construct()
     {
-        $this->apiKey = config('bachs.api_key', 'bachs_test_key_sandbox');
+        $this->apiKey = (string) config('bachs.api_key', '');
         $configuredUrl = config('bachs.api_base_url');
 
         // Automatically route sk_live_ keys to the live production endpoint
         if (str_starts_with($this->apiKey, 'sk_live_')) {
             $this->baseUrl = 'https://api.bachs.io/v1';
         } else {
-            $this->baseUrl = rtrim($configuredUrl ?: 'https://sandbox-api.bachs.io/v1', '/');
+            $this->baseUrl = rtrim($configuredUrl ?: 'https://api.bachs.io/v1', '/');
         }
 
-        $this->webhookSecret = config('bachs.webhook_secret', 'whsec_bachs_sandbox_secret');
+        $this->webhookSecret = (string) config('bachs.webhook_secret', '');
+    }
+
+    public function isLiveMode(): bool
+    {
+        return str_starts_with($this->apiKey, 'sk_live_') || config('app.env') === 'production';
     }
 
     /**
@@ -91,18 +96,26 @@ class BachsPaymentService
                 $checkoutUrl = $data['checkout_url'] ?? ($data['url'] ?? null);
                 $rawResponse = $data;
             } else {
-                Log::warning('Bachs API checkout session response returned status ' . $response->status(), [
-                    'body' => $response->body(),
+                $errorBody = $response->body();
+                Log::error("Bachs API checkout session response returned status {$response->status()}", [
+                    'body' => $errorBody,
                 ]);
+
+                if ($this->isLiveMode()) {
+                    $detail = $response->json('detail') ?: ($response->json('message') ?: $errorBody);
+                    throw new \RuntimeException("Bachs Live API Error ({$response->status()}): {$detail}");
+                }
             }
         } catch (\Throwable $e) {
-            Log::warning('Bachs API request failed: ' . $e->getMessage());
+            Log::error('Bachs API request failed: ' . $e->getMessage());
+            if ($this->isLiveMode()) {
+                throw $e;
+            }
         }
 
-        // Deterministic sandbox fallback if Bachs sandbox credentials are simulated or offline
+        // Deterministic sandbox fallback ONLY if in non-production test mode
         if (!$sessionId || !$checkoutUrl) {
             $sessionId = 'cs_' . Str::lower(Str::random(18));
-            // Provide a direct sandbox verification redirect
             $checkoutUrl = "https://checkout.bachs.io/session/{$sessionId}?sandbox=true&app=buffermate&plan={$planId}&cycle={$billingCycle}";
             $rawResponse = [
                 'id' => $sessionId,

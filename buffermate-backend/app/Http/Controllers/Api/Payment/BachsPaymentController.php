@@ -54,22 +54,29 @@ class BachsPaymentController extends Controller
             ]);
         }
 
-        $session = $this->bachsService->createCheckoutSession([
-            'workspace_id' => $workspaceId,
-            'user_id' => $request->attributes->get('user_id') ?: 'dev_user',
-            'plan_id' => $validated['plan_id'],
-            'billing_cycle' => $validated['billing_cycle'] ?? 'monthly',
-            'customer_email' => $validated['customer_email'] ?? 'alex.morgan@buffermate.ai',
-            'customer_name' => $validated['customer_name'] ?? 'Alex Morgan',
-            'success_url' => $validated['success_url'] ?? url('/dashboard/analytics?payment=success&gateway=bachs&plan=' . $validated['plan_id']),
-            'cancel_url' => $validated['cancel_url'] ?? url('/dashboard/analytics?payment=cancelled'),
-        ]);
+        try {
+            $session = $this->bachsService->createCheckoutSession([
+                'workspace_id' => $workspaceId,
+                'user_id' => $request->attributes->get('user_id') ?: 'dev_user',
+                'plan_id' => $validated['plan_id'],
+                'billing_cycle' => $validated['billing_cycle'] ?? 'monthly',
+                'customer_email' => $validated['customer_email'] ?? 'alex.morgan@buffermate.ai',
+                'customer_name' => $validated['customer_name'] ?? 'Alex Morgan',
+                'success_url' => $validated['success_url'] ?? url('/dashboard/analytics?payment=success&gateway=bachs&plan=' . $validated['plan_id']),
+                'cancel_url' => $validated['cancel_url'] ?? url('/dashboard/analytics?payment=cancelled'),
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Bachs checkout session initialized successfully.',
-            'data' => $session,
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Bachs checkout session initialized successfully.',
+                'data' => $session,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to initialize Bachs checkout session: ' . $e->getMessage(),
+            ], 400);
+        }
     }
 
     /**
